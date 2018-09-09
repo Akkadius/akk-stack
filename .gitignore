@@ -1,0 +1,10 @@
+data/
+server/
+code/
+.idea/
+.env
+.docker-sync
+.DS_Store
+.dropbox_uploader
+.bash_history
+assets/ssh/

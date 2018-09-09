@@ -1,0 +1,4 @@
+# * * * * *  echo "example" >> /home/eqemu/server/example.txt
+
+# This extra line makes it a valid cron - Don't remove
+

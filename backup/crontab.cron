@@ -1,0 +1,18 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=""
+
+# docker stdout pipe example: > /proc/1/fd/1 2>/proc/1/fd/2
+
+# cron goes here
+
+# once a day on a random variance to keep from bursting backups amongst several servers
+0 1 * * * perl -e 'sleep int(rand(1800))'; ./backup/backup-database.sh > /dev/null
+
+# once a day on a random variance to keep from bursting backups amongst several servers
+0 1 * * * perl -e 'sleep int(rand(1800))'; ./backup/backup-quests.sh > /dev/null
+
+# once a week on a random variance to keep from bursting backups amongst several servers
+5 8 * * 0 perl -e 'sleep int(rand(1800))'; ./backup/backup-deployment.sh > /dev/null
+
+# This extra line makes it a valid cron - Don't remove

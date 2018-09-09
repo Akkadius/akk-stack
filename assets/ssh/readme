@@ -1,0 +1,3 @@
+Persisted SSH keys will get stored in this symlinked folder
+
+Symlinked ~/assets/ssh <-> ~/.ssh/

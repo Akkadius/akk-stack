@@ -1,0 +1,166 @@
+version: '2.4'
+
+networks:
+  backend:
+    driver: ${NETWORKS_DRIVER}
+
+services:
+
+  #############################################
+  # eqemu server
+  #############################################
+
+  eqemu-server:
+    restart: unless-stopped
+    image: akkadius/eqemu-server:latest
+    volumes:
+      - ./server:/home/eqemu/server:delegated
+      - ./code:/home/eqemu/code:delegated
+      - ./assets:/home/eqemu/assets:delegated
+    ports:
+      - ${IP_ADDRESS}:2222:22/tcp
+      - ${IP_ADDRESS}:2222:22/udp
+      - ${IP_ADDRESS}:3000-3010:3000-3010
+      - ${IP_ADDRESS}:8080:8080
+      - ${IP_ADDRESS}:9001:9001/tcp
+      - ${IP_ADDRESS}:9001:9001/udp
+      - ${IP_ADDRESS}:9000:9000/tcp
+      - ${IP_ADDRESS}:9000:9000/udp
+      - ${IP_ADDRESS}:5999:5999/tcp
+      - ${IP_ADDRESS}:5999:5999/udp
+      - ${IP_ADDRESS}:5998:5998/tcp
+      - ${IP_ADDRESS}:5998:5998/udp
+      - ${IP_ADDRESS}:6000:6000/tcp
+      - ${IP_ADDRESS}:7778:7778/tcp
+      - ${IP_ADDRESS}:7778:7778/udp
+      - ${IP_ADDRESS}:7000-${PORT_RANGE_HIGH}:7000-${PORT_RANGE_HIGH}/tcp
+      - ${IP_ADDRESS}:7000-${PORT_RANGE_HIGH}:7000-${PORT_RANGE_HIGH}/udp
+    environment:
+      - SERVER_PASSWORD=${SERVER_PASSWORD}
+      - EQEMU_DB_PASSWORD=${MARIADB_PASSWORD}
+      - PEQ_EDITOR_PASSWORD=${PEQ_EDITOR_PASSWORD}
+      - IP_ADDRESS=${IP_ADDRESS}
+      - PORT_RANGE_HIGH=${PORT_RANGE_HIGH}
+      - TZ=${TZ:-US/Central}
+    tty: true
+    networks:
+      - backend
+    cap_add:
+      # This is needed for running perf traces
+      # - CAP_SYS_ADMIN
+      # For GDB traces but it has security implications
+      - SYS_PTRACE
+    cpu_shares: 900
+
+  #############################################
+  # mariadb
+  #############################################
+
+  mariadb:
+    restart: unless-stopped
+    build:
+      context: ./containers/mariadb
+      args:
+        - INNODB_BUFFER_POOL_SIZE=${INNODB_BUFFER_POOL_SIZE:-256MB}
+    ports:
+      - ${IP_ADDRESS}:3306:3306
+    volumes:
+      - ${DATA_PATH_HOST}/mariadb:/var/lib/mysql:delegated
+    environment:
+      - MYSQL_DATABASE=${MARIADB_DATABASE}
+      - MYSQL_USER=${MARIADB_USER}
+      - MYSQL_PASSWORD=${MARIADB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MYSQL_ALLOW_EMPTY_PASSWORD=NO
+      - TZ=${TZ:-US/Central}
+    networks:
+      - backend
+
+  #############################################
+  # phpmyadmin
+  #############################################
+
+  phpmyadmin-proxy:
+    build: ./containers/http-proxy
+    restart: unless-stopped
+    ports:
+      - ${IP_ADDRESS}:8082:80
+    environment:
+      - BASIC_AUTH_USERNAME=${PHPMYADMIN_USERNAME}
+      - BASIC_AUTH_PASSWORD=${PHPMYADMIN_PASSWORD}
+      - PROXY_PASS=http://phpmyadmin
+      - TZ=${TZ:-US/Central}
+    networks:
+      - backend
+
+  phpmyadmin:
+    restart: unless-stopped
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      - PMA_HOST=mariadb
+      - PMA_USER=${MARIADB_USER}
+      - PMA_PASSWORD=${MARIADB_PASSWORD}
+      - TZ=${TZ:-US/Central}
+    networks:
+      - backend
+
+  #############################################
+  # peq editor
+  #############################################
+
+  peq-editor:
+    image: akkadius/peq-editor:latest
+    restart: unless-stopped
+    ports:
+      - ${IP_ADDRESS}:8081:80
+    volumes:
+      - ${DATA_PATH_HOST}/peq-editor:/var/www/html
+    environment:
+      DB_HOST: mariadb
+      DB_NAME: ${MARIADB_DATABASE}
+      DB_USER: ${MARIADB_USER}
+      DB_PASSWORD: ${MARIADB_PASSWORD}
+      TZ: ${TZ:-US/Central}
+    networks:
+      - backend
+
+  #############################################
+  # ftp
+  #############################################
+
+  ftp-quests:
+    image: stilliard/pure-ftpd
+    restart: unless-stopped
+    environment:
+      FTP_USER_UID: 1000
+      FTP_USER_GID: 1000
+      FTP_USER_NAME: quests
+      FTP_USER_PASS: ${FTP_QUESTS_PASSWORD}
+      FTP_USER_HOME: '/home/quests/'
+      TZ: ${TZ:-US/Central}
+    volumes:
+      - ./server/quests/:/home/quests/
+    ports:
+      - ${IP_ADDRESS}:21:21
+      - ${IP_ADDRESS}:30000-30009:30000-30009
+    networks:
+      - backend
+
+  #############################################
+  # backup
+  #############################################
+
+  backup-cron:
+    restart: unless-stopped
+    image: akkadius/eqemu-backup-cron:latest
+    build:
+      context: ./containers/backup-cron
+    hostname: backup-cron
+    tty: true
+    volumes:
+      - ./:/home/backup-cron/
+    environment:
+      TZ: America/Chicago
+      DROPBOX_OAUTH_ACCESS_TOKEN: ${DROPBOX_OAUTH_ACCESS_TOKEN}
+    networks:
+      - backend
