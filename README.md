@@ -202,5 +202,93 @@ You can hop into MySQL shell from either docker exec `make mc` or from the `eqem
 
 ![mysql-shell](https://user-images.githubusercontent.com/3319450/87241546-ec735880-c3e9-11ea-9a8e-412ca4d99736.gif)
 
+## Deployment Info
 
-  
+To print a handy list of passwords and access URL's, simply use `make info` at the host level of the deployment
+
+```
+root@host:/opt/eqemu-servers/peq-test-server# make info
+##################################
+# Server Info
+##################################
+# Akkas Docker PEQ Installer
+##################################
+# Passwords
+##################################
+MARIADB_PASSWORD=1jo5XUzpY7lYOf5FmJKRBhUfGmnVzBN
+MARIADB_ROOT_PASSWORD=mDI8gefiVEGjeiMCUMrZhMmKMWI101B
+SERVER_PASSWORD=uVNjjlucE5H9UzUlziZfP16GQvsWJhe
+PHPMYADMIN_PASSWORD=tD02XcNGoaIaV82wnnEnenp0V7p58V9
+PEQ_EDITOR_PASSWORD=5X5o1E84SXQzjmxN86fLzuBFJyGEjN9
+FTP_QUESTS_PASSWORD=Jqx3KxCZFkRA1aPqBJqMTSA1vA8uK4Y
+##################################
+# IP
+##################################
+IP_ADDRESS=66.70.153.122
+##################################
+# Quests FTP  | 66.70.153.122:21 | quests / Jqx3KxCZFkRA1aPqBJqMTSA1vA8uK4Y
+##################################
+# Web Interfaces
+##################################
+# PEQ Editor  | http://66.70.153.122:8081 | admin / 5X5o1E84SXQzjmxN86fLzuBFJyGEjN9
+# PhpMyAdmin  | http://66.70.153.122:8082 | admin / tD02XcNGoaIaV82wnnEnenp0V7p58V9
+# EQEmu Admin | http://66.70.153.122:3000 | admin / 82a71144a51c521283834f99daff5a
+##################################
+```
+
+## Service Lifetime
+
+By default each container / service in the `docker-compose.yml` is configured to restart unless stopped, meaning if the server restarts the Docker daemon will boot the services you had started initially which is the default behavior of this stack
+
+Occulus and the eqemu-server entrypoint bootup script is designed to start the emulator server services when the server first comes up, so if you need to bring the whole host down, everything will come back up on reboot automatically
+
+## Services to Boot
+
+By default the whole deployment is booted post install, but for production setups maybe you only want the emulator server and the database server only. Simply bring everything down with either `make down` or `docker-compose down`
+
+`make up` will by default only bring up eqemu-server and mariadb
+
+```
+root@host:/opt/eqemu-servers/peq-test-server# make up --dry-run
+docker-compose up -d eqemu-server mariadb
+```
+
+If you want to single boot another service, such as the `peq-editor` simply `docker-compose up -d peq-editor` and you'll have the 2 main services as well as the editor booted
+
+![dc-ps](https://user-images.githubusercontent.com/3319450/87241769-eb432b00-c3eb-11ea-9cbf-f48307981303.gif)
+
+## Accessing the Admin Panel
+
+By default, Occulus runs within the `eqemu-server` service container and is available on port 3000
+
+To access your admin panel bash or ssh into your server and run config to see your web admin password (Or view it in make info mentioned before)
+
+```
+eqemu@97b8129b90b4:~$ config | jq '.["web-admin"]'
+{
+  "application": {
+    "key": "dadbeb31-3073-43dc-a359-569737bb2746",
+    "admin": {
+      "password": "82a71144a51c521283834f99daff5a"
+    }
+  },
+  "launcher": {
+    "runLoginserver": false,
+    "runQueryServ": false,
+    "isRunning": true,
+    "minZoneProcesses": 3
+  }
+}
+```
+
+# Feature Requests
+
+Want a feature that isn't already available? Open an issue with the title "[Feature Request]" and we will see about getting it added
+
+# Contributing
+
+If you want to contribute to the repo, please submit **Pull Requests**
+
+# Pay it Forward
+
+If you use this repository; you're taking advantage of a ton of work that I've done to make the experience incredibly simple for you to use for free - please pay it forward to the community by contributing
