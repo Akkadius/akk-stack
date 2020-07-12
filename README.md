@@ -107,8 +107,25 @@ If you are running a production server with a decent amount of players, consider
 
 If you already ran `make install` simply adjust this value in your `.env` (Uncomment) and rebuild the mariadb container via `docker-compose build mariadb` and restarting the container `docker-compose restart mariadb`
 
-You can validate your buffer pool value reflects what you set in the console
+You can validate your buffer pool value  what you set in the 
 
+### Users
+
+An `eqemu` user is created for the `eqemu-server` server service and only has permissions over the `peq` default database, the root user is also not able to be accessed externally. If you want to restrict the `eqemu` user from external access then you will need to lock that down
+
+```
+root@host:/opt/eqemu-servers/peq-test-server# make mysql-list-users
+docker-compose exec mariadb bash -c "mysql -uroot -pxxx -h localhost -e 'select user, password, host from mysql.user;'"
+WARNING: The DROPBOX_OAUTH_ACCESS_TOKEN variable is not set. Defaulting to a blank string.
++-------------+-------------------------------------------+-----------+
+| User        | Password                                  | Host      |
++-------------+-------------------------------------------+-----------+
+| mariadb.sys |                                           | localhost |
+| root        | *F6CFC46CF35E6BCE3E85D621B308A7940CF8F242 | localhost |
+| eqemu       | *A1824B8E01E5C97385C3D93754C444DC23DB3583 | %         |
++-------------+-------------------------------------------+-----------+
+```
+reflects
 ## PEQ Editor
 
 Automatically configured with pre-set admin password; listens on port 8081 by default
