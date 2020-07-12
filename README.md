@@ -18,6 +18,8 @@ This is what I've used in production, battle-tested, for almost 2 years. I've wo
 - [Features](#features)
   * [Very Easy to Use CLI menus](#very-easy-to-use-cli-menus)
   * [SSH](#ssh)
+  * [Cron Jobs](#cron-jobs)
+  * [Startup Scripts](#startup-scripts)
   * [MariaDB](#mariadb)
   * [PEQ Editor](#peq-editor)
   * [PhpMyAdmin](#phpmyadmin)
@@ -81,7 +83,22 @@ A `make` menu to manage the host-level container environment
 ## SSH
 
 Automatically configured SSH to the `eqemu-server` with automatically generated 30+ character password, persistent keys through reboot; default port is 2222
-  
+
+## Cron Jobs
+
+Cronjob support has been added into the `eqemu-server` service; you can add / edit crons and they persist through reboots. Simply start by editing the crontab.cron file
+
+```
+eqemu@12a1e5add2b9:~$ cat ~/assets/cron/crontab.cron
+# * * * * *  echo "example" >> /home/eqemu/server/example.txt
+
+# This extra line makes it a valid cron - Don't remove
+```
+
+## Startup Scripts
+
+If you want your `eqemu-server` service to fire any particular scripts on container bootup; such as a Discord relay server or any other type of service, you can put the script in the `~/server/startup/*` folder and they will all be ran. Do not try to run EQEmu services here as they are managed by Occulus
+
 ## MariaDB
 
 Configurable INNODB_BUFFER_POOL_MEMORY (Default: 256MB) (Must set before make install or rebuild mariadb)
