@@ -27,7 +27,7 @@ Linux Host or VM with Docker Installed along with Docker Compose
 
 # Features
 
-## Very easy to use CLI menus
+## Very Easy to Use CLI menus
 
 Embedded server management CLI (What is used a majority of the time)
 
@@ -48,6 +48,12 @@ Automatically configured SSH to the `eqemu-server` with automatically generated 
 ## MariaDB
 
 Configurable INNODB_BUFFER_POOL_MEMORY (Default: 256MB) (Must set before make install or rebuild mariadb)
+
+If you are running a production server with a decent amount of players, consider setting this to 512MB or 1GB to avoid page thrashing
+
+If you already ran `make install` simply adjust this value in your `.env` (Uncomment) and rebuild the mariadb container via `docker-compose build mariadb` and restarting the container `docker-compose restart mariadb`
+
+You can validate your buffer pool value reflects what you set in the console
 
 ## PEQ Editor
 
@@ -280,6 +286,24 @@ eqemu@97b8129b90b4:~$ config | jq '.["web-admin"]'
   }
 }
 ```
+
+## Updating Server Binaries
+
+Updating server binaries is as simple as running `update` in the server shell, it will change directory to the source directory, git pull and run a build which will be immediately available the next time you boot a process
+
+## Running Server Processes While Developing
+
+While developing its easy to jump back and forth between compiling changes and running single processes
+
+If you have camped to character select, you can run `kzone` which will kill all zones and simply typing `z` will boot a zone process in the background but will still display in the foreground of the shell
+
+`world` `ucs` `shared` are all shorthands that also work anywhere in any folder in the shell (See below in compiling and developing)
+
+## Compiling and Developing
+
+Compiling is as simple as typing `m` anywhere in the embedded shell
+
+![update](https://user-images.githubusercontent.com/3319450/87242061-e5027e00-c3ee-11ea-9711-c5ce4ae716cb.gif)
 
 # Feature Requests
 
