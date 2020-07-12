@@ -78,7 +78,7 @@ A `make` menu to manage the host-level container environment
 
 ## SSH
 
-Automatically configured SSH to the `eqemu-server` with automatically generated 30+ character password, persistent keys through reboot
+Automatically configured SSH to the `eqemu-server` with automatically generated 30+ character password, persistent keys through reboot; default port is 2222
   
 ## MariaDB
 
@@ -350,4 +350,4 @@ If you want to contribute to the repo, please submit **Pull Requests**
 
 # Pay it Forward
 
-If you use this repository; you're taking advantage of a ton of work that I've done to make the experience incredibly simple for you to use for free - please pay it forward to the community by contributing
+If you use this repository; you're taking advantage of a ton of work that I've done to make the experience incredibly simple for you to use for free - please pay it forward to the community by contributing back
