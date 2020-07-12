@@ -41,49 +41,71 @@ A `make` menu to manage the host-level container environment
 
 <p align="center"><img src="https://user-images.githubusercontent.com/3319450/87240726-bfbb4300-c3e1-11ea-80ac-e53bfa3386f4.gif"></p>
 
-* SSH
+## SSH
+
   * Automatically configured SSH to the `eqemu-server` with automatically generated 30+ character password
   * Persistent keys through reboot
+  
+## MariaDB
+
 * Configurable INNODB_BUFFER_POOL_MEMORY (Default: 256MB) (Must set before make install or rebuild mariadb)
-* PEQ Editor
-* PhpMyAdmin (Password Protected)
-* [Occulus](https://github.com/Akkadius/eqemu-web-admin) Automatically installed server admin panel
-* Symlinked resources
+
+## PEQ Editor
+
+Automatically configured with pre-set admin password
+
+<p align="center"><img src="https://user-images.githubusercontent.com/3319450/87240902-3dcc1980-c3e3-11ea-9d1e-746e217b4459.png"></p>
+
+## PhpMyAdmin
+
+Automatically configured PhpMyAdmin instance with pre-set admin password (Behind a password protected proxy)
+
+<p align="center"><img src="https://user-images.githubusercontent.com/3319450/87240916-63f1b980-c3e3-11ea-8dd8-93bca87f54ec.png"></p>
+
+<p align="center"><img src="https://user-images.githubusercontent.com/3319450/87240919-6f44e500-c3e3-11ea-8c56-6fe0e5ecef89.png"></p>
+
+## Occulus
+
+Automatically installed server admin panel [Occulus repository](https://github.com/Akkadius/eqemu-web-admin)
+
+<p align="center"><img src="https://user-images.githubusercontent.com/3319450/87236540-8c13f500-c3b0-11ea-87f6-756e60fa61ed.png"></p>
+
+## Symlinked resources
   * Server binaries - Never need to copy binaries after a compile
   * Patch files
   * Quests
   * Plugins 
   * LUA Modules
 
-
 ## File Structure
 
+<p align="center"><img src="https://user-images.githubusercontent.com/3319450/87240837-ba122d00-c3e2-11ea-811f-5ed92f2c79f0.gif"></p>
+
+## Automated Backups
+
+Automated cron-based backups that upload to Dropbox using Dropbox API
+
+Follow instructions below to get an API key to enter into the `.env`
+
 ```
-eqemu@f8b74a38cd62:~$ ls -l
-total 12
-lrwxrwxrwx  1 eqemu eqemu   35 Jul 12 00:34 Makefile -> /home/eqemu/assets/scripts/Makefile
-drwxr-xr-x  6 eqemu eqemu 4096 Jul 12 00:10 assets
-drwxr-xr-x 22 eqemu eqemu 4096 Jul 12 00:28 code
-drwxr-xr-x  9 eqemu eqemu 4096 Jul 12 00:34 server
-eqemu@f8b74a38cd62:~$ ls -l server
-total 172
-drwxr-xr-x   4 eqemu eqemu   4096 Jul 12 00:19 assets
-drwxr-xr-x   2 eqemu eqemu   4096 Jul 12 00:34 bin
--rw-r--r--   1 eqemu eqemu   1606 Jul 12 00:34 eqemu_config.json
--rwxr-xr-x   1 eqemu eqemu 103551 Jul 12 00:27 eqemu_server.pl
--rw-r--r--   1 eqemu eqemu    792 Jul 12 00:34 login.json
-drwxr-xr-x   3 eqemu eqemu   4096 Jul 12 00:34 logs
-lrwxrwxrwx   1 eqemu eqemu     38 Jul 12 00:33 lua_modules -> /home/eqemu/server/quests/lua_modules/
-drwxr-xr-x   8 eqemu eqemu   4096 May 25 03:01 maps
-lrwxrwxrwx   1 eqemu eqemu     34 Jul 12 00:33 plugins -> /home/eqemu/server/quests/plugins/
-drwxr-xr-x 273 eqemu eqemu  12288 Jul 12 00:19 quests
--rw-r--r--   1 eqemu eqemu   5879 Jul 12 00:34 server_launcher.pl
--rwxr-xr-x   1 eqemu eqemu    264 Jul 12 00:34 server_start.sh
--rwxr-xr-x   1 eqemu eqemu    265 Jul 12 00:34 server_start_dev.sh
--rwxr-xr-x   1 eqemu eqemu     61 Jul 12 00:34 server_status.sh
--rwxr-xr-x   1 eqemu eqemu     55 Jul 12 00:34 server_stop.sh
-drwxr-xr-x   2 eqemu eqemu   4096 Jul 12 00:34 shared
-drwxr-xr-x   2 eqemu eqemu   4096 Jul 12 00:34 updates_staged
+This is the first time you run this script, please follow the instructions:
+
+1) Open the following URL in your Browser, and log in using your account: https://www.dropbox.com/developers/apps
+2) Click on "Create App", then select "Dropbox API app"
+3) Now go on with the configuration, choosing the app permissions and access restrictions to your DropBox folder
+4) Enter the "App Name" that you prefer (e.g. MyUploader984915521299)
+
+Now, click on the "Create App" button.
+```
+
+Backup retention configurable in `.env`
+
+```
+# DEPLOYMENT_NAME=peq-production (used in backup names)
+# DROPBOX_OAUTH_ACCESS_TOKEN=
+# BACKUP_RETENTION_DAYS_DB_SNAPSHOTS=10
+# BACKUP_RETENTION_DAYS_DEPLOYMENT=35
+# BACKUP_RETENTION_DAYS_QUEST_SNAPSHOTS=7
 ```
 
 # Installation
@@ -137,6 +159,8 @@ Wrote [PORT_RANGE_HIGH] = [7030] to [.env]
 # Install
 
 From this point you're ready to run the fully automated install with a simple `make install`
+
+An example of what this output looks like below (Sped up)
 
 <p align="center"><img src="https://user-images.githubusercontent.com/3319450/87240353-7289a200-c3de-11ea-8afe-1b0a5ad8400e.gif"></p>
   
