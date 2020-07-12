@@ -131,7 +131,9 @@ WARNING: The DROPBOX_OAUTH_ACCESS_TOKEN variable is not set. Defaulting to a bla
 | eqemu       | *A1824B8E01E5C97385C3D93754C444DC23DB3583 | %         |
 +-------------+-------------------------------------------+-----------+
 ```
-reflects
+
+To create new users; simply log in via the root user using the host-level `make mc` which will give you a direct root shell to create new full or limited users to your hearts content
+
 ## PEQ Editor
 
 Automatically configured with pre-set admin password; listens on port 8081 by default
