@@ -202,6 +202,68 @@ Crons are configured to run on a variance so that not all deployments fire backu
 | Quests | A simple snapshot of the quests folder | Once a day at 1M on a random variance of 1800 seconds |
 | Database | A simple snapshot of the database | Once a day at 1M on a random variance of 1800 seconds |
 
+### Running Backups Manually
+
+Bash into the `backup-cron` service; assuming your OAUTH token is valid and everything works
+
+```
+root@host:/opt/eqemu-servers/peq-production# docker-compose exec backup-cron bash
+```
+
+```
+backup-cron@backup-cron:~$ dropbox_uploader.sh list peq-production
+ > Listing "/peq-production"... DONE
+ [D]  database-snapshots
+ [D]  deployment-backups
+ [D]  quest-snapshots
+```
+
+**Database Snapshots**
+
+```
+backup-cron@backup-cron:~$ dropbox_uploader.sh list peq-production/database-snapshots
+ > Listing "/peq-production/database-snapshots"... DONE
+ [F] 182189205 peq-07-02-2020.tar.gz
+ [F] 182222834 peq-07-03-2020.tar.gz
+ [F] 182263995 peq-07-04-2020.tar.gz
+ [F] 182300144 peq-07-05-2020.tar.gz
+ [F] 182394017 peq-07-06-2020.tar.gz
+ [F] 182464528 peq-07-07-2020.tar.gz
+ [F] 182465093 peq-07-08-2020.tar.gz
+ [F] 182527952 peq-07-09-2020.tar.gz
+ [F] 182574977 peq-07-10-2020.tar.gz
+ [F] 182566469 peq-07-11-2020.tar.gz
+ [F] 182661537 peq-07-12-2020.tar.gz
+ ...
+```
+
+**Deployment Snapshots**
+
+(Includes entire deployment folder)
+
+```
+ backup-cron@backup-cron:~$ dropbox_uploader.sh list peq-production/deployment-backups
+ > Listing "/peq-production/deployment-backups"... DONE
+ [F] 3309179293 deployment-07-02-2020.tar.gz
+ [F] 2357754207 deployment-07-05-2020.tar.gz
+ [F] 2364156848 deployment-07-12-2020.tar.gz
+ ...
+```
+
+***Quest Snapshots***
+
+```
+backup-cron@backup-cron:~$ dropbox_uploader.sh list peq-production/quest-snapshots
+ > Listing "/peq-production/quest-snapshots"... DONE
+ [F] 29464443 quests-07-07-2020.tar.gz
+ [F] 29464443 quests-07-08-2020.tar.gz
+ [F] 29464443 quests-07-09-2020.tar.gz
+ [F] 29464443 quests-07-10-2020.tar.gz
+ [F] 29464443 quests-07-11-2020.tar.gz
+ [F] 29464443 quests-07-12-2020.tar.gz
+ ...
+```
+
 ## High CPU Process Watchdog
 
 If a zone process goes into an infinite loop; the watchdog will kill the process and log it in the home directory
