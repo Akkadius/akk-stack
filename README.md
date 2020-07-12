@@ -6,6 +6,8 @@
 
 AkkStack is a simple Docker Compose environment that is augmented with developer and operator focused tooling for running EverQuest Emulator servers
 
+You can have an entire server running within minutes, configured and ready to go for development or production use
+
 This is what I've used in production, battle-tested, for almost 2 years. I've worked through a lot of issues to give you the final stable product. It's what I've also used for development for around the same time frame and you will see why shortly
 
 - [AkkStack | Containerized EverQuest Emulator Server Environment](#akkstack--containerized-everquest-emulator-server-environment)
