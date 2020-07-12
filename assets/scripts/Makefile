@@ -222,5 +222,5 @@ build-with-cores: ##@build Build EQEmu server (make build-with-cores <number>)
 
 update-admin-panel: ##@update Update admin panel
 	kill $(shell ps aux | grep "eqemu-admin" | grep "web" | grep -v "grep" | awk '{print $$2}' | tr '\n' ' ') &>/dev/null || echo "Nothing to kill"
-	make init-eqemu-admin
+	make init-eqemu-admin 
 	while true; do cd ~/server/bin/ && nohup ./eqemu-admin web >/dev/null 2>&1; sleep 1; done &
