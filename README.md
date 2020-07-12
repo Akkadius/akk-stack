@@ -209,7 +209,7 @@ eqemu@f8905f80723c:~$ cat process-kill.log
 Sat Jul 11 20:52:47 CDT 2020 [process-watcher] Killed process [21143] [./bin/zone] for taking too much CPU time [43.50]
 ```
 
-## CPU Share Throttling
+## CPU \ Throttling
 
 To protect the host and the rest of the services running on the box, in the event that someone may be compiling source or trying to maximize all CPU resources, the container is limited
 
@@ -219,6 +219,8 @@ root@host:/opt/eqemu-servers/peq-test-server# cat docker-compose.yml | grep shar
 ```
 
 https://docs.docker.com/compose/compose-file/compose-file-v2/#cpu-and-other-resources
+
+https://docs.docker.com/config/containers/resource_constraints/#configure-the-default-cfs-scheduler
 
 # Installation
 
