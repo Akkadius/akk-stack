@@ -50,6 +50,7 @@ This is what I've used in production, battle-tested, for almost 2 years. I've wo
   * [Updating Server Binaries](#updating-server-binaries)
   * [Running Server Processes While Developing](#running-server-processes-while-developing)
   * [Compiling and Developing](#compiling-and-developing)
+     + [Ninja Support](#ninja-support)
 - [Feature Requests](#feature-requests)
 - [Contributing](#contributing)
 - [Pay it Forward](#pay-it-forward)
@@ -458,6 +459,31 @@ If you have camped to character select, you can run `kzone` which will kill all 
 Compiling is as simple as typing `m` anywhere in the embedded shell
 
 ![update](https://user-images.githubusercontent.com/3319450/87242061-e5027e00-c3ee-11ea-9711-c5ce4ae716cb.gif)
+
+### Ninja Support
+
+If you want to compile using Ninja instead of traditional make for development; there is support in the container ready to go to compile with Ninja, you just need to configure your build repository to use it
+
+```
+eqemu@e5311a8e9505:~$ b
+eqemu@e5311a8e9505:~/code/build$ cmake -GNinja -DEQEMU_BUILD_LOGIN=OFF -DEQEMU_BUILD_LUA=ON -DEQEMU_BUILD_PERL=ON -DEQEMU_BUILD_LOGGING=ON ..
+-- Boost version: 1.67.0
+-- **************************************************
+-- * Library Detection                              *
+-- **************************************************
+-- * MySQL:                                   FOUND *
+-- * MariaDB:                                 FOUND *
+-- * ZLIB:                                    FOUND *
+-- * Lua:                                     FOUND *
+...truncated
+```
+
+To compile, simply use the `n` keyword anywhere
+
+```
+eqemu@e5311a8e9505:~/code/build$ n
+ninja: no work to do
+```
 
 # Feature Requests
 
