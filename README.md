@@ -21,6 +21,7 @@ This is what I've used in production, battle-tested, for almost 2 years. I've wo
   * [Cron Jobs](#cron-jobs)
   * [Startup Scripts](#startup-scripts)
   * [MariaDB](#mariadb)
+    + [Users](#users)
   * [PEQ Editor](#peq-editor)
   * [PhpMyAdmin](#phpmyadmin)
   * [Occulus](#occulus)
@@ -46,7 +47,6 @@ This is what I've used in production, battle-tested, for almost 2 years. I've wo
 - [Feature Requests](#feature-requests)
 - [Contributing](#contributing)
 - [Pay it Forward](#pay-it-forward)
-
 # Requirements
 
 Linux Host or VM with [Docker Installed](https://docs.docker.com/engine/install/) along with [Docker Compose](https://docs.docker.com/compose/install/)
