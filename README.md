@@ -211,7 +211,7 @@ eqemu@f8905f80723c:~$ cat process-kill.log
 Sat Jul 11 20:52:47 CDT 2020 [process-watcher] Killed process [21143] [./bin/zone] for taking too much CPU time [43.50]
 ```
 
-## CPU \ Throttling
+## CPU Share Throttling
 
 To protect the host and the rest of the services running on the box, in the event that someone may be compiling source or trying to maximize all CPU resources, the container is limited
 
