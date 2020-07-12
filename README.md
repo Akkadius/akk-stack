@@ -10,7 +10,7 @@ This is what I've used in production, battle-tested, for almost 2 years. I've wo
 
 # Requirements
 
-Linux Host or VM with Docker Installed along with Docker Compose
+Linux Host or VM with [Docker Installed](https://docs.docker.com/engine/install/) along with [Docker Compose](https://docs.docker.com/compose/install/)
 
 # What's Included
 
