@@ -34,6 +34,7 @@ This is what I've used in production, battle-tested, for almost 2 years. I've wo
   * [File Structure](#file-structure)
   * [Automated Backups](#automated-backups)
   * [High CPU Process Watchdog](#high-cpu-process-watchdog)
+  * [CPU Share Throttling](#cpu-share-throttling)
 - [Installation](#installation)
   * [Initialize the Environment](#initialize-the-environment)
   * [Initialize Network Parameters](#initialize-network-parameters)
@@ -207,6 +208,17 @@ If a zone process goes into an infinite loop; the watchdog will kill the process
 eqemu@f8905f80723c:~$ cat process-kill.log
 Sat Jul 11 20:52:47 CDT 2020 [process-watcher] Killed process [21143] [./bin/zone] for taking too much CPU time [43.50]
 ```
+
+## CPU Share Throttling
+
+To protect the host and the rest of the services running on the box, in the event that someone may be compiling source or trying to maximize all CPU resources, the container is limited
+
+```
+root@host:/opt/eqemu-servers/peq-test-server# cat docker-compose.yml | grep shares
+    cpu_shares: 900
+```
+
+https://docs.docker.com/compose/compose-file/compose-file-v2/#cpu-and-other-resources
 
 # Installation
 
