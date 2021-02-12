@@ -151,7 +151,7 @@ Automatically configured PhpMyAdmin instance with pre-set admin password (Behind
 
 ## Occulus
 
-Automatically installed server admin panel [Occulus repository](https://github.com/Akkadius/eqemu-web-admin); listens on port 3000 by default
+Automatically installed server admin panel [Occulus repository](https://github.com/Akkadius/Occulus); listens on port 3000 by default
 
 <p align="center"><img src="https://user-images.githubusercontent.com/3319450/87236540-8c13f500-c3b0-11ea-87f6-756e60fa61ed.png"></p>
 

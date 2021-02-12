@@ -89,15 +89,15 @@ print `cd $server_path && nohup ./startup/* >/dev/null 2>&1 &`;
 # eqemu-admin panel
 #########################
 if (-e $server_web_admin_standalone) {
-    print "# Starting eqemu-web-admin server (standalone)\n";
+    print "# Starting Occulus server (standalone)\n";
     print `cd $bin_path && nohup ./eqemu-admin web >/dev/null 2>&1 &`;
-    print "# Starting eqemu-web-admin launcher (standalone)\n";
+    print "# Starting Occulus launcher (standalone)\n";
     print `cd $server_path && nohup ./bin/eqemu-admin server-launcher >/dev/null 2>&1 &`;
 }
 elsif (-e $server_web_admin) {
-    print "# Starting eqemu-web-admin server\n";
+    print "# Starting Occulus server\n";
     print `cd $server_web_admin && nohup node ./app/bin/admin web >/dev/null 2>&1 &`;
-    print "# Starting eqemu-web-admin launcher\n";
+    print "# Starting Occulus launcher\n";
     print `cd $server_web_admin && nohup node ./app/bin/admin server-launcher >/dev/null 2>&1 &`;
 }
 
