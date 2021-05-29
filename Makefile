@@ -17,7 +17,7 @@ endif
 ifneq ("$(wildcard .env)","")
 include .env
 export
-else  
+else
 endif
 
 #----------------------
