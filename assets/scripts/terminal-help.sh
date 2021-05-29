@@ -26,7 +26,7 @@ printf "${directory_spacing} | %-10s\n" "[${grn}source${end}]" "Changes director
 printf "\n"
 printf "${cyn}# Development Commands${end}\n\n"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}m${end}]" "Runs [make] and compiles server"
-printf "${quick_command_spacing} | %-10s\n" "[${grn}core${end}]" "Analyzes last core dump created in server directory at ./core"
+#printf "${quick_command_spacing} | %-10s\n" "[${grn}core${end}]" "Analyzes last core dump created in server directory at ./core"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}update${end}]" "Runs [git pull] against source directory and immediately compiles"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}start${end}]" "Starts server"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}stop${end}]" "Stops server"
