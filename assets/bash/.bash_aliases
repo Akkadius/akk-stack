@@ -39,10 +39,10 @@ alias cm='source && cmake -DEQEMU_BUILD_LOGIN=ON -DEQEMU_BUILD_LUA=ON -G "Unix M
 alias k='pkill zone'
 alias r='m && z &'
 # gdb --batch --quiet -ex "thread apply all bt full" -ex "quit" /home/eqemu/server/$(file core | grep -Po "(?<=execfn: '.\/)(.*)(?=', platform)") ./core | grep "#"
-alias core='gdb --batch --quiet -ex "thread apply all bt full" -ex "quit" /home/eqemu/server/$(file core | grep -Po "(?<=execfn: '\''.\/)(.*)(?='\'', platform)") ./core | grep "#"'
+# alias core='gdb --batch --quiet -ex "thread apply all bt full" -ex "quit" /home/eqemu/server/$(file core | grep -Po "(?<=execfn: '\''.\/)(.*)(?='\'', platform)") ./core | grep "#"'
 
-alias n='cd ~/code/build && ninja'
-alias nz='cd ~/code/build && ninja && pkill -9 zone && z'
+alias n='cd ~/code/build && ninja -j$(expr $(nproc) - 2)'
+alias nz='cd ~/code/build && ninja-j$(expr $(nproc) - 2) && pkill -9 zone && z'
 
 ######################################
 # Help
