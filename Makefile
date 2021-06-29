@@ -269,7 +269,7 @@ bw: ##@dev Runs web-admin backend dev server (alias)
 
 backup-dropbox-init: ##@backup Initializes Dropbox backups
 	docker-compose up -d backup-cron
-	docker-compose exec backup-cron dropbox_uploader.sh
+	docker-compose exec backup-cron bash -c "sudo dropbox_uploader.sh"
 
 backup-dropbox-list: ##@backup Lists files from Dropbox backups
 	docker-compose up -d backup-cron
