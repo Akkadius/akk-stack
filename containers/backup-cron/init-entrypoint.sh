@@ -3,13 +3,12 @@
 CWD=$(pwd)
 source $CWD/.env
 
-if [ -z "$DROPBOX_OAUTH_ACCESS_TOKEN" ]; then
-  echo "DROPBOX_OAUTH_ACCESS_TOKEN is not set; run dropbox_uploader.sh to initialize Dropbox API"
+if [ ! -f ".dropbox_uploader" ]; then
+  echo "[.dropbox_uploader] config file does not exist"
+  echo "Option 1) Run dropbox_uploader.sh in container to initialize Dropbox API"
+  echo "Option 2) [make backup-dropbox-init] from the top level"
   dropbox_uploader.sh
 else
-  echo "# Injecting Dropbox Access Token"
-  echo "OAUTH_ACCESS_TOKEN=$DROPBOX_OAUTH_ACCESS_TOKEN" | sudo tee ~/.dropbox_uploader
-
   echo "# Backup cron booting..."
 
   while inotifywait -e modify ./backup/*.cron; do bash -c "cat ./backup/*.cron > /tmp/crontab && crontab /tmp/crontab && rm /tmp/crontab; sudo pkill cron; echo '# Installing changed crons...' > /proc/1/fd/1 2>/proc/1/fd/2; sudo cron -f &"; done >/dev/null 2>&1 &

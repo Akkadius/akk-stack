@@ -262,3 +262,29 @@ fw: ##@dev Runs web-admin frontend dev server (alias)
 bw: ##@dev Runs web-admin backend dev server (alias)
 	docker-compose exec eqemu-server bash -c "cd ~/server/eqemu-web-admin && npm run watch"
 
+
+#----------------------
+# backup
+#----------------------
+
+backup-dropbox-init: ##@backup Initializes Dropbox backups
+	docker-compose up -d backup-cron
+	docker-compose exec backup-cron dropbox_uploader.sh
+
+backup-dropbox-list: ##@backup Lists files from Dropbox backups
+	docker-compose up -d backup-cron
+	docker-compose exec backup-cron dropbox_uploader.sh list
+
+backup-dropbox-database: ##@backup Database backup upload to Dropbox
+	docker-compose exec backup-cron ./backup/backup-database.sh
+
+backup-dropbox-quests: ##@backup Quests backup upload to Dropbox
+	docker-compose exec backup-cron ./backup/backup-quests.sh
+
+backup-dropbox-deployment: ##@backup Deployment backup upload to Dropbox
+	docker-compose exec backup-cron ./backup/backup-deployment.sh
+
+backup-dropbox-all: ##@backup Backup all assets to Dropbox
+	make backup-dropbox-database
+	make backup-dropbox-quests
+	make backup-dropbox-deployment

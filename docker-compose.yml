@@ -161,6 +161,7 @@ services:
       - ./:/home/backup-cron/
     environment:
       TZ: America/Chicago
-      DROPBOX_OAUTH_ACCESS_TOKEN: ${DROPBOX_OAUTH_ACCESS_TOKEN}
+    #      HOST_NAME: ${HOSTNAME:-default}
+    #      HOST_DIR: ${PWD}
     networks:
       - backend

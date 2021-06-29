@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
+# Fetch hostname deployment directory and format into backup prepend
+# DEPLOYMENT_NAME=$HOST_NAME/$(basename $HOST_DIR)
+
 CWD=$(pwd)
 source $CWD/.env
 
 cd /tmp/
 
-if [ -z "${DROPBOX_OAUTH_ACCESS_TOKEN}" ]; then
-    echo "DROPBOX_OAUTH_ACCESS_TOKEN is not set; run dropbox_uploader.sh to initialize Dropbox API"
-    exit;
-fi
+# validate
+set -e
+"$CWD/backup/validate-dropbox.sh"
 
 #############################################
 # quest
@@ -29,7 +31,7 @@ dropbox_uploader.sh upload ${DEPLOYMENT_BACKUP_NAME}.tar.gz ${DEPLOYMENT_NAME:-b
 BACKUP_RETENTION=${BACKUP_RETENTION_DAYS_QUEST_SNAPSHOTS:-7}
 BACKUP_PATH=${DEPLOYMENT_NAME:-backups}/quest-snapshots
 echo "# Truncating ${BACKUP_PATH} days back ${BACKUP_RETENTION}"
-OUTPUT=`dropbox_uploader.sh list ${BACKUP_PATH} | grep -v "Listing" | cut -d " " -f 4- | sort -r | tail -n +${BACKUP_RETENTION} | awk '{$1=$1};1'`
+OUTPUT=$(dropbox_uploader.sh list ${BACKUP_PATH} | grep -v "Listing" | cut -d " " -f 4- | sort -r | tail -n +${BACKUP_RETENTION} | awk '{$1=$1};1')
 for x in $OUTPUT; do dropbox_uploader.sh delete ${BACKUP_PATH}/$x; done
 
 #############################################

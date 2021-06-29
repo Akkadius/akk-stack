@@ -170,24 +170,58 @@ Automatically installed server admin panel [Occulus repository](https://github.c
 
 Automated cron-based backups that upload to Dropbox using Dropbox API
 
-Follow instructions below to get an API key to enter into the `.env`
+### Initialize Backups
+
+To get started, you need to run the uploader script in the backup-cron container for the first time to initialize your application
+
+As of July 2021 this guide has changed to Dropbox's new auth mechanisms to include more configuration in the OAuth flow.
 
 ```
-This is the first time you run this script, please follow the instructions:
-
-1) Open the following URL in your Browser, and log in using your account: https://www.dropbox.com/developers/apps
-2) Click on "Create App", then select "Dropbox API app"
-3) Now go on with the configuration, choosing the app permissions and access restrictions to your DropBox folder
-4) Enter the "App Name" that you prefer (e.g. MyUploader984915521299)
-
-Now, click on the "Create App" button.
+docker-compose exec backup-cron dropbox_uploader.sh
 ```
+
+Follow the instructions prompted from running the command
+
+```
+ This is the first time you run this script, please follow the instructions:
+
+(note: Dropropbox will change there API from 30.9.2021.
+When using dropbox_uploader.sh configured in the past with the old API, have a look at README.md, before continue.)
+
+ 1) Open the following URL in your Browser, and log in using your account: https://www.dropbox.com/developers/apps
+ 2) Click on "Create App", then select "Choose an API: Scoped Access"
+ 3) "Choose the type of access you need: App folder"
+ 4) Enter the "App Name" that you prefer (e.g. MyUploader199602354325435), must be unique
+
+ Now, click on the "Create App" button.
+
+ 5) Now the new configuration is opened, switch to tab "permissions" and check "files.metadata.read/write" and "files.content.read/write"
+ Now, click on the "Submit" button.
+
+ 6) Now to tab "settings" and provide the following information:
+ App key: xxx
+ App secret: xxx
+  Open the following URL in your Browser and allow suggested permissions: https://www.dropbox.com/oauth2/authorize?client_id=ptdwesjtbci5zlm&token_access_type=offline&response_type=code
+ Please provide the access code: xxx
+
+ > App key: xxx
+ > App secret: xxx
+ > Access code: xxx. Looks ok? [y/N]: y
+   The configuration has been saved.
+```
+
+Once you go through the steps of creating your application. Do not forget to set scopes on your app to be able to write and read files. I set my tokens to never refresh
+
+Your configuration gets written to `.dropbox_uploader` which resides at the root of your deployment. This is a sensitive file and is not to be checked into any sort of version control and is used by the `backup-cron` container
+
+### Backup Configuration
 
 Backup retention configurable in `.env`
 
+Your deployment name is what your backups will be prepended to when they get uploaded to Dropbox
+
 ```
-# DEPLOYMENT_NAME=peq-production (used in backup names)
-# DROPBOX_OAUTH_ACCESS_TOKEN=
+# DEPLOYMENT_NAME=peq-production
 # BACKUP_RETENTION_DAYS_DB_SNAPSHOTS=10
 # BACKUP_RETENTION_DAYS_DEPLOYMENT=35
 # BACKUP_RETENTION_DAYS_QUEST_SNAPSHOTS=7
