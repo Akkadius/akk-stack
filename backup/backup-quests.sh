@@ -11,6 +11,7 @@ cd /tmp/
 # validate
 set -e
 "$CWD/backup/validate-dropbox.sh"
+set +e
 
 #############################################
 # quest
