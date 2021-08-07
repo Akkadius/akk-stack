@@ -99,8 +99,8 @@ install: ##@init Install full application port-range-high=[] ip-address=[]
 	make init-strip-mysql-remote-root
 	docker-compose exec eqemu-server bash -c "make install"
 	docker-compose exec -T eqemu-server bash -c "make update-admin-panel"
-	docker-compose down
-	docker-compose up -d
+	COMPOSE_HTTP_TIMEOUT=1000 docker-compose down
+	COMPOSE_HTTP_TIMEOUT=1000 docker-compose up -d
 
 init-strip-mysql-remote-root: ##@init Strips MySQL remote root user
 	docker-compose exec mariadb bash -c "mysql -uroot -p${MARIADB_ROOT_PASSWORD} -h localhost -e \"delete from mysql.user where User = 'root' and Host = '%'; FLUSH PRIVILEGES\""
