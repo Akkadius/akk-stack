@@ -1,3 +1,4 @@
+
 # AkkStack | Containerized EverQuest Emulator Server Environment
 
 <p align="center"><img width="600" src="https://user-images.githubusercontent.com/3319450/87238998-55010c00-c3cf-11ea-8db5-3be25a868ac8.png" alt="AkkStack"></p>
@@ -324,6 +325,10 @@ https://docs.docker.com/config/containers/resource_constraints/#configure-the-de
 # Installation
 
 First clone the repository somewhere on your server, in this case I'm going to clone it to an `/opt/eqemu-servers` folder in a Debian Linux host with Docker installed
+
+```
+git clone https://github.com/Akkadius/akk-stack.git peq-test-server
+```
 
 ```
 root@host:/opt/eqemu-servers# git clone https://github.com/Akkadius/akk-stack.git peq-test-server
