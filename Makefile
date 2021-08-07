@@ -188,7 +188,7 @@ watch-processes: ##@workflow Watch processes
 #----------------------
 
 up: ##@docker Bring up eqemu-server and database
-	docker-compose up -d eqemu-server mariadb
+	COMPOSE_HTTP_TIMEOUT=1000 docker-compose up -d eqemu-server mariadb
 
 up-all: ##@docker Bring up the whole environment
 ifeq ("$(DOCKER_FS_SYNC_MODE)", "sync")
@@ -200,7 +200,7 @@ ifeq (,$(findstring detached,$(RUN_ARGS)))
 endif
 
 down: ##@docker Down all containers
-	docker-compose down
+	COMPOSE_HTTP_TIMEOUT=1000 docker-compose down
 ifeq ("$(DOCKER_FS_SYNC_MODE)", "sync")
 	docker-sync stop
 endif
