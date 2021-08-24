@@ -137,12 +137,15 @@ services:
       FTP_USER_NAME: quests
       FTP_USER_PASS: ${FTP_QUESTS_PASSWORD}
       FTP_USER_HOME: '/home/quests/'
+      FTP_MAX_CLIENTS: 50
+      FTP_PASSIVE_PORTS: '30000:30099'
+      PUBLICHOST: ${IP_ADDRESS}
       TZ: ${TZ:-US/Central}
     volumes:
       - ./server/quests/:/home/quests/
     ports:
       - ${IP_ADDRESS}:21:21
-      - ${IP_ADDRESS}:30000-30009:30000-30009
+      - ${IP_ADDRESS}:30000:30099:30000:30099
     networks:
       - backend
 
