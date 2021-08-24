@@ -138,7 +138,7 @@ services:
       FTP_USER_PASS: ${FTP_QUESTS_PASSWORD}
       FTP_USER_HOME: '/home/quests/'
       FTP_MAX_CLIENTS: 25
-      FTP_PASSIVE_PORTS: '30000:30099'
+      FTP_PASSIVE_PORTS: '30000:30049'
       PUBLICHOST: ${IP_ADDRESS}
       TZ: ${TZ:-US/Central}
     volumes:
