@@ -145,7 +145,7 @@ services:
       - ./server/quests/:/home/quests/
     ports:
       - ${IP_ADDRESS}:21:21
-      - ${IP_ADDRESS}:30000:30099:30000:30099
+      - ${IP_ADDRESS}:30000-30099:30000-30099
     networks:
       - backend
 
