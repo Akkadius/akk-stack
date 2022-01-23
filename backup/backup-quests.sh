@@ -32,7 +32,7 @@ dropbox_uploader.sh upload ${DEPLOYMENT_BACKUP_NAME}.tar.gz ${DEPLOYMENT_NAME:-b
 BACKUP_RETENTION=${BACKUP_RETENTION_DAYS_QUEST_SNAPSHOTS:-7}
 BACKUP_PATH=${DEPLOYMENT_NAME:-backups}/quest-snapshots
 echo "# Truncating ${BACKUP_PATH} days back ${BACKUP_RETENTION}"
-OUTPUT=$(dropbox_uploader.sh list ${BACKUP_PATH} | grep -v "Listing" | cut -d " " -f 4- | sort -r | tail -n +${BACKUP_RETENTION} | awk '{$1=$1};1')
+OUTPUT=$($CWD/backup/dropbox-list-truncation-files.pl ${BACKUP_PATH} ${BACKUP_RETENTION})
 for x in $OUTPUT; do dropbox_uploader.sh delete ${BACKUP_PATH}/$x; done
 
 #############################################
