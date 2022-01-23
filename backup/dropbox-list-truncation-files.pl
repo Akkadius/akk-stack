@@ -34,7 +34,7 @@ foreach my $key (reverse sort keys %files) {
         push (@files_to_truncate, $files{$key});
     }
     else {
-        print "Not deleting [" . $files{$key} . "] ($index) \n";
+        # print "Not deleting [" . $files{$key} . "] ($index) \n";
     }
     $index++;
 }
