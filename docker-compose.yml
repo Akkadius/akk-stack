@@ -4,6 +4,9 @@ networks:
   backend:
     driver: ${NETWORKS_DRIVER}
 
+volumes:
+  build-cache:
+
 services:
 
   #############################################
@@ -17,6 +20,7 @@ services:
       - ./server:/home/eqemu/server:delegated
       - ./code:/home/eqemu/code:delegated
       - ./assets:/home/eqemu/assets:delegated
+      - build-cache:/home/eqemu/.ccache/
     ports:
       - ${IP_ADDRESS}:2222:22/tcp
       - ${IP_ADDRESS}:2222:22/udp
