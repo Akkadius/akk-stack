@@ -204,7 +204,7 @@ last-crash: ##@mgmt Shows last crash that happened
 
 init-build: ##@build Initialize build
 	@./assets/scripts/banner.pl "Initializing EQEmu Server Build"
-	cd ~/code && git submodule init && git submodule update && mkdir -p build && cd build && cmake -DEQEMU_BUILD_LOGIN=ON -DEQEMU_BUILD_LUA=ON -G 'Unix Makefiles' ..
+	cd ~/code && git submodule init && git submodule update && mkdir -p build && cd build && cmake -DEQEMU_BUILD_LOGIN=ON -DEQEMU_BUILD_LUA=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -G 'Unix Makefiles' ..
 
 build: ##@build Build EQEmu server
 	@./assets/scripts/banner.pl "Building EQEmu Server"
