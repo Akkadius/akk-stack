@@ -106,4 +106,4 @@ elsif (-e $server_web_admin) {
 # cron watcher
 #############################################
 print `while inotifywait -e modify ~/assets/cron/; do bash -c "crontab ~/assets/cron/*; sudo pkill cron; sudo cron -f &"; done >/dev/null 2>&1 &`;
-print `sudo cron -f &`;
+print `crontab ~/assets/cron/*; sudo cron -f &`;
