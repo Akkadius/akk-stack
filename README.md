@@ -184,15 +184,16 @@ docker-compose exec backup-cron dropbox_uploader.sh
 Follow the instructions prompted from running the command
 
 ```
+
  This is the first time you run this script, please follow the instructions:
 
-(note: Dropropbox will change there API from 30.9.2021.
+(note: Dropbox will change their API on 2021-09-30.
 When using dropbox_uploader.sh configured in the past with the old API, have a look at README.md, before continue.)
 
  1) Open the following URL in your Browser, and log in using your account: https://www.dropbox.com/developers/apps
  2) Click on "Create App", then select "Choose an API: Scoped Access"
  3) "Choose the type of access you need: App folder"
- 4) Enter the "App Name" that you prefer (e.g. MyUploader199602354325435), must be unique
+ 4) Enter the "App Name" that you prefer (e.g. MyUploader1167208717053), must be unique
 
  Now, click on the "Create App" button.
 
@@ -200,20 +201,50 @@ When using dropbox_uploader.sh configured in the past with the old API, have a l
  Now, click on the "Submit" button.
 
  6) Now to tab "settings" and provide the following information:
- App key: xxx
- App secret: xxx
-  Open the following URL in your Browser and allow suggested permissions: https://www.dropbox.com/oauth2/authorize?client_id=ptdwesjtbci5zlm&token_access_type=offline&response_type=code
- Please provide the access code: xxx
+ App key: dmz4wbjsnghfkwj
+ App secret: iq26gmwnlsnwj48
+  Open the following URL in your Browser and allow suggested permissions: https://www.dropbox.com/oauth2/authorize?client_id=dmz4wbjsnghfkwj&token_access_type=offline&response_type=code
+ Please provide the access code: Bun8T-9NG2kAAAAAAABF0by79e-VuivtOXRtHkS10KA                                                                                               
 
  > App key: xxx
- > App secret: xxx
- > Access code: xxx. Looks ok? [y/N]: y
+ > App secret: 'xxx
+ > Access code: 'Bun8T-9NG2kAAAAAAABF0by79e-xxx'. Looks ok? [y/N]: y
    The configuration has been saved.
 ```
 
-Once you go through the steps of creating your application. Do not forget to set scopes on your app to be able to write and read files. I set my tokens to never refresh
+Once you go through the steps of creating your application. Do not forget to set scopes on your app to be able to write and read files. You MUST follow the prompts above in order otherwise you will run into issues.
+
+![image](https://user-images.githubusercontent.com/3319450/174466660-b9db68db-5a3e-4877-b55d-1ceaa249bb6c.png)
+
+![image](https://user-images.githubusercontent.com/3319450/174466869-b06d9170-3fd6-4057-85a6-238b905fc7d8.png)
 
 Your configuration gets written to `.dropbox_uploader` which resides at the root of your deployment. This is a sensitive file and is not to be checked into any sort of version control and is used by the `backup-cron` container
+
+### Validate it Works!
+
+Run `make backup-dropbox-list`
+
+```
+make backup-dropbox-list
+docker-compose up -d backup-cron
+docker-compose exec backup-cron dropbox_uploader.sh list
+ > Listing "/"... DONE
+```
+
+If it shows `> Listing "/"... DONE` then it is initialized successfully
+
+You can test by running a backup
+
+```
+make backup-dropbox-database
+docker-compose exec backup-cron ./backup/backup-database.sh
+# Dumping database and compressing
+peq-06-19-2022.sql
+# Uploading database snapshot
+ > Uploading "/tmp/peq-06-19-2022.tar.gz" to "/backups/database-snapshots/peq-06-19-2022.tar.gz"... DONE
+# Truncating backups/database-snapshots days back 7
+# Cleaning up...
+```
 
 ### Backup Configuration
 
