@@ -249,7 +249,7 @@ info: ##@info Print install info
 	@echo "##################################"
 	@echo "# PEQ Editor  | http://${IP_ADDRESS}:8081 | admin / ${PEQ_EDITOR_PASSWORD}"
 	@echo "# PhpMyAdmin  | http://${IP_ADDRESS}:8082 | admin / ${PHPMYADMIN_PASSWORD}"
-	@echo "# EQEmu Admin | http://${IP_ADDRESS}:3000 | admin / $(shell docker-compose exec eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.[\"web-admin\"].application.admin.password' | tr -d '\"'")"
+	@echo "# EQEmu Admin | http://${IP_ADDRESS}:3000 | admin / $(shell docker-compose exec -T eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.[\"web-admin\"].application.admin.password'")"
 	@echo "##################################"
 
 #----------------------
