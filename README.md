@@ -1,4 +1,5 @@
 
+
 # AkkStack | Containerized EverQuest Emulator Server Environment
 
 <p align="center"><img width="600" src="https://user-images.githubusercontent.com/3319450/87238998-55010c00-c3cf-11ea-8db5-3be25a868ac8.png" alt="AkkStack"></p>
@@ -17,9 +18,11 @@ You can have an entire server running within minutes, configured and ready to go
 
 This is what I've used in production, battle-tested, for almost 2 years. I've worked through a lot of issues to give you the final stable product. It's what I've also used for development for around the same time frame and you will see why shortly
 
-- [AkkStack | Containerized EverQuest Emulator Server Environment](#akkstack--containerized-everquest-emulator-server-environment)
+- [AkkStack | Containerized EverQuest Emulator Server Environment](#akkstack---containerized-everquest-emulator-server-environment)
 - [Requirements](#requirements)
-- [What's Included](#whats-included)
+  * [Install Docker](#install-docker)
+  * [Installing Docker Compose](#installing-docker-compose)
+- [What's Included](#what-s-included)
   * [Containerized Services](#containerized-services)
 - [Features](#features)
   * [Very Easy to Use CLI menus](#very-easy-to-use-cli-menus)
@@ -34,6 +37,10 @@ This is what I've used in production, battle-tested, for almost 2 years. I've wo
   * [Symlinked resources](#symlinked-resources)
   * [File Structure](#file-structure)
   * [Automated Backups](#automated-backups)
+    + [Initialize Backups](#initialize-backups)
+    + [Validate it Works!](#validate-it-works-)
+    + [Backup Configuration](#backup-configuration)
+    + [Running Backups Manually](#running-backups-manually)
   * [High CPU Process Watchdog](#high-cpu-process-watchdog)
   * [CPU Share Throttling](#cpu-share-throttling)
 - [Installation](#installation)
@@ -48,16 +55,50 @@ This is what I've used in production, battle-tested, for almost 2 years. I've wo
   * [Service Lifetime](#service-lifetime)
   * [Services to Boot](#services-to-boot)
   * [Accessing the Admin Panel](#accessing-the-admin-panel)
+  * [Updating the Admin Panel](#updating-the-admin-panel)
   * [Updating Server Binaries](#updating-server-binaries)
   * [Running Server Processes While Developing](#running-server-processes-while-developing)
   * [Compiling and Developing](#compiling-and-developing)
-     + [Ninja Support](#ninja-support)
+    + [Ninja Support](#ninja-support)
+- [Networking on LAN](#networking-on-lan)
+  * [Address in .env](#address-in-env)
+  * [Address in eqemu_config.json](#address-in-eqemu-configjson)
+- [Troubleshooting](#troubleshooting)
+  * [Networking](#networking)
+    + [Issue: bind: cannot assign requested address](#issue--bind--cannot-assign-requested-address)
 - [Feature Requests](#feature-requests)
 - [Contributing](#contributing)
 - [Pay it Forward](#pay-it-forward)
+
 # Requirements
 
-Linux Host or VM with [Docker Installed](https://docs.docker.com/engine/install/) along with [Docker Compose](https://docs.docker.com/compose/install/)
+## Install Docker
+
+Linux Host or VM with [Docker Installed](https://docs.docker.com/desktop/linux/install/debian/) along with [Docker Compose v2](https://docs.docker.com/compose/install/compose-plugin/)
+
+It doesn't matter what Linux OS you use as long as it has Docker and Docker Compose; but my recommendation is Debian.
+
+After you install, make sure you install docker compose (listed below) and follow the instructions to run Docker as non-root
+
+https://docs.docker.com/engine/install/linux-postinstall/
+
+## Installing Docker Compose
+
+With the latest docker compose v2; Docker does not provide the easiest documentation for installing Docker Compose as `docker-compose` instead of `docker compose`. Below is what I put together to make it easy to install and run docker-compose as you would in `v1`
+
+```
+DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+mkdir -p $DOCKER_CONFIG/cli-plugins
+curl -SL https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+ln -s $DOCKER_CONFIG/cli-plugins/docker-compose /usr/bin/docker-compose
+```
+
+Confirm that it's working
+
+```
+docker-compose -v
+Docker Compose version v2.2.3
+```
 
 # What's Included
 
@@ -94,7 +135,7 @@ Automatically configured SSH to the `eqemu-server` with automatically generated 
 
 ## Cron Jobs
 
-Cronjob support has been added into the `eqemu-server` service; you can add / edit crons and they persist through reboots. Simply start by editing the crontab.cron file
+Cronjob support has been added into the `eqemu-server` service; you can add / edit crons and they persist through reboots. Simply start by editing the crontab.cron file. You cannot use **crontab -e**, you have to edit `~/assets/cron/crontab.cron` directly and the file watcher will install new crontab changes. 
 
 ```
 eqemu@12a1e5add2b9:~$ cat ~/assets/cron/crontab.cron
@@ -124,7 +165,6 @@ An `eqemu` user is created for the `eqemu-server` server service and only has pe
 ```
 root@host:/opt/eqemu-servers/peq-test-server# make mysql-list-users
 docker-compose exec mariadb bash -c "mysql -uroot -pxxx -h localhost -e 'select user, password, host from mysql.user;'"
-WARNING: The DROPBOX_OAUTH_ACCESS_TOKEN variable is not set. Defaulting to a blank string.
 +-------------+-------------------------------------------+-----------+
 | User        | Password                                  | Host      |
 +-------------+-------------------------------------------+-----------+
@@ -429,7 +469,7 @@ To gain a bash into the emulator server we have two options, we can come through
 
 ## MySQL Console 
 
-You can hop into MySQL shell from either docker exec `make mc` or from the `eqemu-server` embeded shell alias `mc`
+You can hop into MySQL shell from either docker exec `make mc` or from the `eqemu-server` embedded shell alias `mc`
 
 ![mysql-shell](https://user-images.githubusercontent.com/3319450/87241546-ec735880-c3e9-11ea-9a8e-412ca4d99736.gif)
 
@@ -512,6 +552,10 @@ eqemu@97b8129b90b4:~$ config | jq '.["web-admin"]'
 }
 ```
 
+## Updating the Admin Panel
+
+Updating server binaries is as simple as running `make update-admin-panel` in the server shell at the root of home, it will kill the currently running panel, cycle it out, start it up. This is not service affecting for running servers with a launcher running.
+
 ## Updating Server Binaries
 
 Updating server binaries is as simple as running `update` in the server shell, it will change directory to the source directory, git pull and run a build which will be immediately available the next time you boot a process
@@ -554,6 +598,87 @@ To compile, simply use the `n` keyword anywhere
 eqemu@e5311a8e9505:~/code/build$ n
 ninja: no work to do
 ```
+
+# Networking on LAN
+
+When using `akk-stack` in a LAN configuration it can be confusing to reason about how things should look because you've got two layers of networking address translation happening and if you're less experienced with networking it can be very confusing.
+
+## Address in .env
+
+Address in your `.env` needs to match your local LAN address whether its static or dynamic
+
+In my case of this writing, I'm using a development laptop on WiFi
+
+```
+ip a | grep "dynamic"
+    inet 192.168.50.115/24 brd 192.168.50.255 scope global dynamic noprefixroute wlo1
+```
+
+My .env should have `192.168.50.115` as `IP_ADDRESS=192.168.50.115` so make sure that's what you use during your install and that's what the install should set in your configuration for you as well.
+
+## Address in eqemu_config.json
+
+Your `eqemu_config.json` will need the following values set 
+
+* `server.world.localaddress` = `192.168.50.115`
+* `server.chatserver.host` = `192.168.50.115`
+* `server.mailserver.host` = `192.168.50.115`
+
+If you are LAN only, this is all you will need to succeed. Even if you login via the public loginserver, but no one will be able to login to your server.
+
+If you are trying to be accessible from WAN, you will need to set
+
+* `server.world.address` = `public-address`
+
+This address is used for the **loginserver** you host yourself as well
+
+# Troubleshooting
+
+## Networking
+
+### Issue: bind: cannot assign requested address
+
+This issue can occur when you are not using an IP address in your config (`.env`) that actually is usable and exists on your system.
+
+```~/code/shared-task-server$ make up
+COMPOSE_HTTP_TIMEOUT=1000 docker-compose up -d eqemu-server mariadb
+[+] Running 1/3
+ ⠿ Network shared-task-server_backend           Created                                                                                                                                                  0.0s
+ ⠿ Container shared-task-server-mariadb-1       Starting                                                                                                                                                 0.4s
+ ⠿ Container shared-task-server-eqemu-server-1  Starting                                                                                                                                                 0.4s
+Error response from daemon: driver failed programming external connectivity on endpoint shared-task-server-mariadb-1 (fb8c974e8c90c7a2a30238b62d35e91d1e469c2ae38603db5695d892e120cd62): Error starting userland proxy: listen tcp4 192.168.65.161:3306: bind: cannot assign requested address
+make: *** [Makefile:191: up] Error 1
+```
+
+To list available addresses, I have an available LAN IP dynamic address I can bind to on `192.168.50.115`
+
+```
+ip a | grep "inet "
+    inet 127.0.0.1/8 scope host lo
+    inet 192.168.50.115/24 brd 192.168.50.255 scope global dynamic noprefixroute wlo1
+    inet 172.20.0.1/16 brd 172.20.255.255 scope global br-0a93670463ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+    inet 10.8.0.6 peer 10.8.0.5/32 scope global noprefixroute tun0
+    inet 172.19.0.1/16 brd 172.19.255.255 scope global br-c5f07d59f84d
+```
+
+I ran command
+
+```
+# make set-vars port-range-high=7030 ip-address=192.168.50.115
+Wrote [IP_ADDRESS] = [192.168.50.115] to [.env]
+Wrote [PORT_RANGE_HIGH] = [7030] to [.env]
+```
+
+```
+# make up
+COMPOSE_HTTP_TIMEOUT=1000 docker-compose up -d eqemu-server mariadb
+[+] Running 2/2
+ ⠿ Container shared-task-server-mariadb-1       Started                                                                                                                                                  0.6s
+ ⠿ Container shared-task-server-eqemu-server-1  Started  
+```
+
+Now the deployment is up and running because we bound to a proper address.
 
 # Feature Requests
 
