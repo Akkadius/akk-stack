@@ -1,4 +1,4 @@
-FROM debian:10-slim
+FROM debian:11-slim
 
 LABEL maintainer="Akkadius <akkadius1@gmail.com>"
 
@@ -45,7 +45,6 @@ RUN apt-get update && apt-get install -y \
 	libluabind-dev \
 	libmysql++ \
 	libperl-dev \
-	libperl5i-perl \
 	libsodium-dev \
 	libssl-dev \
 	lua5.1 \
@@ -62,14 +61,12 @@ RUN apt-get update && apt-get install -y \
 	uuid-dev \
 	wget \
 	zlib1g-dev \
-	zlibc \
 	vim
 
 #######################################################################
 # node
 #######################################################################
-RUN apt-get update && apt-get install -y curl sudo gnupg && \
-	curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - && apt-get install -y nodejs \
+RUN apt-get update && apt-get install -y curl sudo gnupg nodejs npm \
 	&& npm install -g nodemon \
 	&& npm install -g mocha
 

@@ -15,7 +15,7 @@ services:
 
   eqemu-server:
     restart: unless-stopped
-    image: akkadius/eqemu-server:latest
+    image: akkadius/eqemu-server:v11
     volumes:
       - ./server:/home/eqemu/server:delegated
       - ./code:/home/eqemu/code:delegated
