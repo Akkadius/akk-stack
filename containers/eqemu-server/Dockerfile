@@ -86,6 +86,8 @@ RUN chsh -s /bin/bash eqemu
 #############################################
 RUN yes '' | sudo perl -MCPAN -e 'install Switch' && sudo perl -MCPAN -e 'install Net::Telnet'
 
+RUN apt-get update && apt-get install -y libdbd-mysql-perl
+
 #############################################
 # entrypoint script
 #############################################
