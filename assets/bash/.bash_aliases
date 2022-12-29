@@ -69,6 +69,15 @@ alias kucs='pkill ucs'
 alias kworld='pkill world'
 
 ######################################
+# Spire development aliases
+######################################
+if [[ "${SPIRE_DEV}" == *"true"* ]]; then
+    alias spire='cd ~/server/spire'
+    alias spire-be='cd ~/server/spire && air'
+    alias spire-fe='cd ~/server/spire/frontend && npm run dev'
+fi
+
+######################################
 # mgmt
 ######################################
 alias mc='cd ~/ && make mgmt-mc'

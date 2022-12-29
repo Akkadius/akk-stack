@@ -24,6 +24,7 @@ printf "${directory_spacing} | %-10s\n" "[${grn}q|quests${end}]" "Changes direct
 printf "${directory_spacing} | %-10s\n" "[${grn}s|server${end}]" "Changes directory to server"
 printf "${directory_spacing} | %-10s\n" "[${grn}source${end}]" "Changes directory to source (alias)"
 printf "\n"
+
 printf "${cyn}# Development Commands${end}\n\n"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}m${end}]" "Runs [make] and compiles server"
 #printf "${quick_command_spacing} | %-10s\n" "[${grn}core${end}]" "Analyzes last core dump created in server directory at ./core"
@@ -45,6 +46,16 @@ printf "${quick_command_spacing} | %-10s\n" "[${grn}config${end}]" "Displays ser
 printf "\n"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}mc${end}]" "Create direct MySQL console"
 printf "\n"
+
+
+# Spire
+if [[ "${SPIRE_DEV}" == *"true"* ]]; then
+  printf "${cyn}# Spire Development Commands${end}\n\n"
+  printf "${directory_spacing} | %-10s\n" "[${grn}spire${end}]" "Changes directory to spire (alias)"
+  printf "${directory_spacing} | %-10s\n" "[${grn}spire-be${end}]" "Starts Spire backend development server"
+  printf "${directory_spacing} | %-10s\n" "[${grn}spire-fe${end}]" "Starts Spire frontend development server"
+  printf "\n"
+fi
 
 ##############################
 # Get server name

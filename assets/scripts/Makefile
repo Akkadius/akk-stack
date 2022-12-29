@@ -78,6 +78,16 @@ install: ##@init Install full application
 	@make init-eqemu-admin
 	@make init-set-perms
 	@make init-shared-memory
+ifeq ("$(SPIRE_DEV)", "true")
+	@make init-spire-dev
+endif
+
+init-spire-dev: ##@init Initialize Spire for development
+	cd ~/server && git clone https://github.com/akkadius/spire || cd ~/server/spire && git pull
+	cd ~/server/spire && cp .env.dev .env
+	cd ~/server/spire && go get
+	cd ~/server/spire/frontend && npm install
+	echo "VUE_APP_BACKEND_BASE_URL=http://${IP_ADDRESS}:3010" > ~/server/spire/frontend/.env
 
 init-shared-memory: ##@init Run shared memory once on initial install
 	cd ~/server/ && ./bin/shared_memory

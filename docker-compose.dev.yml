@@ -3,7 +3,6 @@ volumes:
   go-build-cache:
 
 services:
-
   eqemu-server:
     restart: unless-stopped
     image: akkadius/eqemu-server:v11-dev
@@ -12,5 +11,7 @@ services:
       - ./code:/home/eqemu/code:delegated
       - ./assets:/home/eqemu/assets:delegated
       - build-cache:/home/eqemu/.ccache/
-      - go-build-cache:/home/go/.cache/
-      - shared-pkg:/home/go/pkg
+      - go-build-cache:/home/eqemu/.cache/
+      - shared-pkg:/home/eqemu/pkg
+    environment:
+      - SPIRE_DEV=${SPIRE_DEV}
