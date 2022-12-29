@@ -1,0 +1,16 @@
+volumes:
+  shared-pkg:
+  go-build-cache:
+
+services:
+
+  eqemu-server:
+    restart: unless-stopped
+    image: akkadius/eqemu-server:v11-dev
+    volumes:
+      - ./server:/home/eqemu/server:delegated
+      - ./code:/home/eqemu/code:delegated
+      - ./assets:/home/eqemu/assets:delegated
+      - build-cache:/home/eqemu/.ccache/
+      - go-build-cache:/home/go/.cache/
+      - shared-pkg:/home/go/pkg

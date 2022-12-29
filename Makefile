@@ -24,9 +24,11 @@ endif
 # docker-sync context
 #----------------------
 DOCKER_COMPOSE_CONTEXT=
-ifeq ("$(DOCKER_FS_SYNC_MODE)", "sync")
-	DOCKER_COMPOSE_CONTEXT = -f docker-compose.yml -f docker-compose-dev.yml
+ifeq ("$(ENV)", "development")
+	DOCKER_COMPOSE_CONTEXT = -f docker-compose.yml -f docker-compose.dev.yml
 endif
+
+DOCKER=docker-compose $(DOCKER_COMPOSE_CONTEXT)
 
 #----------------------
 # Terminal
@@ -75,7 +77,6 @@ ifneq ($(ip-address),)
 	 IN_IP_ADDRESS=$(ip-address)
 endif
 
-
 #----------------------
 # env
 #----------------------
@@ -89,32 +90,32 @@ set-vars: ##@env Sets var port-range-high=[] ip-address=[]
 #----------------------
 
 install: ##@init Install full application port-range-high=[] ip-address=[]
-	docker-compose pull
+	$(DOCKER) pull
 	@assets/scripts/env-set-var.pl IP_ADDRESS $(IN_IP_ADDRESS)
 	@assets/scripts/env-set-var.pl PORT_RANGE_HIGH $(IN_PORT_RANGE_HIGH)
-	docker-compose build mariadb
+	$(DOCKER) build mariadb
 	make up detached
 	@assets/scripts/env-set-var.pl
-	docker-compose exec mariadb bash -c 'while ! mysqladmin status -uroot -p${MARIADB_ROOT_PASSWORD} -h "localhost" --silent; do sleep .5; done;'
+	$(DOCKER) exec mariadb bash -c 'while ! mysqladmin status -uroot -p${MARIADB_ROOT_PASSWORD} -h "localhost" --silent; do sleep .5; done;'
 	make init-strip-mysql-remote-root
-	docker-compose exec eqemu-server bash -c "make install"
-	docker-compose exec -T eqemu-server bash -c "make update-admin-panel"
-	COMPOSE_HTTP_TIMEOUT=1000 docker-compose down
-	COMPOSE_HTTP_TIMEOUT=1000 docker-compose up -d
+	$(DOCKER) exec eqemu-server bash -c "make install"
+	$(DOCKER) exec -T eqemu-server bash -c "make update-admin-panel"
+	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) down
+	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) up -d
 
 init-strip-mysql-remote-root: ##@init Strips MySQL remote root user
-	docker-compose exec mariadb bash -c "mysql -uroot -p${MARIADB_ROOT_PASSWORD} -h localhost -e \"delete from mysql.user where User = 'root' and Host = '%'; FLUSH PRIVILEGES\""
+	$(DOCKER) exec mariadb bash -c "mysql -uroot -p${MARIADB_ROOT_PASSWORD} -h localhost -e \"delete from mysql.user where User = 'root' and Host = '%'; FLUSH PRIVILEGES\""
 
 init-reset-env: ##@init Resets .env
 	make env-transplant
 	make env-scramble-secrets
 
 init-peq-editor: ##@init Initializes PEQ editor
-	docker-compose build peq-editor && docker-compose up -d peq-editor
-	docker-compose exec peq-editor bash -c "git clone https://github.com/ProjectEQ/peqphpeditor.git /var/www/html && \
+	$(DOCKER) build peq-editor && $(DOCKER) up -d peq-editor
+	$(DOCKER) exec peq-editor bash -c "git clone https://github.com/ProjectEQ/peqphpeditor.git /var/www/html && \
     	cd /var/www/html/ && cp config.php.dist config.php && \
     	chown www-data:www-data /var/www/html -R"
-	docker-compose exec eqemu-server bash -c "make init-peq-editor"
+	$(DOCKER) exec eqemu-server bash -c "make init-peq-editor"
 
 #----------------------
 # Image Management
@@ -139,6 +140,10 @@ image-build-push-all: ##@image-build Build and push all images
 image-eqemu-server-build: ##@image-build Builds image
 	docker build containers/eqemu-server -t akkadius/eqemu-server:latest
 	docker build containers/eqemu-server -t akkadius/eqemu-server:v11
+
+image-eqemu-server-build-dev: ##@image-build Builds image (development)
+	make image-eqemu-server-build
+	docker build -f ./containers/eqemu-server/dev.dockerfile ./containers/eqemu-server -t akkadius/eqemu-server:v11-dev
 
 image-eqemu-server-push: ##@image-build Publishes image
 	docker push akkadius/eqemu-server:latest
@@ -165,47 +170,35 @@ image-backup-cron-push: ##@image-build Publishes image
 #----------------------
 
 bash: ##@workflow Bash into eqemu-server
-	docker-compose exec eqemu-server bash
+	$(DOCKER) exec eqemu-server bash
 
 mc: ##@workflow Jump into the MySQL container console
-	docker-compose exec mariadb bash -c "mysql -uroot -p${MARIADB_ROOT_PASSWORD} -h localhost ${MARIADB_DATABASE}"
+	$(DOCKER) exec mariadb bash -c "mysql -uroot -p${MARIADB_ROOT_PASSWORD} -h localhost ${MARIADB_DATABASE}"
 
 MYSQL_BACKUP_NAME=${MARIADB_DATABASE}-$(shell date +"%m-%d-%Y")
 
 mysql-backup: ##@workflow Jump into the MySQL container console
-	docker-compose exec -T mariadb bash -c "mysqldump --lock-tables=false -uroot -p${MARIADB_ROOT_PASSWORD} -h localhost ${MARIADB_DATABASE} > /var/lib/mysql/$(MYSQL_BACKUP_NAME).sql"
+	$(DOCKER) exec -T mariadb bash -c "mysqldump --lock-tables=false -uroot -p${MARIADB_ROOT_PASSWORD} -h localhost ${MARIADB_DATABASE} > /var/lib/mysql/$(MYSQL_BACKUP_NAME).sql"
 	mkdir -p backup/database/
 	mv ./data/mariadb/$(MYSQL_BACKUP_NAME).sql .
 	tar -zcvf backup/database/$(MYSQL_BACKUP_NAME).tar.gz $(MYSQL_BACKUP_NAME).sql
 	rm $(MYSQL_BACKUP_NAME).sql
 
 mysql-list-users: ##@workflow Lists MySQL users
-	docker-compose exec mariadb bash -c "mysql -uroot -p${MARIADB_ROOT_PASSWORD} -h localhost -e 'select user, password, host from mysql.user;'"
+	$(DOCKER) exec mariadb bash -c "mysql -uroot -p${MARIADB_ROOT_PASSWORD} -h localhost -e 'select user, password, host from mysql.user;'"
 
 watch-processes: ##@workflow Watch processes
-	docker-compose exec eqemu-server bash -c "watch -n 1 'ps auxf'"
+	$(DOCKER) exec eqemu-server bash -c "watch -n 1 'ps auxf'"
 
 #----------------------
 # Docker
 #----------------------
 
 up: ##@docker Bring up eqemu-server and database
-	COMPOSE_HTTP_TIMEOUT=1000 docker-compose up -d eqemu-server mariadb
-
-up-all: ##@docker Bring up the whole environment
-ifeq ("$(DOCKER_FS_SYNC_MODE)", "sync")
-	docker-sync start
-endif
-	docker-compose $(DOCKER_COMPOSE_CONTEXT) up -d
-ifeq (,$(findstring detached,$(RUN_ARGS)))
-	docker-compose logs --tail 100 -f
-endif
+	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) up -d eqemu-server mariadb
 
 down: ##@docker Down all containers
-	COMPOSE_HTTP_TIMEOUT=1000 docker-compose down
-ifeq ("$(DOCKER_FS_SYNC_MODE)", "sync")
-	docker-sync stop
-endif
+	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) down
 
 restart: ##@docker Restart containers
 	make down
@@ -222,10 +215,10 @@ env-scramble-secrets: ##@env Scrambles secrets
 	@assets/scripts/env-scramble-secrets.pl $(RUN_ARGS)
 
 env-set-zone-port-range-high: ##@env Set zone port range high value
-	docker-compose $(DOCKER_COMPOSE_CONTEXT) up -d eqemu-server
+	$(DOCKER) up -d eqemu-server
 	@assets/scripts/env-set-var.pl PORT_RANGE_HIGH $(RUN_ARGS)
-	docker-compose exec eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' | tee ~/server/eqemu_config.json"
-	docker-compose $(DOCKER_COMPOSE_CONTEXT) up -d --force-recreate eqemu-server
+	$(DOCKER) exec eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' | tee ~/server/eqemu_config.json"
+	$(DOCKER) up -d --force-recreate eqemu-server
 
 #----------------------
 # Install
@@ -235,7 +228,7 @@ info: ##@info Print install info
 	@echo "##################################"
 	@echo "# Server Info"
 	@echo "##################################"
-	@echo '# $(shell docker-compose exec eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.server.world.longname' | tr -d '\"'")'
+	@echo '# $(shell $(DOCKER) exec eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.server.world.longname' | tr -d '\"'")'
 	@echo "##################################"
 	@echo "# Passwords"
 	@echo "##################################"
@@ -251,7 +244,7 @@ info: ##@info Print install info
 	@echo "##################################"
 	@echo "# PEQ Editor  | http://${IP_ADDRESS}:8081 | admin / ${PEQ_EDITOR_PASSWORD}"
 	@echo "# PhpMyAdmin  | http://${IP_ADDRESS}:8082 | admin / ${PHPMYADMIN_PASSWORD}"
-	@echo "# EQEmu Admin | http://${IP_ADDRESS}:3000 | admin / $(shell docker-compose exec -T eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.[\"web-admin\"].application.admin.password'")"
+	@echo "# EQEmu Admin | http://${IP_ADDRESS}:3000 | admin / $(shell $(DOCKER) exec -T eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.[\"web-admin\"].application.admin.password'")"
 	@echo "##################################"
 
 #----------------------
@@ -259,10 +252,10 @@ info: ##@info Print install info
 #----------------------
 
 fw: ##@dev Runs web-admin frontend dev server (alias)
-	docker-compose exec eqemu-server bash -c "cd ~/server/eqemu-web-admin/frontend && npm run serve"
+	$(DOCKER) exec eqemu-server bash -c "cd ~/server/eqemu-web-admin/frontend && npm run serve"
 
 bw: ##@dev Runs web-admin backend dev server (alias)
-	docker-compose exec eqemu-server bash -c "cd ~/server/eqemu-web-admin && npm run watch"
+	$(DOCKER) exec eqemu-server bash -c "cd ~/server/eqemu-web-admin && npm run watch"
 
 
 #----------------------
@@ -270,21 +263,21 @@ bw: ##@dev Runs web-admin backend dev server (alias)
 #----------------------
 
 backup-dropbox-init: ##@backup Initializes Dropbox backups
-	docker-compose up -d backup-cron
-	docker-compose exec backup-cron dropbox_uploader.sh
+	$(DOCKER) up -d backup-cron
+	$(DOCKER) exec backup-cron dropbox_uploader.sh
 
 backup-dropbox-list: ##@backup Lists files from Dropbox backups
-	docker-compose up -d backup-cron
-	docker-compose exec backup-cron dropbox_uploader.sh list
+	$(DOCKER) up -d backup-cron
+	$(DOCKER) exec backup-cron dropbox_uploader.sh list
 
 backup-dropbox-database: ##@backup Database backup upload to Dropbox
-	docker-compose exec backup-cron ./backup/backup-database.sh
+	$(DOCKER) exec backup-cron ./backup/backup-database.sh
 
 backup-dropbox-quests: ##@backup Quests backup upload to Dropbox
-	docker-compose exec backup-cron ./backup/backup-quests.sh
+	$(DOCKER) exec backup-cron ./backup/backup-quests.sh
 
 backup-dropbox-deployment: ##@backup Deployment backup upload to Dropbox
-	docker-compose exec backup-cron ./backup/backup-deployment.sh
+	$(DOCKER) exec backup-cron ./backup/backup-deployment.sh
 
 backup-dropbox-all: ##@backup Backup all assets to Dropbox
 	make backup-dropbox-database
