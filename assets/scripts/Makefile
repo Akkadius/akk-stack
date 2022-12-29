@@ -77,6 +77,10 @@ install: ##@init Install full application
 	@make pull-utility-scripts
 	@make init-eqemu-admin
 	@make init-set-perms
+	@make init-shared-memory
+
+init-shared-memory: ##@init Run shared memory once on initial install
+	cd ~/server/ && ./bin/shared_memory
 
 init-eqemu-config: ##@init Bootstraps eqemu config
 	@./assets/scripts/banner.pl "Initializing EQEmu Config"
