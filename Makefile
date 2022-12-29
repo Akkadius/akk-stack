@@ -196,6 +196,7 @@ watch-processes: ##@workflow Watch processes
 
 up: ##@docker Bring up eqemu-server and database
 	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) up -d eqemu-server mariadb
+	make up-info
 
 down: ##@docker Down all containers
 	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) down
@@ -245,6 +246,25 @@ info: ##@info Print install info
 	@echo "# PEQ Editor  | http://${IP_ADDRESS}:8081 | admin / ${PEQ_EDITOR_PASSWORD}"
 	@echo "# PhpMyAdmin  | http://${IP_ADDRESS}:8082 | admin / ${PHPMYADMIN_PASSWORD}"
 	@echo "# EQEmu Admin | http://${IP_ADDRESS}:3000 | admin / $(shell $(DOCKER) exec -T eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.[\"web-admin\"].application.admin.password'")"
+ifeq ("$(SPIRE_DEV)", "true")
+	@echo "##################################"
+	@echo "# Spire Backend Development  | http://${IP_ADDRESS}:3010 | "
+	@echo "# Spire Frontend Development | http://${IP_ADDRESS}:8080 | "
+endif
+	@echo "##################################"
+
+up-info: ##@info Shows web interfaces during make up
+	@echo "##################################"
+	@echo "# Web Interfaces"
+	@echo "##################################"
+	@echo "# PEQ Editor  | http://${IP_ADDRESS}:8081"
+	@echo "# PhpMyAdmin  | http://${IP_ADDRESS}:8082"
+	@echo "# EQEmu Admin | http://${IP_ADDRESS}:3000"
+ifeq ("$(SPIRE_DEV)", "true")
+	@echo "##################################"
+	@echo "# Spire Backend Development  | http://${IP_ADDRESS}:3010"
+	@echo "# Spire Frontend Development | http://${IP_ADDRESS}:8080"
+endif
 	@echo "##################################"
 
 #----------------------
