@@ -18,7 +18,7 @@ while (1) {
     foreach my $process (@processes) {
         my @process_data = split(" ", $process);
 
-        if ($process =~ /gcc|mysql|wget|unzip|node/i) {
+        if ($process =~ /gcc|mysql|wget|unzip|node|go-build/i) {
             next;
         }
 
