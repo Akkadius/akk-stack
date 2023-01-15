@@ -149,6 +149,9 @@ image-eqemu-server-push: ##@image-build Publishes image
 	docker push akkadius/eqemu-server:latest
 	docker push akkadius/eqemu-server:v11
 
+image-eqemu-server-push-dev: ##@image-build Publishes image
+	docker push akkadius/eqemu-server:v11-dev
+
 # peq-editor
 
 image-peq-editor-build: ##@image-build Builds image
