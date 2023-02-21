@@ -632,6 +632,23 @@ If you are trying to be accessible from WAN, you will need to set
 
 This address is used for the **loginserver** you host yourself as well
 
+# Customizing
+
+## Changing Docker the repository
+
+In case you want to build and run on customized docker containers you can change the docker repository and namespace.
+
+```
+root@host:/opt/eqemu-servers# make set-vars registry-namespace=mynamespace container registry=mydockerrepo
+Wrote [REGISTRY] = [mydockerrepo] to [.env]
+Wrote [REGISTRY_NAMESPACE] = [mynamespace] to [.env]
+```
+
+Don't forget to create the containers afterwards.
+
+```
+root@host:/opt/eqemu-servers# make image-build-push-all
+```
 # Troubleshooting
 
 ## Networking
