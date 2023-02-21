@@ -77,22 +77,36 @@ ifneq ($(ip-address),)
 	 IN_IP_ADDRESS=$(ip-address)
 endif
 
+IN_REGISTRY=${REGISTRY}
+ifneq ($(registry),)
+         IN_REGISTRY=$(registry)
+endif
+
+IN_REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}
+ifneq ($(registry-namespace),)
+         IN_REGISTRY_NAMESPACE=$(registry-namespace)
+endif
+
 #----------------------
 # env
 #----------------------
 
-set-vars: ##@env Sets var port-range-high=[] ip-address=[]
+set-vars: ##@env Sets var port-range-high=[] ip-address=[] registry=[] registry-namespace=[]
 	@assets/scripts/env-set-var.pl IP_ADDRESS $(IN_IP_ADDRESS)
 	@assets/scripts/env-set-var.pl PORT_RANGE_HIGH $(IN_PORT_RANGE_HIGH)
+	@assets/scripts/env-set-var.pl REGISTRY ${IN_REGISTRY}
+	@assets/scripts/env-set-var.pl REGISTRY_NAMESPACE ${IN_REGISTRY_NAMESPACE}
 
 #----------------------
 # Init / Install
 #----------------------
 
-install: ##@init Install full application port-range-high=[] ip-address=[]
+install: ##@init Install full application port-range-high=[] ip-address=[] registry=[] registry-namespace[]
 	$(DOCKER) pull
 	@assets/scripts/env-set-var.pl IP_ADDRESS $(IN_IP_ADDRESS)
 	@assets/scripts/env-set-var.pl PORT_RANGE_HIGH $(IN_PORT_RANGE_HIGH)
+	@assets/scripts/env-set-var.pl REGISTRY ${IN_REGISTRY}
+	@assets/scripts/env-set-var.pl REGISTRY_NAMESPACE ${IN_REGISTRY_NAMESPACE}
 	$(DOCKER) build mariadb
 	make up detached
 	@assets/scripts/env-set-var.pl
@@ -138,35 +152,35 @@ image-build-push-all: ##@image-build Build and push all images
 # eqemu-server
 
 image-eqemu-server-build: ##@image-build Builds image
-	docker build containers/eqemu-server -t akkadius/eqemu-server:latest
-	docker build containers/eqemu-server -t akkadius/eqemu-server:v11
+	docker build containers/eqemu-server -t ${REGISTRY}/${REGISTRY_NAMESPACE}/eqemu-server:latest
+	docker build containers/eqemu-server -t ${REGISTRY}/${REGISTRY_NAMESPACE}/eqemu-server:v11
 
 image-eqemu-server-build-dev: ##@image-build Builds image (development)
 	make image-eqemu-server-build
-	docker build -f ./containers/eqemu-server/dev.dockerfile ./containers/eqemu-server -t akkadius/eqemu-server:v11-dev
+	docker build -f ./containers/eqemu-server/dev.dockerfile ./containers/eqemu-server -t ${REGISTRY}/${REGISTRY_NAMESPACE}/eqemu-server:v11-dev
 
 image-eqemu-server-push: ##@image-build Publishes image
-	docker push akkadius/eqemu-server:latest
-	docker push akkadius/eqemu-server:v11
+	docker push ${REGISTRY}/${REGISTRY_NAMESPACE}/eqemu-server:latest
+	docker push ${REGISTRY}/${REGISTRY_NAMESPACE}/eqemu-server:v11
 
 image-eqemu-server-push-dev: ##@image-build Publishes image
-	docker push akkadius/eqemu-server:v11-dev
+	docker push ${REGISTRY}/${REGISTRY_NAMESPACE}/eqemu-server:v11-dev
 
 # peq-editor
 
 image-peq-editor-build: ##@image-build Builds image
-	docker build containers/peq-editor -t akkadius/peq-editor:latest
+	docker build containers/peq-editor -t ${REGISTRY}/${REGISTRY_NAMESPACE}/peq-editor:latest
 
 image-peq-editor-push: ##@image-build Publishes image
-	docker push akkadius/peq-editor:latest
+	docker push ${REGISTRY}/${REGISTRY_NAMESPACE}/peq-editor:latest
 
 # backup-cron
 
 image-backup-cron-build: ##@image-build Builds image
-	docker build containers/backup-cron -t akkadius/eqemu-backup-cron:latest
+	docker build containers/backup-cron -t ${REGISTRY}/${REGISTRY_NAMESPACE}/eqemu-backup-cron:latest
 
 image-backup-cron-push: ##@image-build Publishes image
-	docker push akkadius/eqemu-backup-cron:latest
+	docker push ${REGISTRY}/${REGISTRY_NAMESPACE}/eqemu-backup-cron:latest
 
 #----------------------
 # Workflow
