@@ -144,7 +144,7 @@ BIN_FILE_NAME=eqemu-admin-bin-$(shell date +"%m-%d-%Y-%H-%M-%S")
 
 init-eqemu-admin: ##@init Initializes EQEmu Admin
 	rm -f ~/server/bin/eqemu-admin-*
-	wget $(shell curl -s https://api.github.com/repos/Akkadius/Occulus/releases/latest | jq -r '.assets[].browser_download_url' | grep linux) -O ~/server/bin/$(BIN_FILE_NAME)
+	wget https://github.com/Akkadius/Occulus/releases/latest/download/eqemu-admin-linux -O ~/server/bin/$(BIN_FILE_NAME)
 	chmod +x ~/server/bin/$(BIN_FILE_NAME)
 	ln -sf ~/server/bin/$(BIN_FILE_NAME) ~/server/bin/eqemu-admin
 
