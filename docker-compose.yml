@@ -99,7 +99,7 @@ services:
 
   phpmyadmin:
     restart: unless-stopped
-    image: phpmyadmin/phpmyadmin:latest
+    image: phpmyadmin:latest
     environment:
       - PMA_HOST=mariadb
       - PMA_USER=${MARIADB_USER}
