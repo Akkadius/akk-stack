@@ -15,7 +15,7 @@ services:
 
   eqemu-server:
     restart: unless-stopped
-    image: akkadius/eqemu-server:v11
+    image: ${REGISTRY}/${REGISTRY_NAMESPACE}/eqemu-server:v11
     volumes:
       - ./server:/home/eqemu/server:delegated
       - ./code:/home/eqemu/code:delegated
@@ -113,7 +113,7 @@ services:
   #############################################
 
   peq-editor:
-    image: akkadius/peq-editor:latest
+    image: ${REGISTRY}/${REGISTRY_NAMESPACE}/peq-editor:latest
     restart: unless-stopped
     ports:
       - ${IP_ADDRESS}:8081:80
@@ -159,7 +159,7 @@ services:
 
   backup-cron:
     restart: unless-stopped
-    image: akkadius/eqemu-backup-cron:latest
+    image: ${REGISTRY}/${REGISTRY_NAMESPACE}/eqemu-backup-cron:latest
     build:
       context: ./containers/backup-cron
     hostname: backup-cron
