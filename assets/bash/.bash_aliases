@@ -35,7 +35,7 @@ alias c='cd ~/ && make last-crash'
 alias config='cat ~/server/eqemu_config.json | jq .'
 alias crash='c'
 alias crashes='ls -lsh ~/server/logs/crashes/'
-alias cm='source && cmake -DEQEMU_BUILD_LOGIN=ON -DEQEMU_BUILD_LUA=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -G "Unix Makefiles" ..'
+alias cm='source && cmake -DEQEMU_BUILD_LOGIN=ON -DEQEMU_BUILD_LUA=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O1 -g -DNDEBUG" -G "Unix Makefiles" ..'
 alias k='pkill zone'
 alias r='m && z &'
 # gdb --batch --quiet -ex "thread apply all bt full" -ex "quit" /home/eqemu/server/$(file core | grep -Po "(?<=execfn: '.\/)(.*)(?=', platform)") ./core | grep "#"
