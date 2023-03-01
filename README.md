@@ -88,9 +88,9 @@ With the latest docker compose v2; Docker does not provide the easiest documenta
 
 ```
 DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
-mkdir -p $DOCKER_CONFIG/cli-plugins
-curl -SL https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
-ln -s $DOCKER_CONFIG/cli-plugins/docker-compose /usr/bin/docker-compose
+chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+sudo rm /usr/local/bin/docker-compose
+sudo ln -s $DOCKER_CONFIG/cli-plugins/docker-compose /usr/local/bin/docker-compose
 ```
 
 Confirm that it's working
