@@ -74,7 +74,7 @@ This is what I've used in production, battle-tested, for almost 2 years. I've wo
 
 ## Install Docker
 
-Linux Host or VM with [Docker Installed](https://docs.docker.com/desktop/linux/install/debian/) along with [Docker Compose v2](https://docs.docker.com/compose/install/compose-plugin/)
+Linux Host or VM with [Docker Installed](https://docs.docker.com/desktop/linux/install/debian/) along with [Docker Compose v2](https://docs.docker.com/compose/install/linux/#install-the-plugin-manually)
 
 It doesn't matter what Linux OS you use as long as it has Docker and Docker Compose; but my recommendation is Debian.
 
