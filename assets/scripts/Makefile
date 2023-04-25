@@ -178,7 +178,7 @@ pull-maps: ##@assets Pulls maps
 		echo "maps is initialized"; \
 	else \
 		echo "maps is not initialized"; \
-		cd server && wget https://codeload.github.com/Akkadius/EQEmuMaps/zip/master -O maps.zip && unzip -o maps.zip && rm ./maps -rf && mv EQEmuMaps-master maps && rm maps.zip; \
+		cd server && wget https://github.com/Akkadius/eqemu-maps/releases/latest/download/maps.zip -O /tmp/maps.zip && unzip -o /tmp/maps.zip -d ~/server/maps && rm /tmp/maps.zip; \
 	fi
 
 pull-eqemu-code: ##@assets Pulls eqemu code
