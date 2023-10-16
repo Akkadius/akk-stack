@@ -99,7 +99,6 @@ install: ##@init Install full application port-range-high=[] ip-address=[]
 	$(DOCKER) exec mariadb bash -c 'while ! mysqladmin status -uroot -p${MARIADB_ROOT_PASSWORD} -h "localhost" --silent; do sleep .5; done;'
 	make init-strip-mysql-remote-root
 	$(DOCKER) exec eqemu-server bash -c "make install"
-	$(DOCKER) exec -T eqemu-server bash -c "make update-admin-panel"
 	make init-peq-editor
 	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) down
 	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) up -d
