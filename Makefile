@@ -100,6 +100,7 @@ install: ##@init Install full application port-range-high=[] ip-address=[]
 	make init-strip-mysql-remote-root
 	$(DOCKER) exec eqemu-server bash -c "make install"
 	$(DOCKER) exec -T eqemu-server bash -c "make update-admin-panel"
+	make init-peq-editor
 	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) down
 	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) up -d
 
@@ -139,18 +140,18 @@ image-build-push-all: ##@image-build Build and push all images
 
 image-eqemu-server-build: ##@image-build Builds image
 	docker build containers/eqemu-server -t akkadius/eqemu-server:latest
-	docker build containers/eqemu-server -t akkadius/eqemu-server:v11
+	docker build containers/eqemu-server -t akkadius/eqemu-server:v12
 
 image-eqemu-server-build-dev: ##@image-build Builds image (development)
 	make image-eqemu-server-build
-	docker build -f ./containers/eqemu-server/dev.dockerfile ./containers/eqemu-server -t akkadius/eqemu-server:v11-dev
+	docker build -f ./containers/eqemu-server/dev.dockerfile ./containers/eqemu-server -t akkadius/eqemu-server:v12-dev
 
 image-eqemu-server-push: ##@image-build Publishes image
 	docker push akkadius/eqemu-server:latest
-	docker push akkadius/eqemu-server:v11
+	docker push akkadius/eqemu-server:v12
 
 image-eqemu-server-push-dev: ##@image-build Publishes image
-	docker push akkadius/eqemu-server:v11-dev
+	docker push akkadius/eqemu-server:v12-dev
 
 # peq-editor
 

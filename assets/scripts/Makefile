@@ -140,13 +140,21 @@ init-loginserver: ##@init Initializes Loginserver
 		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') < /tmp/login_schema.sql
 	@./assets/scripts/banner.pl "Loginserver initialized!"
 
-BIN_FILE_NAME=eqemu-admin-bin-$(shell date +"%m-%d-%Y-%H-%M-%S")
+BIN_FILE_NAME=spire-admin-bin-$(shell date +"%m-%d-%Y-%H-%M-%S")
+
+ADMIN_PASSWORD=$(shell cat ~/server/eqemu_config.json 2>/dev/null | jq '.["web-admin"].application.admin.password' | tr -d '" || echo ""')
+ifeq ("${ADMIN_PASSWORD}", "")
+	ADMIN_PASSWORD=${SPIRE_ADMIN_PASSWORD}
+endif
 
 init-eqemu-admin: ##@init Initializes EQEmu Admin
 	rm -f ~/server/bin/eqemu-admin-*
-	wget $(shell curl -s https://api.github.com/repos/Akkadius/Occulus/releases/latest | jq -r '.assets[].browser_download_url' | grep linux) -O ~/server/bin/$(BIN_FILE_NAME)
-	chmod +x ~/server/bin/$(BIN_FILE_NAME)
-	ln -sf ~/server/bin/$(BIN_FILE_NAME) ~/server/bin/eqemu-admin
+	rm -f ~/server/bin/spire-*
+	wget $(shell curl -s https://api.github.com/repos/Akkadius/spire/releases/latest | jq -r '.assets[].browser_download_url' | grep linux) -O /tmp/spire.zip
+	unzip -o /tmp/spire.zip -d ~/server/bin
+	mv ~/server/bin/spire-linux-amd64 ~/server/bin/spire
+	chmod +x ~/server/bin/spire
+	cd ~/server && ./bin/spire spire:init admin ${ADMIN_PASSWORD} || echo "Already initialized"
 
 init-eqemu-admin-dev: ##@init Initializes EQEmu Admin (Development)
 	cd ~/server && if cd eqemu-web-admin 2> /dev/null; then git pull; else git clone https://github.com/Akkadius/eqemu-web-admin; fi
@@ -234,7 +242,13 @@ build-with-cores: ##@build Build EQEmu server (make build-with-cores <number>)
 # update
 #----------------------
 
+L_SPIRE_PORT=${SPIRE_PORT}
+ifeq ("${L_SPIRE_PORT}", "")
+	L_SPIRE_PORT=3000
+endif
+
 update-admin-panel: ##@update Update admin panel
 	kill $(shell ps aux | grep "eqemu-admin" | grep "web" | grep -v "grep" | awk '{print $$2}' | tr '\n' ' ') &>/dev/null || echo "Nothing to kill"
+	kill $(shell ps aux | grep "spire" | grep "http:serve" | grep -v "grep" | awk '{print $$2}' | tr '\n' ' ') &>/dev/null || echo "Nothing to kill"
 	make init-eqemu-admin
-	while true; do cd ~/server/bin/ && nohup ./eqemu-admin web >/dev/null 2>&1; sleep 1; done &
+	while true; do cd ~/server/ && nohup ./bin/spire http:serve --port=${L_SPIRE_PORT} >/dev/null 2>&1; sleep 1; done &
