@@ -185,7 +185,7 @@ init-set-perms: ##@init Sets permissions recursively
 	find ~/ -not -user eqemu -execdir sudo chown eqemu:eqemu {} \+
 
 init-server-binaries: ##@init Initializes server binaries
-	cd ~/server && ./bin/spire eqemu-server:update --release-binaries=true
+	cd ~/server && ./bin/spire eqemu-server:update --release-binaries=true --auto=true
 
 #----------------------
 # Assets
