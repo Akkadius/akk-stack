@@ -28,6 +28,8 @@ alias start='server && bash -c "while true; do nohup ./bin/eqemu-admin server-la
 alias stop='server && ~/assets/scripts/stop-server.sh'
 alias restart='server && stop && start'
 alias update='source && git pull && make -j4'
+alias update-source='source && git pull && make -j4'
+alias update-release='server && ./bin/spire eqemu-server:update --release-binaries=true'
 alias logs='tail -f ~/server/logs/**/*.log'
 alias m='source && make -j$(expr $(nproc) - 2) && server'
 alias perm='sudo chown eqemu /home/eqemu/ -R'

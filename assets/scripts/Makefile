@@ -69,13 +69,14 @@ install: ##@init Install full application
 	@make pull-eqemu-server-script
 	@make pull-maps
 	@make init-build
-	@make build-with-cores 4
+#	@make build-with-cores 4
+	@make init-eqemu-admin
+	@make init-server-binaries
 	@~/assets/scripts/create-symlinks.pl
 	@make init-peq-database
 	@make init-loginserver
 	@make init-peq-editor
 	@make pull-utility-scripts
-	@make init-eqemu-admin
 	@make init-set-perms
 	@make init-shared-memory
 ifeq ("$(SPIRE_DEV)", "true")
@@ -182,6 +183,9 @@ init-peq-editor: ##@init Initializes PEQ Editor DB tables
 
 init-set-perms: ##@init Sets permissions recursively
 	find ~/ -not -user eqemu -execdir sudo chown eqemu:eqemu {} \+
+
+init-server-binaries: ##@init Initializes server binaries
+	cd ~/server && ./bin/spire eqemu-server:update --release-binaries=true
 
 #----------------------
 # Assets
