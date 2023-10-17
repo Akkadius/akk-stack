@@ -117,7 +117,7 @@ init-directories: ##@init Bootstrap directories
 
 init-peq-database: ##@init Sources fresh PEQ database (Warning: Will over-write existing)
 	@./assets/scripts/banner.pl "Bootstrapping PEQ Database"
-	~/assets/scripts/source-database.sh
+	#~/assets/scripts/source-database.sh
 	cd ~/server && perl eqemu_server.pl source_peq_db
 	cd ~/server && perl eqemu_server.pl check_db_updates
 
