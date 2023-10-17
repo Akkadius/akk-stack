@@ -82,7 +82,6 @@ install: ##@init Install full application
 ifeq ("$(SPIRE_DEV)", "true")
 	@make init-spire-dev
 endif
-	@make update-admin-panel
 
 init-spire-dev: ##@init Initialize Spire for development
 	cd ~/server && git clone https://github.com/akkadius/spire || cd ~/server/spire && git pull
