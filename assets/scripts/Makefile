@@ -165,6 +165,7 @@ init-eqemu-admin: ##@init Initializes EQEmu Admin
 		| jq '.["web-admin"].launcher.staticZones = "butcher,erudnext,freporte,qeynos,freeporte,oot,iceclad,nro,oasis,nedaria,abysmal,natimbi,timorous,abysmal,firiona,overthere"' \
 		| tee ~/server/eqemu_config.json
 	cd ~/server && ./bin/spire spire:init admin ${ADMIN_PASSWORD} || echo "Already initialized"
+	cd ~/server && ./bin/spire spire:occulus-update
 
 init-eqemu-admin-dev: ##@init Initializes EQEmu Admin (Development)
 	cd ~/server && if cd eqemu-web-admin 2> /dev/null; then git pull; else git clone https://github.com/Akkadius/eqemu-web-admin; fi
