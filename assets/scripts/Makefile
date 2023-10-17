@@ -156,7 +156,7 @@ init-eqemu-admin: ##@init Initializes EQEmu Admin
 	unzip -o /tmp/spire.zip -d ~/server/bin
 	mv ~/server/bin/spire-linux-amd64 ~/server/bin/spire
 	chmod +x ~/server/bin/spire
-	cd ~/server && ./bin/spire spire:init admin ${ADMIN_PASSWORD} || echo "Already initialized"
+	cd ~/server && SKIP_ASSET_CHECK=1 ./bin/spire spire:init admin ${ADMIN_PASSWORD} || echo "Already initialized"
 	cat ~/server/eqemu_config.json | jq '' \
 		| jq '.["web-admin"].application.admin.password = "${ADMIN_PASSWORD}"' \
 		| jq '.["web-admin"].application.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
@@ -164,6 +164,7 @@ init-eqemu-admin: ##@init Initializes EQEmu Admin
 		| jq '.["web-admin"].launcher.minZoneProcesses = 10' \
 		| jq '.["web-admin"].launcher.staticZones = "butcher,erudnext,freporte,qeynos,freeporte,oot,iceclad,nro,oasis,nedaria,abysmal,natimbi,timorous,abysmal,firiona,overthere"' \
 		| tee ~/server/eqemu_config.json
+	cd ~/server && ./bin/spire spire:init admin ${ADMIN_PASSWORD} || echo "Already initialized"
 
 init-eqemu-admin-dev: ##@init Initializes EQEmu Admin (Development)
 	cd ~/server && if cd eqemu-web-admin 2> /dev/null; then git pull; else git clone https://github.com/Akkadius/eqemu-web-admin; fi
