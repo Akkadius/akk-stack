@@ -143,9 +143,9 @@ init-loginserver: ##@init Initializes Loginserver
 
 BIN_FILE_NAME=spire-admin-bin-$(shell date +"%m-%d-%Y-%H-%M-%S")
 
-ADMIN_PASSWORD=$(shell cat ~/server/eqemu_config.json 2>/dev/null | jq '.["web-admin"].application.admin.password' | tr -d '"' || echo "")
-ifeq ("${ADMIN_PASSWORD}", "null")
-	ADMIN_PASSWORD=${SPIRE_ADMIN_PASSWORD}
+ADMIN_PASSWORD=${SPIRE_ADMIN_PASSWORD}
+ifeq ("${ADMIN_PASSWORD}", "")
+	ADMIN_PASSWORD=$(shell cat ~/server/eqemu_config.json 2>/dev/null | jq '.["web-admin"].application.admin.password' | tr -d '"' || echo "")
 endif
 
 init-eqemu-admin: ##@init Initializes EQEmu Admin
