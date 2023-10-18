@@ -76,7 +76,6 @@ install: ##@init Install full application
 	@make init-peq-database
 	@make init-loginserver
 	@make init-peq-editor
-	@make pull-utility-scripts
 	@make init-set-perms
 	@make init-shared-memory
 ifeq ("$(SPIRE_DEV)", "true")
@@ -117,9 +116,14 @@ init-directories: ##@init Bootstrap directories
 
 init-peq-database: ##@init Sources fresh PEQ database (Warning: Will over-write existing)
 	@./assets/scripts/banner.pl "Bootstrapping PEQ Database"
-	#~/assets/scripts/source-database.sh
-	cd ~/server && perl eqemu_server.pl source_peq_db
-	cd ~/server && perl eqemu_server.pl check_db_updates
+	curl http://db.projecteq.net/api/v1/dump/latest -o /tmp/db.zip
+	unzip -o /tmp/db.zip -d /tmp/db/
+	cd /tmp/db/peq-dump/ && mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
+		-p$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password') \
+		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
+		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') \
+		< ./create_all_tables.sql
+	rm -rf /tmp/db/
 
 init-loginserver: ##@init Initializes Loginserver
 	@./assets/scripts/banner.pl "Initializing Loginserver"
@@ -206,10 +210,6 @@ pull-eqemu-code: ##@assets Pulls eqemu code
 	@./assets/scripts/banner.pl "Pulling EQEmu Source Code into [./code]"
 	git -C ./code pull 2> /dev/null || git clone https://github.com/EQEmu/Server.git code
 
-pull-eqemu-server-script: ##@assets Pulls eqemu_server.pl
-	@./assets/scripts/banner.pl "Pulling EQEmu Server Management Script [eqemu_server.pl]"
-	cd ~/server && wget --no-check-certificate https://raw.githubusercontent.com/EQEmu/Server/master/utils/scripts/eqemu_server.pl -O eqemu_server.pl && chmod 755 eqemu_server.pl
-
 pull-peq-quests: ##@assets Pulls ProjectEQ quests
 	@./assets/scripts/banner.pl "Pulling Latest ProjectEQ Quests"
 	cd ~/server && git -C ./quests pull 2> /dev/null || git clone https://github.com/ProjectEQ/projecteqquests.git quests
@@ -217,11 +217,6 @@ pull-peq-quests: ##@assets Pulls ProjectEQ quests
 pull-docker-config: ##@assets Pulls default eqemu_config.json
 	@./assets/scripts/banner.pl "Bootstrapping default [eqemu_config.json]"
 	cd ~/server && wget --no-cache --no-check-certificate --no-cookies https://raw.githubusercontent.com/Akkadius/eqemu-install-v2/master/eqemu_config_docker.json -O eqemu_config.json
-
-pull-utility-scripts: ##@assets Pulls utility scripts (start/stop server)
-	@./assets/scripts/banner.pl "Bootstrapping server utility scripts"
-	cd ~/server && perl eqemu_server.pl utility_scripts
-	cd ~/server && chmod 755 *.sh
 
 #----------------------
 # mgmt
