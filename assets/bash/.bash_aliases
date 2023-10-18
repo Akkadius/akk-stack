@@ -23,7 +23,7 @@ alias bin='cd ~/server/bin/'
 ######################################
 # Server MGMT
 ######################################
-alias start='server && bash -c "while true; do nohup ./bin/spire spire:launcher start && echo \"Server started\"" >/dev/null 2>&1; sleep 1; done &" && echo Server started'
+alias start='server && bash -c "while true; do nohup ./bin/spire spire:launcher start >/dev/null 2>&1; sleep 1; done &" && echo Server started'
 alias stop='server && ./bin/spire spire:launcher stop && echo Server stopped'
 alias restart='server && ./bin/spire spire:launcher restart && echo Server restarted'
 alias update='source && git pull && make -j4'
