@@ -69,7 +69,6 @@ install: ##@init Install full application
 	@make pull-eqemu-server-script
 	@make pull-maps
 	@make init-build
-#	@make build-with-cores 4
 	@~/assets/scripts/create-symlinks.pl
 	@make init-eqemu-admin
 	@make init-server-binaries
@@ -247,9 +246,6 @@ build: ##@build Build EQEmu server
 
 build-clean: ##@build Cleans build directory
 	cd ~/code/build && make clean
-
-build-with-cores: ##@build Build EQEmu server (make build-with-cores <number>)
-	cd ~/code/build && make -j$(RUN_ARGS)
 
 #----------------------
 # update
