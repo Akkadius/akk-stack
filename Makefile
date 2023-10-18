@@ -270,6 +270,8 @@ ifeq ("$(SPIRE_DEV)", "true")
 	@echo "# Spire Frontend Development | http://${IP_ADDRESS}:8080"
 endif
 	@echo "##################################"
+	@echo "Use 'make info' to see passwords"
+	@echo "##################################"
 
 #----------------------
 # dev
