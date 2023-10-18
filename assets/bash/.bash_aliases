@@ -1,11 +1,4 @@
 ######################################
-# Admin Panel
-######################################
-alias admin='cd ~/server/eqemu-web-admin'
-alias adminrun='admin && nodemon ./app/bin/admin web'
-alias admindebug='admin && DEBUG=eqemu-admin:* && nodemon ./app/bin/admin web'
-
-######################################
 # Directories
 ######################################
 alias source='cd ~/code/build'

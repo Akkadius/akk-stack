@@ -66,7 +66,6 @@ install: ##@init Install full application
 	@make init-eqemu-config
 	@make pull-eqemu-code
 	@make pull-peq-quests
-	@make pull-eqemu-server-script
 	@make pull-maps
 	@make init-build
 	@~/assets/scripts/create-symlinks.pl
