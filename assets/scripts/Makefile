@@ -124,6 +124,7 @@ init-peq-database: ##@init Sources fresh PEQ database (Warning: Will over-write 
 		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') \
 		< ./create_all_tables.sql
 	rm -rf /tmp/db/
+	cd ~/server && ./bin/world database:updates
 
 init-loginserver: ##@init Initializes Loginserver
 	@./assets/scripts/banner.pl "Initializing Loginserver"
