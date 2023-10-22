@@ -258,5 +258,8 @@ endif
 update-admin-panel: ##@update Update admin panel
 	kill $(shell ps aux | grep "eqemu-admin" | grep "web" | grep -v "grep" | awk '{print $$2}' | tr '\n' ' ') &>/dev/null || echo "Nothing to kill"
 	kill $(shell ps aux | grep "spire" | grep "http:serve" | grep -v "grep" | awk '{print $$2}' | tr '\n' ' ') &>/dev/null || echo "Nothing to kill"
-	make init-eqemu-admin
+	wget --quiet $(shell curl -s https://api.github.com/repos/Akkadius/spire/releases/latest | jq -r '.assets[].browser_download_url' | grep spire-linux) -O /tmp/spire.zip
+	unzip -o /tmp/spire.zip -d ~/server/bin
+	mv ~/server/bin/spire-linux-amd64 ~/server/bin/spire
+	chmod +x ~/server/bin/spire
 	while true; do cd ~/server/ && nohup ./bin/spire http:serve --port=${L_SPIRE_PORT} >/dev/null 2>&1; sleep 1; done &
