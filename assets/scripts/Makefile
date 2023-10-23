@@ -52,15 +52,6 @@ help: ##@other Show this help.
 # Init / Install
 #----------------------
 
-test:
-	@echo ${EQEMU_DB_PASSWORD}
-	@echo ${SERVER_PASSWORD}
-	@echo ${RANDOM_ID}
-	cat ~/server/eqemu_config.json \
-		| jq '.server.database.password = "${EQEMU_DB_PASSWORD}"' \
-		| jq '.server.world.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
-		| tee ~/server/eqemu_config.json
-
 install: ##@init Install full application
 	@make init-directories
 	@make init-eqemu-config
@@ -191,6 +182,27 @@ init-set-perms: ##@init Sets permissions recursively
 
 init-server-binaries: ##@init Initializes server binaries
 	cd ~/server && ./bin/spire eqemu-server:update --release-binaries=true --auto=true
+
+init-perl: ##@init Initializes perl - compiles perl from source to /opt/eqemu-perl
+	@./assets/scripts/banner.pl "Initializing Perl"
+	cd /tmp && wget https://www.cpan.org/src/5.0/perl-5.32.1.tar.gz -O /tmp/perl.tar.gz
+	sudo mkdir -p /opt/eqemu-perl
+	sudo chown eqemu:eqemu /opt/eqemu-perl -R
+	cd /tmp && tar -xzf perl.tar.gz -C /opt/eqemu-perl --strip-components=1
+	cd /opt/eqemu-perl && ./Configure -des -Dprefix=/opt/eqemu-perl -Dusethreads -Dusemultiplicity -Duse64bitall -Dstatic
+	cd /opt/eqemu-perl && make -j$(shell nproc)
+	# cd /opt/eqemu-perl && make -j$(shell nproc) test_harness
+	cd /opt/eqemu-perl && make install
+	rm -rf /tmp/perl.tar.gz
+	# install DBI and DBD::mysql
+	yes | sudo /opt/eqemu-perl/bin/perl -MCPAN -e 'install App::cpanminus'
+	sudo /opt/eqemu-perl/bin/cpanm DBI
+	sudo /opt/eqemu-perl/bin/cpanm DBD::mysql@4.046_01
+	sudo /opt/eqemu-perl/bin/cpanm JSON
+	sudo /opt/eqemu-perl/bin/cpanm Data::Dumper
+	sudo /opt/eqemu-perl/bin/cpanm File::Find
+	sudo /opt/eqemu-perl/bin/cpanm File::Path
+	sudo /opt/eqemu-perl/bin/cpanm -n Module::Refresh
 
 #----------------------
 # Assets
