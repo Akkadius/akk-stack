@@ -185,14 +185,14 @@ init-server-binaries: ##@init Initializes server binaries
 
 init-perl: ##@init Initializes perl - compiles perl from source to /opt/eqemu-perl
 	@./assets/scripts/banner.pl "Initializing Perl"
-	cd /tmp && wget https://www.cpan.org/src/5.0/perl-5.32.1.tar.gz -O /tmp/perl.tar.gz
 	sudo mkdir -p /opt/eqemu-perl
 	sudo chown eqemu:eqemu /opt/eqemu-perl -R
+	cd /tmp && wget https://github.com/Perl/perl5/archive/refs/tags/v5.32.1.tar.gz -O perl.tar.gz
 	cd /tmp && tar -xzf perl.tar.gz -C /opt/eqemu-perl --strip-components=1
-	cd /opt/eqemu-perl && ./Configure -des -Dprefix=/opt/eqemu-perl -Dusethreads -Dusemultiplicity -Duse64bitall -Dstatic
+	cd /opt/eqemu-perl && ./Configure -des -Dprefix=/opt/eqemu-perl -Dusethreads -Dusemultiplicity -Duse64bitall -Dnoextensions
 	cd /opt/eqemu-perl && make -j$(shell nproc)
 	# cd /opt/eqemu-perl && make -j$(shell nproc) test_harness
-	cd /opt/eqemu-perl && make install
+	cd /opt/eqemu-perl && make install PREFIX=/opt/eqemu-perl INSTALL_BASE=/opt/eqemu-perl
 	rm -rf /tmp/perl.tar.gz
 	# install DBI and DBD::mysql
 	yes | sudo /opt/eqemu-perl/bin/perl -MCPAN -e 'install App::cpanminus'
@@ -202,7 +202,9 @@ init-perl: ##@init Initializes perl - compiles perl from source to /opt/eqemu-pe
 	sudo /opt/eqemu-perl/bin/cpanm Data::Dumper
 	sudo /opt/eqemu-perl/bin/cpanm File::Find
 	sudo /opt/eqemu-perl/bin/cpanm File::Path
+	sudo /opt/eqemu-perl/bin/cpanm List::Util
 	sudo /opt/eqemu-perl/bin/cpanm -n Module::Refresh
+	sudo chown eqemu:eqemu -R /opt/eqemu-perl/
 
 #----------------------
 # Assets
