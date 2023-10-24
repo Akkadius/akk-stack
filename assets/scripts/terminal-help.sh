@@ -9,7 +9,7 @@ cyn=$'\e[1;36m'
 end=$'\e[0m'
 
 directory_spacing=$'%-25s'
-quick_command_spacing=$'%-25s'
+quick_command_spacing=$'%-28s'
 
 printf "\n> ${yel}EQEmulator Server Console${end}\n"
 printf "\n"
@@ -29,6 +29,8 @@ printf "${cyn}# Development Commands${end}\n\n"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}m${end}]" "Runs [make] and compiles server"
 #printf "${quick_command_spacing} | %-10s\n" "[${grn}core${end}]" "Analyzes last core dump created in server directory at ./core"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}update${end}]" "Runs [git pull] against source directory and immediately compiles"
+printf "${quick_command_spacing} | %-10s\n" "[${grn}update-source${end}]" "Runs [git pull] against source directory and immediately compiles"
+printf "${quick_command_spacing} | %-10s\n" "[${grn}update-release${end}]" "Updates server with latest release binaries"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}start${end}]" "Starts server"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}stop${end}]" "Stops server"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}restart${end}]" "Restarts server"

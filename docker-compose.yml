@@ -15,7 +15,7 @@ services:
 
   eqemu-server:
     restart: unless-stopped
-    image: akkadius/eqemu-server:v11
+    image: akkadius/eqemu-server:v13
     volumes:
       - ./server:/home/eqemu/server:delegated
       - ./code:/home/eqemu/code:delegated
@@ -40,6 +40,8 @@ services:
       - ${IP_ADDRESS}:7000-${PORT_RANGE_HIGH}:7000-${PORT_RANGE_HIGH}/tcp
       - ${IP_ADDRESS}:7000-${PORT_RANGE_HIGH}:7000-${PORT_RANGE_HIGH}/udp
     environment:
+      - SPIRE_PORT=${SPIRE_PORT:-3000}
+      - SPIRE_ADMIN_PASSWORD=${SPIRE_ADMIN_PASSWORD:-}
       - SERVER_PASSWORD=${SERVER_PASSWORD}
       - EQEMU_DB_PASSWORD=${MARIADB_PASSWORD}
       - PEQ_EDITOR_PASSWORD=${PEQ_EDITOR_PASSWORD}

@@ -3,12 +3,13 @@ use strict;
 use warnings FATAL => 'all';
 
 my %fields_to_scramble = (
-    "MARIADB_ROOT_PASSWORD" => 1,
-    "MARIADB_PASSWORD"      => 1,
-    "PHPMYADMIN_PASSWORD"   => 1,
-    "SERVER_PASSWORD"       => 1,
-    "FTP_QUESTS_PASSWORD"   => 1,
-    "PEQ_EDITOR_PASSWORD"   => 1
+    "MARIADB_ROOT_PASSWORD"  => 1,
+    "MARIADB_PASSWORD"       => 1,
+    "PHPMYADMIN_PASSWORD"    => 1,
+    "SERVER_PASSWORD"        => 1,
+    "FTP_QUESTS_PASSWORD"    => 1,
+    "SPIRE_ADMIN_PASSWORD"   => 1,
+    "PEQ_EDITOR_PASSWORD"    => 1
 );
 
 ##################################

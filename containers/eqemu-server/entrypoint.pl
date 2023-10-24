@@ -3,11 +3,12 @@
 #############################################
 # vars
 #############################################
-my $SERVER_PASSWORD             = $ENV{'SERVER_PASSWORD'};
-my $server_path                 = "/home/eqemu/server";
-my $bin_path                    = $server_path . "/bin/";
-my $server_web_admin            = $server_path . "/eqemu-web-admin";
-my $server_web_admin_standalone = $bin_path . "/eqemu-admin";
+my $SERVER_PASSWORD   = $ENV{'SERVER_PASSWORD'};
+my $EQEMU_DB_PASSWORD = $ENV{'EQEMU_DB_PASSWORD'};
+my $server_path       = "/home/eqemu/server";
+my $bin_path          = $server_path . "/bin/";
+my $SPIRE_PORT        = $ENV{'SPIRE_PORT'};
+my $spire_admin       = $bin_path . "/spire";
 
 if (-e "~/server/eqemu_config.json") {
     print "# Creating symlinks\n";
@@ -87,20 +88,11 @@ print `rm -rf ~/server/updates_staged`;
 print `cd $server_path && nohup ./startup/* >/dev/null 2>&1 &`;
 
 #########################
-# eqemu-admin panel
+# spire-admin
 #########################
-if (-e $server_web_admin_standalone) {
-    print "# Starting Occulus server (standalone)\n";
-    print `cd $bin_path && nohup ./eqemu-admin web >/dev/null 2>&1 &`;
-    print "# Starting Occulus launcher (standalone)\n";
-    print `cd $server_path && nohup ./bin/eqemu-admin server-launcher >/dev/null 2>&1 &`;
-}
-elsif (-e $server_web_admin) {
-    print "# Starting Occulus server\n";
-    print `cd $server_web_admin && nohup node ./app/bin/admin web >/dev/null 2>&1 &`;
-    print "# Starting Occulus launcher\n";
-    print `cd $server_web_admin && nohup node ./app/bin/admin server-launcher >/dev/null 2>&1 &`;
-}
+print "# Starting Spire\n";
+print `while ! mysqladmin status -ueqemu -p$EQEMU_DB_PASSWORD -h "mariadb" --silent; do sleep .5; done;`;
+print `while true; do cd ~/server/ && nohup ./bin/spire http:serve --port=$SPIRE_PORT >/dev/null 2>&1; sleep 1; done &`;
 
 #############################################
 # cron watcher

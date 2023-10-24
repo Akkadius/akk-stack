@@ -99,9 +99,10 @@ install: ##@init Install full application port-range-high=[] ip-address=[]
 	$(DOCKER) exec mariadb bash -c 'while ! mysqladmin status -uroot -p${MARIADB_ROOT_PASSWORD} -h "localhost" --silent; do sleep .5; done;'
 	make init-strip-mysql-remote-root
 	$(DOCKER) exec eqemu-server bash -c "make install"
-	$(DOCKER) exec -T eqemu-server bash -c "make update-admin-panel"
-	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) down
+	make init-peq-editor
+	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) down --timeout 3
 	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) up -d
+	make up-info
 
 init-strip-mysql-remote-root: ##@init Strips MySQL remote root user
 	$(DOCKER) exec mariadb bash -c "mysql -uroot -p${MARIADB_ROOT_PASSWORD} -h localhost -e \"delete from mysql.user where User = 'root' and Host = '%'; FLUSH PRIVILEGES\""
@@ -112,7 +113,7 @@ init-reset-env: ##@init Resets .env
 
 init-peq-editor: ##@init Initializes PEQ editor
 	$(DOCKER) build peq-editor && $(DOCKER) up -d peq-editor
-	$(DOCKER) exec peq-editor bash -c "git clone https://github.com/ProjectEQ/peqphpeditor.git /var/www/html && \
+	$(DOCKER) exec peq-editor bash -c "git clone https://github.com/ProjectEQ/peqphpeditor.git /var/www/html || cd /var/www/html; git pull && \
     	cd /var/www/html/ && cp config.php.dist config.php && \
     	chown www-data:www-data /var/www/html -R"
 	$(DOCKER) exec eqemu-server bash -c "make init-peq-editor"
@@ -123,11 +124,13 @@ init-peq-editor: ##@init Initializes PEQ editor
 
 image-build-all: ##@image-build Build all images
 	make image-eqemu-server-build
+	make image-eqemu-server-build-dev
 	make image-peq-editor-build
 	make image-backup-cron-build
 
 image-push-all: ##@image-build Push all images
 	make image-eqemu-server-push
+	make image-eqemu-server-push-dev
 	make image-peq-editor-push
 	make image-backup-cron-push
 
@@ -139,18 +142,18 @@ image-build-push-all: ##@image-build Build and push all images
 
 image-eqemu-server-build: ##@image-build Builds image
 	docker build containers/eqemu-server -t akkadius/eqemu-server:latest
-	docker build containers/eqemu-server -t akkadius/eqemu-server:v11
+	docker build containers/eqemu-server -t akkadius/eqemu-server:v13
 
 image-eqemu-server-build-dev: ##@image-build Builds image (development)
 	make image-eqemu-server-build
-	docker build -f ./containers/eqemu-server/dev.dockerfile ./containers/eqemu-server -t akkadius/eqemu-server:v11-dev
+	docker build -f ./containers/eqemu-server/dev.dockerfile ./containers/eqemu-server -t akkadius/eqemu-server:v13-dev
 
 image-eqemu-server-push: ##@image-build Publishes image
 	docker push akkadius/eqemu-server:latest
-	docker push akkadius/eqemu-server:v11
+	docker push akkadius/eqemu-server:v13
 
 image-eqemu-server-push-dev: ##@image-build Publishes image
-	docker push akkadius/eqemu-server:v11-dev
+	docker push akkadius/eqemu-server:v13-dev
 
 # peq-editor
 
@@ -202,7 +205,7 @@ up: ##@docker Bring up eqemu-server and database
 	make up-info
 
 down: ##@docker Down all containers
-	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) down
+	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) down --timeout 3
 
 restart: ##@docker Restart containers
 	make down
@@ -268,6 +271,8 @@ ifeq ("$(SPIRE_DEV)", "true")
 	@echo "# Spire Backend Development  | http://${IP_ADDRESS}:3010"
 	@echo "# Spire Frontend Development | http://${IP_ADDRESS}:8080"
 endif
+	@echo "##################################"
+	@echo "Use 'make info' to see passwords"
 	@echo "##################################"
 
 #----------------------

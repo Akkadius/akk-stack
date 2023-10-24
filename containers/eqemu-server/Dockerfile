@@ -1,4 +1,4 @@
-FROM debian:11-slim
+FROM debian:12-slim
 
 LABEL maintainer="Akkadius <akkadius1@gmail.com>"
 
@@ -82,11 +82,35 @@ RUN echo "eqemu ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/user && \
 RUN chsh -s /bin/bash eqemu
 
 #############################################
-# cpan modules
+# install eqemu-perl
 #############################################
-RUN yes '' | sudo perl -MCPAN -e 'install Switch' && sudo perl -MCPAN -e 'install Net::Telnet'
+RUN mkdir -p /opt/eqemu-perl && \
+	mkdir -p /tmp/eqemu-perl && \
+	chown eqemu:eqemu /opt/eqemu-perl -R && \
+    # downloading from github this way is slow, so we pull from a release
+	# cd /tmp && wget -q https://github.com/Perl/perl5/archive/refs/tags/v5.32.1.tar.gz -O perl.tar.gz && \
+	cd /tmp && wget -q https://github.com/EQEmu/Server/releases/download/v1.2/perl5-5.32.1.tar.gz -O perl.tar.gz && \
+	cd /tmp && tar -xzf perl.tar.gz --strip-components=1 -C /tmp/eqemu-perl && \
+	cd /tmp/eqemu-perl && ./Configure -des -Dprefix=/opt/eqemu-perl -Dusethreads -Dusemultiplicity -Duse64bitall -Dnoextensions -Duseshrplib 1> /dev/null && \
+	cd /tmp/eqemu-perl && make -j$(nproc) 1> /dev/null && \
+	# cd /opt/eqemu-perl && make -j$(shell nproc) test_harness
+	cd /tmp/eqemu-perl && make -j$(nproc) install 1> /dev/null && \
+	rm -rf /tmp/perl.tar.gz && \
+	rm -rf /tmp/eqemu-perl && \
+	# install DBI and DBD::mysql
+	yes | /opt/eqemu-perl/bin/perl -MCPAN -e 'install App::cpanminus'
 
-RUN apt-get update && apt-get install -y libdbd-mysql-perl
+RUN /opt/eqemu-perl/bin/cpanm --notest DBI && \
+    /opt/eqemu-perl/bin/cpanm --notest DBD::mysql@4.046_01 && \
+    /opt/eqemu-perl/bin/cpanm --notest JSON && \
+    /opt/eqemu-perl/bin/cpanm --notest Data::Dumper && \
+    /opt/eqemu-perl/bin/cpanm --notest File::Find && \
+    /opt/eqemu-perl/bin/cpanm --notest File::Path && \
+    /opt/eqemu-perl/bin/cpanm --notest List::Util && \
+    /opt/eqemu-perl/bin/cpanm --notest Switch && \
+    /opt/eqemu-perl/bin/cpanm --notest Net::Telnet && \
+    /opt/eqemu-perl/bin/cpanm -n Module::Refresh && \
+    chown eqemu:eqemu -R /opt/eqemu-perl/
 
 #############################################
 # entrypoint script

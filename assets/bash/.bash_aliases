@@ -1,11 +1,4 @@
 ######################################
-# Admin Panel
-######################################
-alias admin='cd ~/server/eqemu-web-admin'
-alias adminrun='admin && nodemon ./app/bin/admin web'
-alias admindebug='admin && DEBUG=eqemu-admin:* && nodemon ./app/bin/admin web'
-
-######################################
 # Directories
 ######################################
 alias source='cd ~/code/build'
@@ -23,11 +16,12 @@ alias bin='cd ~/server/bin/'
 ######################################
 # Server MGMT
 ######################################
-# ./bin/eqemu-admin server-launcher && sleep 1
-alias start='server && bash -c "while true; do nohup ./bin/eqemu-admin server-launcher >/dev/null 2>&1; sleep 1; done &" && echo Server started'
-alias stop='server && ~/assets/scripts/stop-server.sh'
-alias restart='server && stop && start'
+alias start='server && ./bin/spire spire:launcher start && echo Server started'
+alias stop='server && ./bin/spire spire:launcher stop && echo Server stopped'
+alias restart='server && ./bin/spire spire:launcher restart && echo Server restarted'
 alias update='source && git pull && make -j4'
+alias update-source='source && git pull && make -j4 && ~/assets/scripts/create-symlinks.pl'
+alias update-release='server && ./bin/spire eqemu-server:update --release-binaries=true --auto=true'
 alias logs='tail -f ~/server/logs/**/*.log'
 alias m='source && make -j$(expr $(nproc) - 2) && server'
 alias perm='sudo chown eqemu /home/eqemu/ -R'
