@@ -232,48 +232,48 @@ env-set-zone-port-range-high: ##@env Set zone port range high value
 #----------------------
 
 info: ##@info Print install info
-	@echo "##################################"
-	@echo "# Server Info"
-	@echo "##################################"
-	@echo '# $(shell $(DOCKER) exec eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.server.world.longname' | tr -d '\"'")'
-	@echo "##################################"
-	@echo "# Passwords"
-	@echo "##################################"
+	@echo "----------------------------------"
+	@echo "> Server Info"
+	@echo "----------------------------------"
+	@echo '> $(shell $(DOCKER) exec -T eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.server.world.longname' | tr -d '\"'")'
+	@echo "----------------------------------"
+	@echo "> Passwords"
+	@echo "----------------------------------"
 	@cat .env | grep PASSWORD
-	@echo "##################################"
-	@echo "# IP"
-	@echo "##################################"
+	@echo "----------------------------------"
+	@echo "> IP"
+	@echo "----------------------------------"
 	@cat .env | grep IP
-	@echo "##################################"
-	@echo "# Quests FTP  | ${IP_ADDRESS}:21 | quests / ${FTP_QUESTS_PASSWORD}"
-	@echo "##################################"
-	@echo "# Web Interfaces"
-	@echo "##################################"
-	@echo "# PEQ Editor  | http://${IP_ADDRESS}:8081 | admin / ${PEQ_EDITOR_PASSWORD}"
-	@echo "# PhpMyAdmin  | http://${IP_ADDRESS}:8082 | admin / ${PHPMYADMIN_PASSWORD}"
-	@echo "# EQEmu Admin | http://${IP_ADDRESS}:3000 | admin / $(shell $(DOCKER) exec -T eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.[\"web-admin\"].application.admin.password'")"
+	@echo "----------------------------------"
+	@echo "> Quests FTP  | ${IP_ADDRESS}:21 | quests / ${FTP_QUESTS_PASSWORD}"
+	@echo "----------------------------------"
+	@echo "> Web Interfaces"
+	@echo "----------------------------------"
+	@echo "> PEQ Editor  | http://${IP_ADDRESS}:8081 | admin / ${PEQ_EDITOR_PASSWORD}"
+	@echo "> PhpMyAdmin  | http://${IP_ADDRESS}:8082 | admin / ${PHPMYADMIN_PASSWORD}"
+	@echo "> EQEmu Admin | http://${IP_ADDRESS}:3000 | admin / $(shell $(DOCKER) exec -T eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.[\"web-admin\"].application.admin.password'")"
 ifeq ("$(SPIRE_DEV)", "true")
-	@echo "##################################"
-	@echo "# Spire Backend Development  | http://${IP_ADDRESS}:3010 | "
-	@echo "# Spire Frontend Development | http://${IP_ADDRESS}:8080 | "
+	@echo "----------------------------------"
+	@echo "> Spire Backend Development  | http://${IP_ADDRESS}:3010 | "
+	@echo "> Spire Frontend Development | http://${IP_ADDRESS}:8080 | "
 endif
-	@echo "##################################"
+	@echo "----------------------------------"
 
 up-info: ##@info Shows web interfaces during make up
-	@echo "##################################"
-	@echo "# Web Interfaces"
-	@echo "##################################"
-	@echo "# PEQ Editor  | http://${IP_ADDRESS}:8081"
-	@echo "# PhpMyAdmin  | http://${IP_ADDRESS}:8082"
-	@echo "# EQEmu Admin | http://${IP_ADDRESS}:3000"
+	@echo "----------------------------------"
+	@echo "> Web Interfaces"
+	@echo "----------------------------------"
+	@echo "> PEQ Editor  | http://${IP_ADDRESS}:8081"
+	@echo "> PhpMyAdmin  | http://${IP_ADDRESS}:8082"
+	@echo "> EQEmu Admin | http://${IP_ADDRESS}:3000"
 ifeq ("$(SPIRE_DEV)", "true")
-	@echo "##################################"
-	@echo "# Spire Backend Development  | http://${IP_ADDRESS}:3010"
-	@echo "# Spire Frontend Development | http://${IP_ADDRESS}:8080"
+	@echo "----------------------------------"
+	@echo "> Spire Backend Development  | http://${IP_ADDRESS}:3010"
+	@echo "> Spire Frontend Development | http://${IP_ADDRESS}:8080"
 endif
-	@echo "##################################"
+	@echo "----------------------------------"
 	@echo "Use 'make info' to see passwords"
-	@echo "##################################"
+	@echo "----------------------------------"
 
 #----------------------
 # dev
