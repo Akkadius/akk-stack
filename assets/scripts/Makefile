@@ -186,14 +186,16 @@ init-server-binaries: ##@init Initializes server binaries
 init-perl: ##@init Initializes perl - compiles perl from source to /opt/eqemu-perl
 	@./assets/scripts/banner.pl "Initializing Perl"
 	sudo mkdir -p /opt/eqemu-perl
+	mkdir -p /tmp/eqemu-perl
 	sudo chown eqemu:eqemu /opt/eqemu-perl -R
 	cd /tmp && wget https://github.com/Perl/perl5/archive/refs/tags/v5.32.1.tar.gz -O perl.tar.gz
-	cd /tmp && tar -xzf perl.tar.gz -C /opt/eqemu-perl --strip-components=1
-	cd /opt/eqemu-perl && ./Configure -des -Dprefix=/opt/eqemu-perl -Dusethreads -Dusemultiplicity -Duse64bitall -Dnoextensions
-	cd /opt/eqemu-perl && make -j$(shell nproc)
+	cd /tmp && tar -xzf perl.tar.gz --strip-components=1 -C /tmp/eqemu-perl
+	cd /tmp/eqemu-perl && ./Configure -des -Dprefix=/opt/eqemu-perl -Dusethreads -Dusemultiplicity -Duse64bitall -Dnoextensions -Duseshrplib
+	cd /tmp/eqemu-perl && make -j$(shell nproc)
 	# cd /opt/eqemu-perl && make -j$(shell nproc) test_harness
-	cd /opt/eqemu-perl && make install PREFIX=/opt/eqemu-perl INSTALL_BASE=/opt/eqemu-perl
+	cd /tmp/eqemu-perl && make install
 	rm -rf /tmp/perl.tar.gz
+	rm -rf /tmp/eqemu-perl
 	# install DBI and DBD::mysql
 	yes | sudo /opt/eqemu-perl/bin/perl -MCPAN -e 'install App::cpanminus'
 	sudo /opt/eqemu-perl/bin/cpanm DBI

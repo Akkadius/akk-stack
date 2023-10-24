@@ -124,11 +124,13 @@ init-peq-editor: ##@init Initializes PEQ editor
 
 image-build-all: ##@image-build Build all images
 	make image-eqemu-server-build
+	make image-eqemu-server-build-dev
 	make image-peq-editor-build
 	make image-backup-cron-build
 
 image-push-all: ##@image-build Push all images
 	make image-eqemu-server-push
+	make image-eqemu-server-push-dev
 	make image-peq-editor-push
 	make image-backup-cron-push
 
@@ -140,18 +142,18 @@ image-build-push-all: ##@image-build Build and push all images
 
 image-eqemu-server-build: ##@image-build Builds image
 	docker build containers/eqemu-server -t akkadius/eqemu-server:latest
-	docker build containers/eqemu-server -t akkadius/eqemu-server:v12
+	docker build containers/eqemu-server -t akkadius/eqemu-server:v13
 
 image-eqemu-server-build-dev: ##@image-build Builds image (development)
 	make image-eqemu-server-build
-	docker build -f ./containers/eqemu-server/dev.dockerfile ./containers/eqemu-server -t akkadius/eqemu-server:v12-dev
+	docker build -f ./containers/eqemu-server/dev.dockerfile ./containers/eqemu-server -t akkadius/eqemu-server:v13-dev
 
 image-eqemu-server-push: ##@image-build Publishes image
 	docker push akkadius/eqemu-server:latest
-	docker push akkadius/eqemu-server:v12
+	docker push akkadius/eqemu-server:v13
 
 image-eqemu-server-push-dev: ##@image-build Publishes image
-	docker push akkadius/eqemu-server:v12-dev
+	docker push akkadius/eqemu-server:v13-dev
 
 # peq-editor
 
