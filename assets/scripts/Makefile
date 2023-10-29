@@ -249,11 +249,13 @@ last-crash: ##@mgmt Shows last crash that happened
 
 init-build: ##@build Initialize build
 	@./assets/scripts/banner.pl "Initializing EQEmu Server Build"
-	cd ~/code && git submodule init && git submodule update && rm -rf build && mkdir -p build && cd build && cmake -DEQEMU_BUILD_LOGIN=ON -DEQEMU_BUILD_LUA=ON -DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O1 -g -DNDEBUG" -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -G 'Unix Makefiles' ..
+	cd ~/code && git submodule init && git submodule update && rm -rf build && mkdir -p build && cd build && cmake -DEQEMU_BUILD_LOGIN=ON -DEQEMU_BUILD_LUA=ON -DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O1 -g -DNDEBUG" -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCURL_LIBRARY=./dependencies/curl_x64/lib -DCURL_INCLUDE_DIR=
+./dependencies/curl_x64/include -G 'Unix Makefiles' ..
 
 init-dev-build: ##@build Initialize build for development (faster compiles, uses ninja)
 	@./assets/scripts/banner.pl "Initializing EQEmu Server Build"
-	cd ~/code && git submodule init && git submodule update && rm -rf build && mkdir -p build && cd build && cmake -DEQEMU_BUILD_LOGIN=ON -DEQEMU_BUILD_TESTS=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O0 -g -DNDEBUG -Os" -G "Ninja" ..
+	cd ~/code && git submodule init && git submodule update && rm -rf build && mkdir -p build && cd build && cmake -DEQEMU_BUILD_LOGIN=ON -DEQEMU_BUILD_TESTS=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O0 -g -DNDEBUG -Os" -DCURL_LIBRARY=./dependencies/curl_x64/lib -DCURL_INCLUDE_DIR=
+./dependencies/curl_x64/include -G "Ninja" ..
 
 build: ##@build Build EQEmu server
 	@./assets/scripts/banner.pl "Building EQEmu Server"
