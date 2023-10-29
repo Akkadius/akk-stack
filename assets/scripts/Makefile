@@ -249,11 +249,36 @@ last-crash: ##@mgmt Shows last crash that happened
 
 init-build: ##@build Initialize build
 	@./assets/scripts/banner.pl "Initializing EQEmu Server Build"
-	cd ~/code && git submodule init && git submodule update && rm -rf build && mkdir -p build && cd build && cmake -DEQEMU_BUILD_LOGIN=ON -DEQEMU_BUILD_LUA=ON -DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O1 -g -DNDEBUG" -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -G 'Unix Makefiles' ..
+	cd ~/code && \
+		git submodule init && \
+		git submodule update && \
+		rm -rf build && \
+		mkdir -p build && \
+		cd build && \
+		cmake \
+			-DEQEMU_BUILD_LOGIN=ON \
+			-DEQEMU_BUILD_LUA=ON \
+			-DPERL_LIBRARY=/opt/eqemu-perl/lib/5.32.1/x86_64-linux-thread-multi/CORE/libperl.so \
+			-DPERL_EXECUTABLE=/opt/eqemu-perl/bin/perl \
+			-DPERL_INCLUDE_PATH=/opt/eqemu-perl/lib/5.32.1/x86_64-linux-thread-multi/CORE/ \
+			-DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O1 -g -DNDEBUG" \
+			-DCMAKE_CXX_COMPILER_LAUNCHER=ccache -G 'Unix Makefiles' ..
 
 init-dev-build: ##@build Initialize build for development (faster compiles, uses ninja)
 	@./assets/scripts/banner.pl "Initializing EQEmu Server Build"
-	cd ~/code && git submodule init && git submodule update && rm -rf build && mkdir -p build && cd build && cmake -DEQEMU_BUILD_LOGIN=ON -DEQEMU_BUILD_TESTS=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O0 -g -DNDEBUG -Os" -G "Ninja" ..
+	cd ~/code && \
+		git submodule init && \
+		git submodule update && \
+		rm -rf build && \
+		mkdir -p build && \
+		cd build && \
+		cmake -DEQEMU_BUILD_LOGIN=ON \
+			-DEQEMU_BUILD_TESTS=ON \
+			-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+			-DPERL_LIBRARY=/opt/eqemu-perl/lib/5.32.1/x86_64-linux-thread-multi/CORE/libperl.so \
+			-DPERL_EXECUTABLE=/opt/eqemu-perl/bin/perl \
+			-DPERL_INCLUDE_PATH=/opt/eqemu-perl/lib/5.32.1/x86_64-linux-thread-multi/CORE/ \
+			-DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O0 -g -DNDEBUG -Os" -G "Ninja" ..
 
 build: ##@build Build EQEmu server
 	@./assets/scripts/banner.pl "Building EQEmu Server"
