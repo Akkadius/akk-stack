@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y \
 	cpp \
 	ccache \
 	curl \
+	libcurl4-openssl-dev \
 	cron \
 	debconf-utils \
 	default-libmysqlclient-dev \
