@@ -218,16 +218,16 @@ pull-maps: ##@assets Pulls maps
 		echo "maps is initialized"; \
 	else \
 		echo "maps is not initialized"; \
-		cd server && wget https://github.com/Akkadius/eqemu-maps/releases/latest/download/maps.zip -O /tmp/maps.zip && unzip -o /tmp/maps.zip -d ~/server/maps && rm /tmp/maps.zip; \
+		cd server && wget https://github.com/EQMacEmu/Maps.git -O /tmp/maps.zip && unzip -o /tmp/maps.zip -d ~/server/maps && rm /tmp/maps.zip; \
 	fi
 
 pull-eqemu-code: ##@assets Pulls eqemu code
 	@./assets/scripts/banner.pl "Pulling EQEmu Source Code into [./code]"
-	git -C ./code pull 2> /dev/null || git clone https://github.com/EQEmu/Server.git code
+	git -C ./code pull 2> /dev/null || git clone https://github.com/chazix/EQMacEmu.git code
 
 pull-peq-quests: ##@assets Pulls ProjectEQ quests
 	@./assets/scripts/banner.pl "Pulling Latest ProjectEQ Quests"
-	cd ~/server && git -C ./quests pull 2> /dev/null || git clone https://github.com/ProjectEQ/projecteqquests.git quests
+	cd ~/server && git -C ./quests pull 2> /dev/null || git clone https://github.com/SecretsOTheP/quests.git quests
 
 pull-docker-config: ##@assets Pulls default eqemu_config.json
 	@./assets/scripts/banner.pl "Bootstrapping default [eqemu_config.json]"
