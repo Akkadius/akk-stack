@@ -45,6 +45,7 @@ RUN apt-get update && apt-get install -y \
 	libluabind-dev \
 	libmysql++ \
 	libperl-dev \
+	libdbd-mysql-perl \
 	libsodium-dev \
 	libssl-dev \
 	lua5.1 \
