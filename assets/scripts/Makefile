@@ -103,17 +103,18 @@ init-directories: ##@init Bootstrap directories
 	mkdir -p ~/server/shared
 	mkdir -p ~/server/assets
 
-init-peq-database: ##@init Sources fresh PEQ database (Warning: Will over-write existing)
+init-peq-database: ##@init Sources fresh latest Quarm database (Warning: Will over-write existing)
 	@./assets/scripts/banner.pl "Bootstrapping PEQ Database"
-	curl http://db.projecteq.net/api/v1/dump/latest -o /tmp/db.zip
+	curl https://raw.githubusercontent.com/chazix/EQMacEmu/main/utils/sql/database_full/quarm_latest.zip -o /tmp/db.zip
 	unzip -o /tmp/db.zip -d /tmp/db/
-	cd /tmp/db/peq-dump/ && mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
+	cd /tmp/db/ && mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
 		-p$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password') \
 		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
 		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') \
 		< ./create_all_tables.sql
 	rm -rf /tmp/db/
-	cd ~/server && ./bin/world database:updates
+	# [10302023] quarm doesn't currently support database:updates
+	#cd ~/server && ./bin/world database:updates
 
 init-loginserver: ##@init Initializes Loginserver
 	@./assets/scripts/banner.pl "Initializing Loginserver"
@@ -180,7 +181,7 @@ init-set-perms: ##@init Sets permissions recursively
 	find ~/ -not -user eqemu -execdir sudo chown eqemu:eqemu {} \+
 
 init-server-binaries: ##@init Initializes server binaries
-	cd ~/server && ./bin/spire eqemu-server:update --release-binaries=true --auto=true
+	cd ~/server && ./bin/spire eqemu-server:update --compile-server=true --auto=true
 
 init-perl: ##@init Initializes perl - compiles perl from source to /opt/eqemu-perl
 	@./assets/scripts/banner.pl "Initializing Perl"
