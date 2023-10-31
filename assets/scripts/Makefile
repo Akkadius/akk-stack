@@ -59,6 +59,7 @@ install: ##@init Install full application
 	@make pull-peq-quests
 	@make pull-maps
 	@make init-build
+	@make build
 	@~/assets/scripts/create-symlinks.pl
 	@make init-eqemu-admin
 	@make init-server-binaries
