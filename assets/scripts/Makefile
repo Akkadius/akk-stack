@@ -119,8 +119,8 @@ init-peq-database: ##@init Sources fresh latest Quarm database (Warning: Will ov
 init-loginserver: ##@init Initializes Loginserver
 	@./assets/scripts/banner.pl "Initializing Loginserver"
 	wget --quiet https://raw.githubusercontent.com/chazix/EQMacEmu/main/loginserver/login_util/login.json -O /tmp/login.json
-	wget --quiet https://raw.githubusercontent.com/chazix/EQMacEmu/main/loginserver/loginserver/login_util/login_opcodes.conf -O ~/server/assets/opcodes/login_opcodes.conf
-	wget --quiet https://raw.githubusercontent.com/chazix/EQMacEmu/main/loginserver/loginserver/login_util/login_opcodes_oldver.conf -O ~/server/assets/opcodes/login_opcodes_oldver.conf
+	wget --quiet https://raw.githubusercontent.com/chazix/EQMacEmu/main/loginserver/login_util/login_opcodes.conf -O ~/server/assets/opcodes/login_opcodes.conf
+	wget --quiet https://raw.githubusercontent.com/chazix/EQMacEmu/main/loginserver/login_util/login_opcodes_oldver.conf -O ~/server/assets/opcodes/login_opcodes_oldver.conf
 	cat /tmp/login.json | grep -o '^[^/]*' | jq '' \
 		| jq '.database.host = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host')"' \
 		| jq '.database.db = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db')"' \
