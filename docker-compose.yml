@@ -35,6 +35,7 @@ services:
       - ${IP_ADDRESS}:5998:5998/tcp
       - ${IP_ADDRESS}:5998:5998/udp
       - ${IP_ADDRESS}:6000:6000/tcp
+      - ${IP_ADDRESS}:6000:6000/udp
       - ${IP_ADDRESS}:7778:7778/tcp
       - ${IP_ADDRESS}:7778:7778/udp
       - ${IP_ADDRESS}:7000-${PORT_RANGE_HIGH}:7000-${PORT_RANGE_HIGH}/tcp
