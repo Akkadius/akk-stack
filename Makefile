@@ -77,11 +77,17 @@ ifneq ($(ip-address),)
 	 IN_IP_ADDRESS=$(ip-address)
 endif
 
+IN_REMOTE_IP_ADDRESS=${REMOTE_IP_ADDRESS}
+ifneq ($(remote-ip-address),)
+	 IN_REMOTE_IP_ADDRESS=$(remote-ip-address)
+endif
+
 #----------------------
 # env
 #----------------------
 
-set-vars: ##@env Sets var port-range-high=[] ip-address=[]
+set-vars: ##@env Sets var port-range-high=[] ip-address=[] remote-ip-address=[]
+	@assets/scripts/env-set-var.pl REMOTE_IP_ADDRESS $(IN_REMOTE_IP_ADDRESS)
 	@assets/scripts/env-set-var.pl IP_ADDRESS $(IN_IP_ADDRESS)
 	@assets/scripts/env-set-var.pl PORT_RANGE_HIGH $(IN_PORT_RANGE_HIGH)
 
@@ -89,8 +95,9 @@ set-vars: ##@env Sets var port-range-high=[] ip-address=[]
 # Init / Install
 #----------------------
 
-install: ##@init Install full application port-range-high=[] ip-address=[]
+install: ##@init Install full application port-range-high=[] ip-address=[] remote-ip-address=[]
 	$(DOCKER) pull
+	@assets/scripts/env-set-var.pl REMOTE_IP_ADDRESS $(IN_REMOTE_IP_ADDRESS)
 	@assets/scripts/env-set-var.pl IP_ADDRESS $(IN_IP_ADDRESS)
 	@assets/scripts/env-set-var.pl PORT_RANGE_HIGH $(IN_PORT_RANGE_HIGH)
 	$(DOCKER) build mariadb
