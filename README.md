@@ -665,7 +665,8 @@ ip a | grep "inet "
 I ran command
 
 ```
-# make set-vars port-range-high=7030 ip-address=192.168.50.115
+# make set-vars port-range-high=7030 ip-address=192.168.50.115 remote-ip-address=192.168.50.115
+Wrote [REMOTE_IP_ADDRESS] = [192.168.50.115] to [.env]
 Wrote [IP_ADDRESS] = [192.168.50.115] to [.env]
 Wrote [PORT_RANGE_HIGH] = [7030] to [.env]
 ```
