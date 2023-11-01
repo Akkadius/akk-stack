@@ -242,7 +242,7 @@ pull-peq-quests: ##@assets Pulls ProjectEQ quests
 
 pull-docker-config: ##@assets Pulls default eqemu_config.json
 	@./assets/scripts/banner.pl "Bootstrapping default [eqemu_config.json]"
-	cd ~/server && wget --no-cache --no-check-certificate --no-cookies https://raw.githubusercontent.com/Akkadius/eqemu-install-v2/master/eqemu_config_docker.json -O eqemu_config.json
+	cd ~/server && wget --no-cache --no-check-certificate --no-cookies https://raw.githubusercontent.com/chazix/EQMacEmu/main/utils/defaults/akk-stack/eqemu_config_docker.json -O eqemu_config.json
 
 #----------------------
 # mgmt
