@@ -87,11 +87,18 @@ init-eqemu-config: ##@init Bootstraps eqemu config
 	@./assets/scripts/banner.pl "Initializing EQEmu Config"
 	@make pull-docker-config
 	@cat ~/server/eqemu_config.json \
-    		| jq '.server.database.password = "${EQEMU_DB_PASSWORD}"' \
-    		| jq '.server.world.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
-    		| jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' \
-    		| jq '.server.world.address = "${IP_ADDRESS}"' \
-    		| tee ~/server/eqemu_config.json
+			| jq '.server.database.password = "${EQEMU_DB_PASSWORD}"' \
+			| jq '.server.world.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
+			| jq '.server.world.loginserver1.host = "${IP_ADDRESS}"' \
+			| jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' \
+			| jq '.server.world.address = "${REMOTE_IP_ADDRESS}"' \
+			| jq '.server.world.localaddress = "${IP_ADDRESS}"' \
+			| jq '.server.qsdatabase.host = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host')"' \
+			| jq '.server.qsdatabase.db = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db')"' \
+			| jq '.server.qsdatabase.username = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username')"' \
+			| jq '.server.qsdatabase.password = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password')"' \
+			| jq '.server.chatserver.host = "${IP_ADDRESS}"' \
+			| tee ~/server/eqemu_config.json
 
 init-directories: ##@init Bootstrap directories
 	@./assets/scripts/banner.pl "Bootstrapping directories"
@@ -128,6 +135,8 @@ init-loginserver: ##@init Initializes Loginserver
 		| jq '.database.db = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db')"' \
 		| jq '.database.user = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username')"' \
 		| jq '.database.password = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password')"' \
+		| jq '.client_configuration.local_network = "${IP_ADDRESS}"' \
+		| jq '.client_configuration.network_ip = "${REMOTE_IP_ADDRESS}"' \
 		| jq '.old.opcodes = "assets/opcodes/login_opcodes_oldver.conf"' \
 		> ~/server/login.json
 	wget --quiet https://raw.githubusercontent.com/chazix/EQMacEmu/main/loginserver/login_util/login_schema.sql -O /tmp/login_schema.sql
