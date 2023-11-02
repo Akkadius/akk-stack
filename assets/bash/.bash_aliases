@@ -23,7 +23,7 @@ alias restart='server && ./bin/spire spire:launcher restart && echo Server resta
 alias update='source && git pull && make'
 #alias update-source='source && git pull && make -j4 && ~/assets/scripts/create-symlinks.pl'
 alias update-source='source && git pull && make && ~/assets/scripts/create-symlinks.pl'
-alias update-release='server && ./bin/spire eqemu-server:update --release-binaries=true --auto=true'
+#alias update-release='server && ./bin/spire eqemu-server:update --release-binaries=true --auto=true'
 alias logs='tail -f ~/server/logs/**/*.log'
 #alias m='source && make -j$(expr $(nproc) - 2) && server'
 alias m='source && make && server'
