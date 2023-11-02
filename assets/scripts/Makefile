@@ -271,10 +271,12 @@ init-dev-build: ##@build Initialize build for development (faster compiles, uses
 	cd ~/code && git submodule init && git submodule update && rm -rf build && mkdir -p build && cd build && cmake -DEQEMU_BUILD_LOGIN=ON -DEQEMU_BUILD_TESTS=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O0 -g -DNDEBUG -Os" -G "Ninja" ..
 
 build: ##@build Build EQEmu server
+	@make install-additional-depends
 	@./assets/scripts/banner.pl "Building EQEmu Server"
 	cd ~/code/build && make
 
 build-clean: ##@build Cleans build directory
+	@make install-additional-depends
 	cd ~/code/build && make clean
 
 #----------------------
