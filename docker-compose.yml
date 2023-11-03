@@ -50,6 +50,8 @@ services:
       - REMOTE_IP_ADDRESS=${REMOTE_IP_ADDRESS}
       - PORT_RANGE_HIGH=${PORT_RANGE_HIGH}
       - TZ=${TZ:-US/Central}
+      - ALIAS_UPDATE_RELEASE=${ALIAS_UPDATE_RELEASE:-true}
+      - PLATFORM_TARGET=${PLATFORM_TARGET:-peq}
     tty: true
     networks:
       - backend

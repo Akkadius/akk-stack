@@ -83,22 +83,37 @@ init-spire-dev: ##@init Initialize Spire for development
 init-shared-memory: ##@init Run shared memory once on initial install
 	cd ~/server/ && ./bin/shared_memory
 
+init-eqemu-config-peq: ##@init eqemu config for PEQ
+	@cat ~/server/eqemu_config.json \
+		| jq '.server.database.password = "${EQEMU_DB_PASSWORD}"' \
+		| jq '.server.world.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
+		| jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' \
+		| jq '.server.world.address = "${IP_ADDRESS}"' \
+		| tee ~/server/eqemu_config.json
+
+init-eqemu-config-quarm: ##@init eqemu config for Quarm
+	@cat ~/server/eqemu_config.json \
+		| jq '.server.database.password = "${EQEMU_DB_PASSWORD}"' \
+		| jq '.server.world.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
+		| jq '.server.world.loginserver1.host = "${IP_ADDRESS}"' \
+		| jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' \
+		| jq '.server.world.address = "${REMOTE_IP_ADDRESS}"' \
+		| jq '.server.world.localaddress = "${IP_ADDRESS}"' \
+		| jq '.server.qsdatabase.host = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host')"' \
+		| jq '.server.qsdatabase.db = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db')"' \
+		| jq '.server.qsdatabase.username = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username')"' \
+		| jq '.server.qsdatabase.password = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password')"' \
+		| jq '.server.chatserver.host = "${IP_ADDRESS}"' \
+		| tee ~/server/eqemu_config.json
+
 init-eqemu-config: ##@init Bootstraps eqemu config
 	@./assets/scripts/banner.pl "Initializing EQEmu Config"
 	@make pull-docker-config
-	@cat ~/server/eqemu_config.json \
-			| jq '.server.database.password = "${EQEMU_DB_PASSWORD}"' \
-			| jq '.server.world.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
-			| jq '.server.world.loginserver1.host = "${IP_ADDRESS}"' \
-			| jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' \
-			| jq '.server.world.address = "${REMOTE_IP_ADDRESS}"' \
-			| jq '.server.world.localaddress = "${IP_ADDRESS}"' \
-			| jq '.server.qsdatabase.host = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host')"' \
-			| jq '.server.qsdatabase.db = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db')"' \
-			| jq '.server.qsdatabase.username = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username')"' \
-			| jq '.server.qsdatabase.password = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password')"' \
-			| jq '.server.chatserver.host = "${IP_ADDRESS}"' \
-			| tee ~/server/eqemu_config.json
+ifeq ("$(PLATFORM_TARGET)", "peq")
+	@make init-eqemu-config-peq
+ifeq ("$(PLATFORM_TARGET)", "quarm")
+	@make init-eqemu-config-quarm
+endif
 
 init-directories: ##@init Bootstrap directories
 	@./assets/scripts/banner.pl "Bootstrapping directories"
@@ -112,8 +127,18 @@ init-directories: ##@init Bootstrap directories
 	mkdir -p ~/server/shared
 	mkdir -p ~/server/assets
 
-init-peq-database: ##@init Sources fresh latest Quarm database (Warning: Will over-write existing)
-	@./assets/scripts/banner.pl "Bootstrapping PEQ Database"
+init-peq-database-peq: ##@init Sources fresh PEQ database (Warning: Will over-write existing)
+	curl http://db.projecteq.net/api/v1/dump/latest -o /tmp/db.zip
+	unzip -o /tmp/db.zip -d /tmp/db/
+	cd /tmp/db/peq-dump/ && mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
+		-p$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password') \
+		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
+		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') \
+		< ./create_all_tables.sql
+	rm -rf /tmp/db/
+	cd ~/server && ./bin/world database:updates
+
+init-peq-database-quarm: ##@init Sources fresh Quarm database (Warning: Will over-write existing)
 	curl https://raw.githubusercontent.com/chazix/EQMacEmu/main/utils/sql/database_full/quarm_latest.zip -o /tmp/db.zip
 	unzip -o /tmp/db.zip -d /tmp/db/
 	cd /tmp/db/ && mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
@@ -125,8 +150,33 @@ init-peq-database: ##@init Sources fresh latest Quarm database (Warning: Will ov
 	# [10302023] quarm doesn't currently support database:updates
 	#cd ~/server && ./bin/world database:updates
 
-init-loginserver: ##@init Initializes Loginserver
-	@./assets/scripts/banner.pl "Initializing Loginserver"
+init-peq-database: ##@init Sources fresh latest platform database (Warning: Will over-write existing)
+	@./assets/scripts/banner.pl "Bootstrapping PEQ Database"
+ifeq ("$(PLATFORM_TARGET)", "peq")
+	@make init-peq-database-peq
+ifeq ("$(PLATFORM_TARGET)", "quarm")
+	@make init-peq-database-quarm
+endif
+
+init-loginserver-peq: ##@init Initializes PEQ Loginserver
+	wget --quiet https://raw.githubusercontent.com/EQEmu/Server/master/loginserver/login_util/login.json -O /tmp/login.json
+	wget --quiet https://raw.githubusercontent.com/EQEmu/Server/master/loginserver/login_util/login_opcodes.conf -O ~/server/assets/opcodes/login_opcodes.conf
+	wget --quiet https://raw.githubusercontent.com/EQEmu/Server/master/loginserver/login_util/login_opcodes_sod.conf -O ~/server/assets/opcodes/login_opcodes_sod.conf
+	cat /tmp/login.json | grep -o '^[^/]*' | jq '' \
+		| jq '.database.host = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host')"' \
+		| jq '.database.db = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db')"' \
+		| jq '.database.user = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username')"' \
+		| jq '.database.password = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password')"' \
+		| jq '.client_configuration.titanium_opcodes = "assets/opcodes/login_opcodes.conf"' \
+		| jq '.client_configuration.sod_opcodes = "assets/opcodes/login_opcodes_sod.conf"' \
+		> ~/server/login.json
+	wget --quiet https://raw.githubusercontent.com/EQEmu/Server/master/loginserver/login_util/login_schema.sql -O /tmp/login_schema.sql
+	mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
+		-p$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password') \
+		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
+		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') < /tmp/login_schema.sql
+
+init-loginserver-quarm: ##@init Initializes Quarm Loginserver
 	wget --quiet https://raw.githubusercontent.com/chazix/EQMacEmu/main/loginserver/login_util/login.json -O /tmp/login.json
 	wget --quiet https://raw.githubusercontent.com/chazix/EQMacEmu/main/loginserver/login_util/login_opcodes.conf -O ~/server/assets/opcodes/login_opcodes.conf
 	wget --quiet https://raw.githubusercontent.com/chazix/EQMacEmu/main/loginserver/login_util/login_opcodes_oldver.conf -O ~/server/assets/opcodes/login_opcodes_oldver.conf
@@ -144,6 +194,14 @@ init-loginserver: ##@init Initializes Loginserver
 		-p$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password') \
 		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
 		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') < /tmp/login_schema.sql
+
+init-loginserver: ##@init Initializes Loginserver
+	@./assets/scripts/banner.pl "Initializing Loginserver"
+ifeq ("$(PLATFORM_TARGET)", "peq")
+	@make init-loginserver-peq
+ifeq ("$(PLATFORM_TARGET)", "quarm")
+	@make init-loginserver-quarm
+endif
 	@./assets/scripts/banner.pl "Loginserver initialized!"
 
 BIN_FILE_NAME=spire-admin-bin-$(shell date +"%m-%d-%Y-%H-%M-%S")
@@ -191,8 +249,18 @@ init-peq-editor: ##@init Initializes PEQ Editor DB tables
 init-set-perms: ##@init Sets permissions recursively
 	find ~/ -not -user eqemu -execdir sudo chown eqemu:eqemu {} \+
 
-init-server-binaries: ##@init Initializes server binaries
+init-server-binaries-peq: ##@init Initializes server binaries for PEQ
+	cd ~/server && ./bin/spire eqemu-server:update --release-binaries=true --auto=true
+
+init-server-binaries-quarm: ##@init Initializes server binaries for Quarm
 	cd ~/server && ./bin/spire eqemu-server:update --compile-server=true --auto=true
+
+init-server-binaries: ##@init Initializes server binaries
+ifeq ("$(PLATFORM_TARGET)", "peq")
+	@make init-server-binaries-peq
+ifeq ("$(PLATFORM_TARGET)", "quarm")
+	@make init-server-binaries-quarm
+endif
 
 init-perl: ##@init Initializes perl - compiles perl from source to /opt/eqemu-perl
 	@./assets/scripts/banner.pl "Initializing Perl"
@@ -223,8 +291,15 @@ init-perl: ##@init Initializes perl - compiles perl from source to /opt/eqemu-pe
 # Assets
 #----------------------
 
-pull-maps: ##@assets Pulls maps
-	@./assets/scripts/banner.pl "Pulling latest EQEmu Maps"
+pull-maps-peq: ##@assets Pulls PEQ maps
+	@if [ $(shell find ~/server/maps | wc -l) -gt 10 ] ; then \
+		echo "maps is initialized"; \
+	else \
+		echo "maps is not initialized"; \
+		cd server && wget https://github.com/Akkadius/eqemu-maps/releases/latest/download/maps.zip -O /tmp/maps.zip && unzip -o /tmp/maps.zip -d ~/server/maps && rm /tmp/maps.zip; \
+	fi
+
+pull-maps-quarm: ##@assets Pulls Quarm maps
 	@if [ $(shell find ~/server/maps | wc -l) -gt 10 ] ; then \
 		echo "maps is initialized"; \
 	else \
@@ -232,17 +307,55 @@ pull-maps: ##@assets Pulls maps
 		(cd ~/server && git -C ./maps pull 2> /dev/null || git clone https://github.com/EQMacEmu/Maps.git Maps) \
 	fi
 
+pull-maps: ##@assets Pulls maps
+	@./assets/scripts/banner.pl "Pulling latest EQEmu Maps"
+ifeq ("$(PLATFORM_TARGET)", "peq")
+	@make pull-maps-peq
+ifeq ("$(PLATFORM_TARGET)", "quarm")
+	@make pull-maps-quarm
+endif
+
+pull-eqemu-code-peq: ##@assets Pulls PEQ eqemu code
+	git -C ./code pull 2> /dev/null || git clone https://github.com/EQEmu/Server.git code
+
+pull-eqemu-code-quarm: ##@assets Pulls Quarm eqemu code
+	git -C ./code pull 2> /dev/null || git clone https://github.com/chazix/EQMacEmu.git code
+
 pull-eqemu-code: ##@assets Pulls eqemu code
 	@./assets/scripts/banner.pl "Pulling EQEmu Source Code into [./code]"
-	git -C ./code pull 2> /dev/null || git clone https://github.com/chazix/EQMacEmu.git code
+ifeq ("$(PLATFORM_TARGET)", "peq")
+	@make pull-eqemu-code-peq
+ifeq ("$(PLATFORM_TARGET)", "quarm")
+	@make pull-eqemu-code-quarm
+endif
+
+pull-peq-quests-peq: ##@assets Pulls PEQ quests
+	cd ~/server && git -C ./quests pull 2> /dev/null || git clone https://github.com/ProjectEQ/projecteqquests.git quests
+
+pull-peq-quests-quarm: ##@assets Pulls Quarm quests
+	cd ~/server && git -C ./quests pull 2> /dev/null || git clone https://github.com/SecretsOTheP/quests.git quests
 
 pull-peq-quests: ##@assets Pulls ProjectEQ quests
 	@./assets/scripts/banner.pl "Pulling Latest ProjectEQ Quests"
-	cd ~/server && git -C ./quests pull 2> /dev/null || git clone https://github.com/SecretsOTheP/quests.git quests
+ifeq ("$(PLATFORM_TARGET)", "peq")
+	@make pull-peq-quests-peq
+ifeq ("$(PLATFORM_TARGET)", "quarm")
+	@make pull-peq-quests-quarm
+endif
+
+pull-docker-config-peq: ##@assets Pulls default eqemu_config.json
+	cd ~/server && wget --no-cache --no-check-certificate --no-cookies https://raw.githubusercontent.com/Akkadius/eqemu-install-v2/master/eqemu_config_docker.json -O eqemu_config.json
+
+pull-docker-config-quarm: ##@assets Pulls default eqemu_config.json
+	cd ~/server && wget --no-cache --no-check-certificate --no-cookies https://raw.githubusercontent.com/chazix/EQMacEmu/main/utils/defaults/akk-stack/eqemu_config_docker.json -O eqemu_config.json
 
 pull-docker-config: ##@assets Pulls default eqemu_config.json
 	@./assets/scripts/banner.pl "Bootstrapping default [eqemu_config.json]"
-	cd ~/server && wget --no-cache --no-check-certificate --no-cookies https://raw.githubusercontent.com/chazix/EQMacEmu/main/utils/defaults/akk-stack/eqemu_config_docker.json -O eqemu_config.json
+ifeq ("$(PLATFORM_TARGET)", "peq")
+	@make pull-docker-config-peq
+ifeq ("$(PLATFORM_TARGET)", "quarm")
+	@make pull-docker-config-quarm
+endif
 
 #----------------------
 # mgmt
