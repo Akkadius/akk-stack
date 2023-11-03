@@ -195,7 +195,7 @@ init-loginserver-quarm: ##@init Initializes Quarm Loginserver
 		| jq '.database.password = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password')"' \
 		| jq '.client_configuration.local_network = "${IP_ADDRESS}"' \
 		| jq '.client_configuration.network_ip = "${REMOTE_IP_ADDRESS}"' \
-		| jq '.old.opcodes = "assets/opcodes/login_opcodes_oldver.conf"' \
+		| jq '.Old.opcodes = "assets/opcodes/login_opcodes_oldver.conf"' \
 		> ~/server/login.json
 	wget --quiet https://raw.githubusercontent.com/chazix/EQMacEmu/main/loginserver/login_util/login_schema.sql -O /tmp/login_schema.sql
 	mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
