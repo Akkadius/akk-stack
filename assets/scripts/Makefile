@@ -119,7 +119,7 @@ init-eqemu-config: ##@init Bootstraps eqemu config
 	@make pull-docker-config
 ifeq ("$(PLATFORM_TARGET)", "peq")
 	@make init-eqemu-config-peq
-ifeq ("$(PLATFORM_TARGET)", "quarm")
+else ifeq ("$(PLATFORM_TARGET)", "quarm")
 	@make init-eqemu-config-quarm
 endif
 
@@ -162,7 +162,7 @@ init-peq-database: ##@init Sources fresh latest platform database (Warning: Will
 	@./assets/scripts/banner.pl "Bootstrapping PEQ Database"
 ifeq ("$(PLATFORM_TARGET)", "peq")
 	@make init-peq-database-peq
-ifeq ("$(PLATFORM_TARGET)", "quarm")
+else ifeq ("$(PLATFORM_TARGET)", "quarm")
 	@make init-peq-database-quarm
 endif
 
@@ -207,7 +207,7 @@ init-loginserver: ##@init Initializes Loginserver
 	@./assets/scripts/banner.pl "Initializing Loginserver"
 ifeq ("$(PLATFORM_TARGET)", "peq")
 	@make init-loginserver-peq
-ifeq ("$(PLATFORM_TARGET)", "quarm")
+else ifeq ("$(PLATFORM_TARGET)", "quarm")
 	@make init-loginserver-quarm
 endif
 	@./assets/scripts/banner.pl "Loginserver initialized!"
@@ -266,7 +266,7 @@ init-server-binaries-quarm: ##@init Initializes server binaries for Quarm
 init-server-binaries: ##@init Initializes server binaries
 ifeq ("$(PLATFORM_TARGET)", "peq")
 	@make init-server-binaries-peq
-ifeq ("$(PLATFORM_TARGET)", "quarm")
+else ifeq ("$(PLATFORM_TARGET)", "quarm")
 	@make init-server-binaries-quarm
 endif
 
@@ -319,7 +319,7 @@ pull-maps: ##@assets Pulls maps
 	@./assets/scripts/banner.pl "Pulling latest EQEmu Maps"
 ifeq ("$(PLATFORM_TARGET)", "peq")
 	@make pull-maps-peq
-ifeq ("$(PLATFORM_TARGET)", "quarm")
+else ifeq ("$(PLATFORM_TARGET)", "quarm")
 	@make pull-maps-quarm
 endif
 
@@ -333,7 +333,7 @@ pull-eqemu-code: ##@assets Pulls eqemu code
 	@./assets/scripts/banner.pl "Pulling EQEmu Source Code into [./code]"
 ifeq ("$(PLATFORM_TARGET)", "peq")
 	@make pull-eqemu-code-peq
-ifeq ("$(PLATFORM_TARGET)", "quarm")
+else ifeq ("$(PLATFORM_TARGET)", "quarm")
 	@make pull-eqemu-code-quarm
 endif
 
@@ -347,7 +347,7 @@ pull-peq-quests: ##@assets Pulls ProjectEQ quests
 	@./assets/scripts/banner.pl "Pulling Latest ProjectEQ Quests"
 ifeq ("$(PLATFORM_TARGET)", "peq")
 	@make pull-peq-quests-peq
-ifeq ("$(PLATFORM_TARGET)", "quarm")
+else ifeq ("$(PLATFORM_TARGET)", "quarm")
 	@make pull-peq-quests-quarm
 endif
 
@@ -361,7 +361,7 @@ pull-docker-config: ##@assets Pulls default eqemu_config.json
 	@./assets/scripts/banner.pl "Bootstrapping default [eqemu_config.json]"
 ifeq ("$(PLATFORM_TARGET)", "peq")
 	@make pull-docker-config-peq
-ifeq ("$(PLATFORM_TARGET)", "quarm")
+else ifeq ("$(PLATFORM_TARGET)", "quarm")
 	@make pull-docker-config-quarm
 endif
 
