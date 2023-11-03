@@ -312,7 +312,7 @@ pull-maps-quarm: ##@assets Pulls Quarm maps
 		echo "maps is initialized"; \
 	else \
 		echo "maps is not initialized"; \
-		(cd ~/server && git -C ./maps pull 2> /dev/null || git clone https://github.com/EQMacEmu/Maps.git Maps) \
+		(cd ~/server && git -C ./maps pull 2> /dev/null || git clone https://github.com/EQMacEmu/Maps.git maps) \
 	fi
 
 pull-maps: ##@assets Pulls maps
