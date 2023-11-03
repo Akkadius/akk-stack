@@ -58,9 +58,17 @@ install: ##@init Install full application
 	@make pull-eqemu-code
 	@make pull-peq-quests
 	@make pull-maps
+
+ifeq ("$(PLATFORM_TARGET)", "quarm")
 	@make install-additional-depends
+endif
+
 	@make init-build
+
+ifeq ("$(PLATFORM_TARGET)", "quarm")
 	@make build
+endif
+
 	@~/assets/scripts/create-symlinks.pl
 	@make init-eqemu-admin
 	@make init-server-binaries
@@ -384,12 +392,16 @@ init-dev-build: ##@build Initialize build for development (faster compiles, uses
 	cd ~/code && git submodule init && git submodule update && rm -rf build && mkdir -p build && cd build && cmake -DEQEMU_BUILD_LOGIN=ON -DEQEMU_BUILD_TESTS=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O0 -g -DNDEBUG -Os" -G "Ninja" ..
 
 build: ##@build Build EQEmu server
+ifeq ("$(PLATFORM_TARGET)", "quarm")
 	@make install-additional-depends
+endif
 	@./assets/scripts/banner.pl "Building EQEmu Server"
 	cd ~/code/build && make
 
 build-clean: ##@build Cleans build directory
+ifeq ("$(PLATFORM_TARGET)", "quarm")
 	@make install-additional-depends
+endif
 	cd ~/code/build && make clean
 
 #----------------------
