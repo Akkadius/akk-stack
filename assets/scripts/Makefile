@@ -102,35 +102,15 @@ init-eqemu-config-peq: ##@init eqemu config for PEQ
 init-eqemu-config-quarm: ##@init eqemu config for Quarm
 	@cat ~/server/eqemu_config.json \
 		| jq '.server.qsdatabase.host = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host')"' \
-		| tee ~/server/eqemu_config.json
-	@cat ~/server/eqemu_config.json \
 		| jq '.server.qsdatabase.db = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db')"' \
-		| tee ~/server/eqemu_config.json
-	@cat ~/server/eqemu_config.json \
 		| jq '.server.qsdatabase.username = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username')"' \
-		| tee ~/server/eqemu_config.json
-	@cat ~/server/eqemu_config.json \
 		| jq '.server.qsdatabase.password = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password')"' \
-		| tee ~/server/eqemu_config.json
-	@cat ~/server/eqemu_config.json \
 		| jq '.server.database.password = "${EQEMU_DB_PASSWORD}"' \
-		| tee ~/server/eqemu_config.json
-	@cat ~/server/eqemu_config.json \
 		| jq '.server.world.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
-		| tee ~/server/eqemu_config.json
-	@cat ~/server/eqemu_config.json \
 		| jq '.server.world.loginserver1.host = "${IP_ADDRESS}"' \
-		| tee ~/server/eqemu_config.json
-	@cat ~/server/eqemu_config.json \
 		| jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' \
-		| tee ~/server/eqemu_config.json
-	@cat ~/server/eqemu_config.json \
 		| jq '.server.world.address = "${REMOTE_IP_ADDRESS}"' \
-		| tee ~/server/eqemu_config.json
-	@cat ~/server/eqemu_config.json \
 		| jq '.server.world.localaddress = "${IP_ADDRESS}"' \
-		| tee ~/server/eqemu_config.json
-	@cat ~/server/eqemu_config.json \
 		| jq '.server.chatserver.host = "${IP_ADDRESS}"' \
 		| tee ~/server/eqemu_config.json
 
