@@ -1,6 +1,4 @@
 # * * * * *  echo "example" >> /home/eqemu/server/example.txt
 
-@reboot sudo apt-get install -y libcurl4-openssl-dev
-
 # This extra line makes it a valid cron - Don't remove
 
