@@ -30,7 +30,9 @@ printf "${quick_command_spacing} | %-10s\n" "[${grn}m${end}]" "Runs [make] and c
 #printf "${quick_command_spacing} | %-10s\n" "[${grn}core${end}]" "Analyzes last core dump created in server directory at ./core"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}update${end}]" "Runs [git pull] against source directory and immediately compiles"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}update-source${end}]" "Runs [git pull] against source directory and immediately compiles"
-printf "${quick_command_spacing} | %-10s\n" "[${grn}update-release${end}]" "Updates server with latest release binaries"
+if [[ "${ALIAS_UPDATE_RELEASE}" == *"true"* ]]; then
+  printf "${quick_command_spacing} | %-10s\n" "[${grn}update-release${end}]" "Updates server with latest release binaries"
+fi
 printf "${quick_command_spacing} | %-10s\n" "[${grn}start${end}]" "Starts server"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}stop${end}]" "Stops server"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}restart${end}]" "Restarts server"
