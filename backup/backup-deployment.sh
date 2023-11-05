@@ -4,7 +4,9 @@
 # DEPLOYMENT_NAME=$HOST_NAME/$(basename $HOST_DIR)
 
 CWD=$(pwd)
+set -o allexport
 source $CWD/.env
+set +o allexport
 
 cd /tmp/
 
