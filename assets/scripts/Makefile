@@ -383,10 +383,21 @@ pull-docker-config-quarm: ##@assets Pulls default eqemu_config.json
 
 pull-docker-config: ##@assets Pulls default eqemu_config.json
 	@./assets/scripts/banner.pl "Bootstrapping default [eqemu_config.json]"
+# keep attempting to pull until eqemu_config size is > 0
 ifeq ("$(PLATFORM_TARGET)", "peq")
-	@make pull-docker-config-peq
+	config_size=0; \
+	while [ $$config_size -lt 1 ]; do \
+		make pull-docker-config-peq; \
+		sleep 1; \
+		config_size=$$(du -s ~/server/eqemu_config.json | awk '{print $$1}'); \
+	done
 else ifeq ("$(PLATFORM_TARGET)", "quarm")
-	@make pull-docker-config-quarm
+	config_size=0; \
+	while [ $$config_size -lt 1 ]; do \
+		make pull-docker-config-quarm; \
+		sleep 1; \
+		config_size=$$(du -s ~/server/eqemu_config.json | awk '{print $$1}'); \
+	done
 endif
 
 #----------------------
