@@ -77,7 +77,7 @@ ifneq ($(ip-address),)
 	IN_IP_ADDRESS=$(ip-address)
 endif
 
-IN_REMOTE_IP_ADDRESS=${IN_IP_ADDRESS} # default to local IP
+IN_REMOTE_IP_ADDRESS=${REMOTE_IP_ADDRESS}
 ifneq ($(remote-ip-address),)
 	IN_REMOTE_IP_ADDRESS=$(remote-ip-address)
 endif
