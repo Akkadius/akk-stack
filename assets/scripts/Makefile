@@ -219,6 +219,24 @@ ifeq ("${ADMIN_PASSWORD}", "")
 	ADMIN_PASSWORD=$(shell cat ~/server/eqemu_config.json 2>/dev/null | jq '.["web-admin"].application.admin.password' | tr -d '"' || echo "")
 endif
 
+init-eqemu-config-admin-peq: ##@init Initializes PEQ EQEmu Admin
+	cat ~/server/eqemu_config.json | jq '' \
+		| jq '.["web-admin"].application.admin.password = "${ADMIN_PASSWORD}"' \
+		| jq '.["web-admin"].application.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
+		| jq '.["web-admin"].launcher.runSharedMemory = true' \
+		| jq '.["web-admin"].launcher.minZoneProcesses = 10' \
+		| jq '.["web-admin"].launcher.staticZones = "butcher,erudnext,freporte,qeynos,freeporte,oot,iceclad,nro,oasis,nedaria,abysmal,natimbi,timorous,abysmal,firiona,overthere"' \
+		| tee ~/server/eqemu_config.json
+
+init-eqemu-config-admin-quarm: ##@init Initializes Quarm EQEmu Admin
+	cat ~/server/eqemu_config.json | jq '' \
+		| jq '.["web-admin"].application.admin.password = "${ADMIN_PASSWORD}"' \
+		| jq '.["web-admin"].application.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
+		| jq '.["web-admin"].launcher.runSharedMemory = true' \
+		| jq '.["web-admin"].launcher.minZoneProcesses = 10' \
+		| jq '.["web-admin"].launcher.staticZones = ""' \
+		| tee ~/server/eqemu_config.json
+
 init-eqemu-admin: ##@init Initializes EQEmu Admin
 	rm -f ~/server/bin/eqemu-admin-*
 	rm -f ~/server/bin/spire-*
@@ -227,13 +245,11 @@ init-eqemu-admin: ##@init Initializes EQEmu Admin
 	mv ~/server/bin/spire-linux-amd64 ~/server/bin/spire
 	chmod +x ~/server/bin/spire
 	cd ~/server && SKIP_ASSET_CHECK=1 ./bin/spire spire:init admin ${ADMIN_PASSWORD} || echo "Already initialized"
-	cat ~/server/eqemu_config.json | jq '' \
-		| jq '.["web-admin"].application.admin.password = "${ADMIN_PASSWORD}"' \
-		| jq '.["web-admin"].application.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
-		| jq '.["web-admin"].launcher.runSharedMemory = true' \
-		| jq '.["web-admin"].launcher.minZoneProcesses = 10' \
-		| jq '.["web-admin"].launcher.staticZones = "butcher,erudnext,freporte,qeynos,freeporte,oot,iceclad,nro,oasis,nedaria,abysmal,natimbi,timorous,abysmal,firiona,overthere"' \
-		| tee ~/server/eqemu_config.json
+ifeq ("$(PLATFORM_TARGET)", "peq")
+	@make init-eqemu-config-admin-peq
+else ifeq ("$(PLATFORM_TARGET)", "quarm")
+	@make init-eqemu-config-admin-quarm
+endif
 	cd ~/server && ./bin/spire spire:init admin ${ADMIN_PASSWORD} || echo "Already initialized"
 	cd ~/server && ./bin/spire spire:occulus-update
 
