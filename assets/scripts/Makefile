@@ -96,15 +96,15 @@ init-eqemu-config-peq: ##@init eqemu config for PEQ
 		| jq '.server.database.password = "${EQEMU_DB_PASSWORD}"' \
 		| jq '.server.world.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
 		| jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' \
-		| jq '.server.world.address = "${IP_ADDRESS}"' \
+		| jq '.server.world.address = "${REMOTE_IP_ADDRESS}"' \
 		| tee ~/server/eqemu_config.json
 
 init-eqemu-config-quarm: ##@init eqemu config for Quarm
 	@cat ~/server/eqemu_config.json \
-		| jq '.server.qsdatabase.host = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host')"' \
-		| jq '.server.qsdatabase.db = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db')"' \
-		| jq '.server.qsdatabase.username = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username')"' \
-		| jq '.server.qsdatabase.password = "$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password')"' \
+		| jq '.server.qsdatabase.host = "${EQEMU_DB_HOST}"' \
+		| jq '.server.qsdatabase.db = "${EQEMU_DB_DATABASE}"' \
+		| jq '.server.qsdatabase.username = "${EQEMU_DB_USER}"' \
+		| jq '.server.qsdatabase.password = "${EQEMU_DB_PASSWORD}"' \
 		| jq '.server.database.password = "${EQEMU_DB_PASSWORD}"' \
 		| jq '.server.world.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
 		| jq '.server.world.loginserver1.host = "${IP_ADDRESS}"' \
