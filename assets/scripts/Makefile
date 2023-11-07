@@ -1,3 +1,5 @@
+.NOTPARALLEL:
+
 #----------------------
 # Parse makefile arguments
 #----------------------
@@ -227,6 +229,8 @@ init-eqemu-config-admin-peq: ##@init Initializes PEQ EQEmu Admin
 		| jq '.["web-admin"].launcher.minZoneProcesses = 10' \
 		| jq '.["web-admin"].launcher.staticZones = "butcher,erudnext,freporte,qeynos,freeporte,oot,iceclad,nro,oasis,nedaria,abysmal,natimbi,timorous,abysmal,firiona,overthere"' \
 		| tee ~/server/eqemu_config.json
+	cd ~/server && ./bin/spire spire:init admin ${ADMIN_PASSWORD} || echo "Already initialized"
+	cd ~/server && ./bin/spire spire:occulus-update
 
 init-eqemu-config-admin-quarm: ##@init Initializes Quarm EQEmu Admin
 	cat ~/server/eqemu_config.json | jq '' \
@@ -235,6 +239,12 @@ init-eqemu-config-admin-quarm: ##@init Initializes Quarm EQEmu Admin
 		| jq '.["web-admin"].launcher.runSharedMemory = true' \
 		| jq '.["web-admin"].launcher.minZoneProcesses = 10' \
 		| jq '.["web-admin"].launcher.staticZones = ""' \
+		| tee ~/server/eqemu_config.json
+	cd ~/server && ./bin/spire spire:init admin ${ADMIN_PASSWORD} || echo "Already initialized"
+	cd ~/server && ./bin/spire spire:occulus-update
+# this disappears after spire:occulus-update, and needs to be restored
+	cat ~/server/eqemu_config.json \
+		| jq '.server.directories.maps = "maps/"' \
 		| tee ~/server/eqemu_config.json
 
 init-eqemu-admin: ##@init Initializes EQEmu Admin
@@ -250,8 +260,6 @@ ifeq ("$(PLATFORM_TARGET)", "peq")
 else ifeq ("$(PLATFORM_TARGET)", "quarm")
 	@make init-eqemu-config-admin-quarm
 endif
-	cd ~/server && ./bin/spire spire:init admin ${ADMIN_PASSWORD} || echo "Already initialized"
-	cd ~/server && ./bin/spire spire:occulus-update
 
 init-eqemu-admin-dev: ##@init Initializes EQEmu Admin (Development)
 	cd ~/server && if cd eqemu-web-admin 2> /dev/null; then git pull; else git clone https://github.com/Akkadius/eqemu-web-admin; fi
