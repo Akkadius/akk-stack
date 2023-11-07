@@ -81,6 +81,10 @@ IN_REMOTE_IP_ADDRESS=${REMOTE_IP_ADDRESS}
 ifneq ($(remote-ip-address),)
 	IN_REMOTE_IP_ADDRESS=$(remote-ip-address)
 endif
+# if remote-ip-address is not set, use ip-address
+ifeq ($(IN_REMOTE_IP_ADDRESS), "0.0.0.0")
+	IN_REMOTE_IP_ADDRESS=${IN_IP_ADDRESS}
+endif
 
 #----------------------
 # env
