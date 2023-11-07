@@ -69,17 +69,19 @@ help: ##@other Show this help.
 
 IN_PORT_RANGE_HIGH=${PORT_RANGE_HIGH}
 ifneq ($(port-range-high),)
-	 IN_PORT_RANGE_HIGH=$(port-range-high)
+	IN_PORT_RANGE_HIGH=$(port-range-high)
 endif
 
 IN_IP_ADDRESS=${IP_ADDRESS}
 ifneq ($(ip-address),)
-	 IN_IP_ADDRESS=$(ip-address)
+	IN_IP_ADDRESS=$(ip-address)
 endif
 
 IN_REMOTE_IP_ADDRESS=${REMOTE_IP_ADDRESS}
 ifneq ($(remote-ip-address),)
-	 IN_REMOTE_IP_ADDRESS=$(remote-ip-address)
+	IN_REMOTE_IP_ADDRESS=$(remote-ip-address)
+else # default to local IP
+	IN_REMOTE_IP_ADDRESS=IN_IP_ADDRESS
 endif
 
 #----------------------
