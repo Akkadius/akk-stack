@@ -1,3 +1,5 @@
+.NOTPARALLEL:
+
 #----------------------
 # Parse makefile arguments
 #----------------------
