@@ -28,9 +28,6 @@ my $opcodes_server_directory = $server_path . "/" . $config->{"server"}{"directo
 #########################################
 # server binaries
 #########################################
-opendir(DH, $binary_path);
-my @files = readdir(DH);
-
 my @binaries = (
     "export_client_files",
     "import_client_files",
@@ -55,7 +52,7 @@ foreach my $bin (@binaries) {
 print "# Symlinking patches\n";
 
 opendir(DH, $patches_source_path);
-@files = readdir(DH);
+my @files = readdir(DH);
 
 foreach my $file (@files) {
     my $source = $patches_source_path . "/" . $file;
