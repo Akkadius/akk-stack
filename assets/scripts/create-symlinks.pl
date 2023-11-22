@@ -31,12 +31,20 @@ my $opcodes_server_directory = $server_path . "/" . $config->{"server"}{"directo
 opendir(DH, $binary_path);
 my @files = readdir(DH);
 
-foreach my $file (@files) {
-    my $source = $binary_path . "/" . $file;
-    my $target = $server_path . "/bin/" . $file;
-    next if (substr($file, 0, 1) eq ".");
-    next if (substr($file, 0, 2) eq "..");
-    next if $file =~ / /i;
+my @binaries = (
+    "export_client_files",
+    "import_client_files",
+    "loginserver",
+    "queryserv",
+    "shared_memory",
+    "ucs",
+    "world",
+    "zone",
+);
+
+foreach my $bin (@binaries) {
+    my $source = $binary_path . "/" . $bin;
+    my $target = $server_path . "/bin/" . $bin;
     print "\tSymlinking Source: " . $source . " Target: " . $target . "\n";
     print `ln -s -f $source $target`
 }
