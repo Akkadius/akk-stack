@@ -12,6 +12,9 @@ ENV PGID ${PGID}
 
 ENV TZ=US/Central
 
+ENV CC=/usr/bin/clang
+ENV CXX=/usr/bin/clang++
+
 RUN apt-get update -yqq && \
     groupadd -g ${PGID} eqemu && \
     useradd -u ${PUID} -g eqemu -m eqemu -G eqemu && \
@@ -23,6 +26,7 @@ RUN apt-get update && apt-get install -y \
 	cmake \
 	cpp \
 	ccache \
+	clang \
 	curl \
 	cron \
 	debconf-utils \

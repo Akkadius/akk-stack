@@ -142,18 +142,18 @@ image-build-push-all: ##@image-build Build and push all images
 
 image-eqemu-server-build: ##@image-build Builds image
 	docker build containers/eqemu-server -t akkadius/eqemu-server:latest
-	docker build containers/eqemu-server -t akkadius/eqemu-server:v13
+	docker build containers/eqemu-server -t akkadius/eqemu-server:v14
 
 image-eqemu-server-build-dev: ##@image-build Builds image (development)
 	make image-eqemu-server-build
-	docker build -f ./containers/eqemu-server/dev.dockerfile ./containers/eqemu-server -t akkadius/eqemu-server:v13-dev
+	docker build -f ./containers/eqemu-server/dev.dockerfile ./containers/eqemu-server -t akkadius/eqemu-server:v14-dev
 
 image-eqemu-server-push: ##@image-build Publishes image
 	docker push akkadius/eqemu-server:latest
-	docker push akkadius/eqemu-server:v13
+	docker push akkadius/eqemu-server:v14
 
 image-eqemu-server-push-dev: ##@image-build Publishes image
-	docker push akkadius/eqemu-server:v13-dev
+	docker push akkadius/eqemu-server:v14-dev
 
 # peq-editor
 
