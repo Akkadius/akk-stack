@@ -1,3 +1,5 @@
+.NOTPARALLEL:
+
 #----------------------
 # Parse makefile arguments
 #----------------------
@@ -69,19 +71,29 @@ help: ##@other Show this help.
 
 IN_PORT_RANGE_HIGH=${PORT_RANGE_HIGH}
 ifneq ($(port-range-high),)
-	 IN_PORT_RANGE_HIGH=$(port-range-high)
+	IN_PORT_RANGE_HIGH=$(port-range-high)
 endif
 
 IN_IP_ADDRESS=${IP_ADDRESS}
 ifneq ($(ip-address),)
-	 IN_IP_ADDRESS=$(ip-address)
+	IN_IP_ADDRESS=$(ip-address)
+endif
+
+IN_REMOTE_IP_ADDRESS=${REMOTE_IP_ADDRESS}
+ifneq ($(remote-ip-address),)
+	IN_REMOTE_IP_ADDRESS=$(remote-ip-address)
+endif
+# if remote-ip-address is not set, use ip-address
+ifeq ($(IN_REMOTE_IP_ADDRESS), 0.0.0.0)
+	IN_REMOTE_IP_ADDRESS=${IN_IP_ADDRESS}
 endif
 
 #----------------------
 # env
 #----------------------
 
-set-vars: ##@env Sets var port-range-high=[] ip-address=[]
+set-vars: ##@env Sets var port-range-high=[] ip-address=[] remote-ip-address=[]
+	@assets/scripts/env-set-var.pl REMOTE_IP_ADDRESS $(IN_REMOTE_IP_ADDRESS)
 	@assets/scripts/env-set-var.pl IP_ADDRESS $(IN_IP_ADDRESS)
 	@assets/scripts/env-set-var.pl PORT_RANGE_HIGH $(IN_PORT_RANGE_HIGH)
 
@@ -89,8 +101,9 @@ set-vars: ##@env Sets var port-range-high=[] ip-address=[]
 # Init / Install
 #----------------------
 
-install: ##@init Install full application port-range-high=[] ip-address=[]
+install: ##@init Install full application port-range-high=[] ip-address=[] remote-ip-address=[]
 	$(DOCKER) pull
+	@assets/scripts/env-set-var.pl REMOTE_IP_ADDRESS $(IN_REMOTE_IP_ADDRESS)
 	@assets/scripts/env-set-var.pl IP_ADDRESS $(IN_IP_ADDRESS)
 	@assets/scripts/env-set-var.pl PORT_RANGE_HIGH $(IN_PORT_RANGE_HIGH)
 	$(DOCKER) build mariadb

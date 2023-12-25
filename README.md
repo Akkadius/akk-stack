@@ -440,7 +440,8 @@ The next command is going to initialize two large key things in our setup
 Make sure that you only open as many ports as you need on the zone end, because `docker-proxy` will NAT all ports individually in its own docker userland which does take some time when starting and shutting off containers. The more ports you nail up, the longer it takes to start / stop. Since this is a test server, I'm only going to use 30 ports. This `make` command also drives the `eqemu_config.json` port and address parameters as well automatically for you
 
 ```
-root@host:/opt/eqemu-servers# make set-vars port-range-high=7030 ip-address=66.70.153.122
+root@host:/opt/eqemu-servers# make set-vars port-range-high=7030 ip-address=66.70.153.122 remote-ip-address=66.70.153.122
+Wrote [REMOTE_IP_ADDRESS] = [66.70.153.122] to [.env]
 Wrote [IP_ADDRESS] = [66.70.153.122] to [.env]
 Wrote [PORT_RANGE_HIGH] = [7030] to [.env]
 ```
@@ -665,7 +666,8 @@ ip a | grep "inet "
 I ran command
 
 ```
-# make set-vars port-range-high=7030 ip-address=192.168.50.115
+# make set-vars port-range-high=7030 ip-address=192.168.50.115 remote-ip-address=192.168.50.115
+Wrote [REMOTE_IP_ADDRESS] = [192.168.50.115] to [.env]
 Wrote [IP_ADDRESS] = [192.168.50.115] to [.env]
 Wrote [PORT_RANGE_HIGH] = [7030] to [.env]
 ```
