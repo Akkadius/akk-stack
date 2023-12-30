@@ -72,7 +72,7 @@ ifeq ("$(SPIRE_DEV)", "true")
 endif
 
 init-spire-dev: ##@init Initialize Spire for development
-	cd ~/server && git clone https://github.com/akkadius/spire || cd ~/server/spire && git pull
+	git -C ~/server/spire pull 2> /dev/null || git clone https://github.com/akkadius/spire ~/server/spire
 	cd ~/server/spire && cp .env.dev .env
 	cd ~/server/spire && go get
 	cd ~/server/spire/frontend && npm install
