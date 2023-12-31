@@ -147,8 +147,8 @@ init-eqemu-admin-assets: ##@init Initializes EQEmu Admin Assets
 	@./assets/scripts/banner.pl "Initializing EQEmu Admin Assets"
 	curl -L https://github.com/Akkadius/eq-asset-preview/releases/latest/download/build.zip -o /tmp/build.zip
 	mkdir -p ~/.cache/spire
-	mkdir -p ~/.cache/spire/assets
-	unzip -o /tmp/build.zip -d ~/.cache/spire/assets
+	mkdir -p ~/.cache/spire
+	unzip -o /tmp/build.zip -d ~/.cache/spire
 
 init-eqemu-admin: ##@init Initializes EQEmu Admin
 	rm -f ~/server/bin/eqemu-admin-*
