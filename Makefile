@@ -113,9 +113,7 @@ init-reset-env: ##@init Resets .env
 
 init-peq-editor: ##@init Initializes PEQ editor
 	$(DOCKER) build peq-editor && $(DOCKER) up -d peq-editor
-	$(DOCKER) exec peq-editor bash -c "git clone https://github.com/ProjectEQ/peqphpeditor.git /var/www/html || cd /var/www/html; git pull && \
-    	cd /var/www/html/ && cp config.php.dist config.php && \
-    	chown www-data:www-data /var/www/html -R"
+	$(DOCKER) exec peq-editor bash -c "chown www-data:www-data -R /var/www/html && git -C /var/www/html pull 2> /dev/null || echo 'hi'; git clone https://github.com/ProjectEQ/peqphpeditor.git /var/www/html && cd /var/www/html/ && cp config.php.dist config.php"
 	$(DOCKER) exec eqemu-server bash -c "make init-peq-editor"
 
 #----------------------
