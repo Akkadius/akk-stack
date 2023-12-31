@@ -60,6 +60,7 @@ install: ##@init Install full application
 	@make pull-maps
 	@make init-build
 	@~/assets/scripts/create-symlinks.pl
+	@make init-eqemu-admin-assets
 	@make init-eqemu-admin
 	@make init-server-binaries
 	@make init-peq-database
@@ -141,6 +142,13 @@ ADMIN_PASSWORD=${SPIRE_ADMIN_PASSWORD}
 ifeq ("${ADMIN_PASSWORD}", "")
 	ADMIN_PASSWORD=$(shell cat ~/server/eqemu_config.json 2>/dev/null | jq '.["web-admin"].application.admin.password' | tr -d '"' || echo "")
 endif
+
+init-eqemu-admin-assets: ##@init Initializes EQEmu Admin Assets
+	@./assets/scripts/banner.pl "Initializing EQEmu Admin Assets"
+	curl -L https://github.com/Akkadius/eq-asset-preview/releases/latest/download/build.zip -o /tmp/build.zip
+	mkdir -p ~/.cache/spire
+	mkdir -p ~/.cache/spire/assets
+	unzip -o /tmp/build.zip -d ~/.cache/spire/assets
 
 init-eqemu-admin: ##@init Initializes EQEmu Admin
 	rm -f ~/server/bin/eqemu-admin-*
