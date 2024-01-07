@@ -570,33 +570,53 @@ If you have camped to character select, you can run `kzone` which will kill all 
 
 ## Compiling and Developing
 
-Compiling is as simple as typing `m` anywhere in the embedded shell
+### Compile for Production
+
+Compiling is as simple as typing `m` anywhere in the embedded shell when building for production.
 
 ![update](https://user-images.githubusercontent.com/3319450/87242061-e5027e00-c3ee-11ea-9711-c5ce4ae716cb.gif)
 
-### Ninja Support
+### Compile for Development
 
-If you want to compile using Ninja instead of traditional make for development; there is support in the container ready to go to compile with Ninja, you just need to configure your build repository to use it
+Compiling for development has some extra features that are available to you out of the box that will save developers a tremendous amount of time.
 
-```
-eqemu@e5311a8e9505:~$ b
-eqemu@e5311a8e9505:~/code/build$ cmake -GNinja -DEQEMU_BUILD_LOGIN=OFF -DEQEMU_BUILD_LUA=ON -DEQEMU_BUILD_PERL=ON -DEQEMU_BUILD_LOGGING=ON ..
--- Boost version: 1.67.0
--- **************************************************
--- * Library Detection                              *
--- **************************************************
--- * MySQL:                                   FOUND *
--- * MariaDB:                                 FOUND *
--- * ZLIB:                                    FOUND *
--- * Lua:                                     FOUND *
-...truncated
-```
-
-To compile, simply use the `n` keyword anywhere
+Initialize your development build by using `make init-dev-build` when shelled into the home directory of the server container.
 
 ```
-eqemu@e5311a8e9505:~/code/build$ n
-ninja: no work to do
+eqemu@10c173f9139a:~$ make init-dev-build
+> Initializing EQEmu Server Build
+
+cd ~/code && \
+	git submodule init && \
+	git submodule update && \
+	rm -rf build && \
+	mkdir -p build && \
+	cd build && \
+	cmake -DEQEMU_BUILD_LOGIN=ON \
+		-DEQEMU_BUILD_TESTS=ON \
+		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+		-DPERL_LIBRARY=/opt/eqemu-perl/lib/5.32.1/x86_64-linux-thread-multi/CORE/libperl.so \
+		-DPERL_EXECUTABLE=/opt/eqemu-perl/bin/perl \
+		-DPERL_INCLUDE_PATH=/opt/eqemu-perl/lib/5.32.1/x86_64-linux-thread-multi/CORE/ \
+		-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=gold \
+		-DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O0 -g -DNDEBUG -Os -Wno-everything" -G "Ninja" ..
+-- The C compiler identification is Clang 14.0.6
+-- The CXX compiler identification is Clang 14.0.6
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+... truncated output
+```
+
+What this does 
+
+* Uses ccache to cache your compile objects so that you don't have to recompile everything every time you make a change
+* Uses Ninja to parallelize your compile jobs
+* Uses the gold linker to speed up linking
+* Uses `-O0 -g -DNDEBUG -Os -Wno-everything` to optimize for debugging and speed up compile times
+* Uses clang to speed up compile times significantly over GCC
+
+When you want to compile for development, simply type `n` anywhere and it will compile.
+
 ```
 
 # Networking on LAN
