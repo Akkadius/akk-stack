@@ -621,8 +621,7 @@ My .env should have `192.168.50.115` as `IP_ADDRESS=192.168.50.115` so make sure
 Your `eqemu_config.json` will need the following values set 
 
 * `server.world.localaddress` = `192.168.50.115`
-* `server.chatserver.host` = `192.168.50.115`
-* `server.mailserver.host` = `192.168.50.115`
+* `server.ucs.host` = `192.168.50.115`
 
 If you are LAN only, this is all you will need to succeed. Even if you login via the public loginserver, but no one will be able to login to your server.
 
