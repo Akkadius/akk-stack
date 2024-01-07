@@ -617,8 +617,6 @@ What this does
 
 When you want to compile for development, simply type `n` anywhere and it will compile.
 
-```
-
 # Networking on LAN
 
 When using `akk-stack` in a LAN configuration it can be confusing to reason about how things should look because you've got two layers of networking address translation happening and if you're less experienced with networking it can be very confusing.
