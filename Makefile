@@ -78,6 +78,27 @@ ifneq ($(ip-address),)
 endif
 
 #----------------------
+# services
+#----------------------
+
+RUN_SERVICES=
+ifeq ($(ENABLE_FTP_QUESTS),true)
+	RUN_SERVICES+= ftp-quests
+endif
+
+ifeq ($(ENABLE_PHPMYADMIN),true)
+	RUN_SERVICES+= phpmyadmin
+endif
+
+ifeq ($(ENABLE_PEQ_EDITOR),true)
+	RUN_SERVICES+= peq-editor
+endif
+
+ifeq ($(ENABLE_BACKUP_CRON),true)
+	RUN_SERVICES+= backup-cron
+endif
+
+#----------------------
 # env
 #----------------------
 
@@ -199,7 +220,7 @@ watch-processes: ##@workflow Watch processes
 #----------------------
 
 up: ##@docker Bring up eqemu-server and database
-	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) up -d eqemu-server mariadb
+	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) up -d eqemu-server mariadb $(RUN_SERVICES)
 	make up-info
 
 down: ##@docker Down all containers
