@@ -1,20 +1,16 @@
 # AkkStack | Containerized EverQuest Emulator Server Environment
 
-<p align="center"><img width="600" src="https://user-images.githubusercontent.com/3319450/87238998-55010c00-c3cf-11ea-8db5-3be25a868ac8.png" alt="AkkStack"></p>
-
-<hr>
-
 <p align="center">
- <img height="70" src="https://user-images.githubusercontent.com/3319450/87256107-950ad200-c455-11ea-9cdf-17cc277b874e.png" alt="Docker">
-</p>
-
-<hr>
+ 
+<img src="https://github.com/Akkadius/akk-stack/assets/3319450/d276736b-622a-4bd6-a9eb-c9fdc48b3259" alt="AkkStack">
 
 AkkStack is a simple Docker Compose environment that is augmented with developer and operator focused tooling for running EverQuest Emulator servers
 
 You can have an entire server running within minutes, configured and ready to go for development or production use
 
 **The README for this project has gotten far too large, we have moved to a** [dedicated documentation space within the EverQuest Emulator Docs](https://docs.eqemu.io/akk-stack/introduction/)
+
+</p>
 
 # Feature Requests
 
