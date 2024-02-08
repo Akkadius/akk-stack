@@ -26,4 +26,4 @@ If you want to contribute to the repo, please submit **Pull Requests**
 
 # Pay it Forward
 
-If you use this repository; you're taking advantage of a ton of work that I've done to make the experience incredibly simple for you to use for free - please pay it forward to the community by contributing back
+If you decide to utilize this repository, know that it's built on a lot of effort I've put in to ensure it's super easy for you to enjoy for free. I kindly ask that you consider giving back to the community by contributing in any way you can. Let's keep the spirit of collaboration alive!
