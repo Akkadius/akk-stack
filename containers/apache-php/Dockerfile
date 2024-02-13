@@ -16,3 +16,9 @@ RUN a2enmod expires
 RUN a2enmod file_cache
 RUN a2enmod headers
 RUN a2enmod rewrite
+
+RUN usermod -u 1000 www-data && groupmod -g 1000 www-data
+RUN mkdir -p /var/www/html && chown -R www-data:www-data /var/www/
+VOLUME /var/www/html
+
+USER www-data

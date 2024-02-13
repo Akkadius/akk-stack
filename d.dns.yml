@@ -94,3 +94,41 @@ services:
       - "traefik.http.routers.magelo-https.tls.certresolver=le"
       - "traefik.http.routers.magelo-https.service=magelo-https"
       - "traefik.http.services.magelo-https.loadbalancer.server.port=80"
+
+  allakhazam:
+    depends_on:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      # http
+      - "traefik.http.routers.allakhazam-http.rule=Host(`${ALLAKHAZAM_SUBDOMAIN}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.allakhazam-http.entrypoints=web"
+      - "traefik.http.routers.allakhazam-http.service=allakhazam-http"
+      - "traefik.http.services.allakhazam-http.loadbalancer.server.port=80"
+      - "traefik.http.routers.allakhazam-http.middlewares=allakhazam-https"
+      - "traefik.http.middlewares.allakhazam-https.redirectscheme.scheme=https"
+      # https
+      - "traefik.http.routers.allakhazam-https.rule=Host(`${ALLAKHAZAM_SUBDOMAIN}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.allakhazam-https.entrypoints=websecure"
+      - "traefik.http.routers.allakhazam-https.tls.certresolver=le"
+      - "traefik.http.routers.allakhazam-https.service=allakhazam-https"
+      - "traefik.http.services.allakhazam-https.loadbalancer.server.port=80"
+
+  web-root:
+    depends_on:
+      - traefik
+    labels:
+        - "traefik.enable=true"
+        # http
+        - "traefik.http.routers.web-root-http.rule=Host(`${DOMAIN_NAME}`)"
+        - "traefik.http.routers.web-root-http.entrypoints=web"
+        - "traefik.http.routers.web-root-http.service=web-root-http"
+        - "traefik.http.services.web-root-http.loadbalancer.server.port=80"
+        - "traefik.http.routers.web-root-http.middlewares=web-root-https"
+        - "traefik.http.middlewares.web-root-https.redirectscheme.scheme=https"
+        # https
+        - "traefik.http.routers.web-root-https.rule=Host(`${DOMAIN_NAME}`)"
+        - "traefik.http.routers.web-root-https.entrypoints=websecure"
+        - "traefik.http.routers.web-root-https.tls.certresolver=le"
+        - "traefik.http.routers.web-root-https.service=web-root-https"
+        - "traefik.http.services.web-root-https.loadbalancer.server.port=80"

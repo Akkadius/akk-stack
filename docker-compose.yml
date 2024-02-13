@@ -165,6 +165,24 @@ services:
       - backend
 
   #############################################
+  # web-root
+  #############################################
+
+  web-root:
+    image: akkadius/web-root:latest
+    build:
+      context: ./containers/apache-php
+    restart: unless-stopped
+    ports:
+      - "${IP_ADDRESS}:8084:80"
+    volumes:
+      - ${DATA_PATH_HOST}/web-root:/var/www/html
+    environment:
+      TZ: ${TZ:-US/Central}
+    networks:
+      - backend
+
+  #############################################
   # peq editor
   #############################################
 
@@ -219,6 +237,29 @@ services:
       CONTENT_DB_NAME: ${MARIADB_DATABASE}
       CONTENT_DB_USER: magelo
       CONTENT_DB_PASSWORD: magelo
+      TZ: ${TZ:-US/Central}
+    networks:
+      - backend
+
+  #############################################
+  # allakhazam
+  #############################################
+
+  allakhazam:
+    user: "1000:1000"
+    image: akkadius/allakhazam:latest
+    build:
+      context: ./containers/apache-php
+    restart: unless-stopped
+    ports:
+      - "${IP_ADDRESS}:8083:80"
+    volumes:
+      - ${DATA_PATH_HOST}/allakhazam:/var/www/html
+    environment:
+      DB_HOST: mariadb
+      DB_NAME: ${MARIADB_DATABASE}
+      DB_USER: allakhazam
+      DB_PASSWORD: allakhazam
       TZ: ${TZ:-US/Central}
     networks:
       - backend

@@ -105,6 +105,14 @@ ifeq ($(ENABLE_MAGELO),true)
 	RUN_SERVICES+= magelo
 endif
 
+ifeq ($(ENABLE_ALLAKHAZAM),true)
+	RUN_SERVICES+= allakhazam
+endif
+
+ifeq ($(ENABLE_WEB_ROOT),true)
+	RUN_SERVICES+= allakhazam
+endif
+
 #----------------------
 # env
 #----------------------
@@ -131,6 +139,12 @@ install: ##@init Install full application port-range-high=[] ip-address=[]
 ifeq ($(ENABLE_MAGELO),true)
 	make init-magelo
 endif
+ifeq ($(ENABLE_ALLAKHAZAM),true)
+	make init-allakhazam
+endif
+ifeq ($(ENABLE_WEB_ROOT),true)
+	make init-web-root
+endif
 	make down
 	make up
 	make up-info
@@ -148,9 +162,20 @@ init-peq-editor: ##@init Initializes PEQ editor
 
 init-magelo: ##@init Initializes Magelo
 	@$(DOCKER) build magelo && $(DOCKER) up -d magelo
-	@$(DOCKER) exec magelo bash -c "git config --global --add safe.directory '*'; chown www-data:www-data -R /var/www/html && git -C /var/www/html pull 2> /dev/null || git clone https://github.com/maudigan/charbrowser.git /var/www/html && cd /var/www/html/ && cp ./include/config.template ./include/config.php"
+	@$(DOCKER) exec -u root magelo bash -c "git config --global --add safe.directory '*'; chown www-data:www-data -R /var/www/html"
+	@$(DOCKER) exec magelo bash -c "git -C /var/www/html pull 2> /dev/null || git clone https://github.com/maudigan/charbrowser.git /var/www/html && cd /var/www/html/ && cp ./include/config.template ./include/config.php"
 	@$(DOCKER) exec mariadb bash -c "mysql -uroot -p${MARIADB_ROOT_PASSWORD} -h localhost ${MARIADB_DATABASE} -e \"DROP user IF EXISTS 'magelo'@'172.%'; CREATE USER 'magelo'@'172.%' IDENTIFIED BY 'magelo'; GRANT SELECT ON ${MARIADB_DATABASE}.* TO 'magelo'@'172.%'; GRANT SELECT, UPDATE ON ${MARIADB_DATABASE}.character_data TO 'magelo'@'172.%';\""
 
+init-allakhazam: ##@init Initializes Allahkazam
+	@$(DOCKER) build allakhazam && $(DOCKER) up -d allakhazam
+	@$(DOCKER) exec -u root allakhazam bash -c "git config --global --add safe.directory '*'; chown www-data:www-data -R /var/www/html"
+	@$(DOCKER) exec allakhazam bash -c "git -C /var/www/html pull 2> /dev/null || git clone https://github.com/Akkadius/EQEmuAllakhazamClone.git /var/www/html && cd /var/www/html/ && cp ./includes/config.template.php ./includes/config.php"
+	@$(DOCKER) exec mariadb bash -c "mysql -uroot -p${MARIADB_ROOT_PASSWORD} -h localhost ${MARIADB_DATABASE} -e \"DROP user IF EXISTS 'allakhazam'@'172.%'; CREATE USER 'allakhazam'@'172.%' IDENTIFIED BY 'allakhazam'; GRANT SELECT ON ${MARIADB_DATABASE}.* TO 'allakhazam'@'172.%';\""
+
+init-web-root: ##@init Initializes domain root
+	@$(DOCKER) build web-root && $(DOCKER) up -d web-root
+	@$(DOCKER) exec -u root web-root bash -c "git config --global --add safe.directory '*'; chown www-data:www-data -R /var/www/html"
+	@$(DOCKER) exec web-root bash -c "echo 'Hello World' > /var/www/html/index.html"
 
 #----------------------
 # Image Management
