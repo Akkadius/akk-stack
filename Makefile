@@ -128,6 +128,9 @@ install: ##@init Install full application port-range-high=[] ip-address=[]
 	make init-strip-mysql-remote-root
 	$(DOCKER) exec eqemu-server bash -c "make install"
 	make init-peq-editor
+ifeq ($(ENABLE_MAGELO),true)
+	make init-magelo
+endif
 	make down
 	make up
 	make up-info
@@ -362,3 +365,7 @@ show-fail2ban: ##@show Show fail2ban logs
 update-peq-editor: ##@update Update PEQ Editor
 	@$(DOCKER) build peq-editor && $(DOCKER) up -d peq-editor
 	@$(DOCKER) exec peq-editor bash -c "git config --global --add safe.directory '*'; chown www-data:www-data -R /var/www/html && git -C /var/www/html pull 2> /dev/null || git clone https://github.com/ProjectEQ/peqphpeditor.git /var/www/html && cd /var/www/html/ && cp config.php.dist config.php"
+
+update-magelo: ##@update Update Magelo
+	@$(DOCKER) build magelo && $(DOCKER) up -d magelo
+	@$(DOCKER) exec magelo bash -c "git config --global --add safe.directory '*'; chown www-data:www-data -R /var/www/html && git -C /var/www/html pull 2> /dev/null || git clone https://github.com/maudigan/charbrowser.git /var/www/html && cd /var/www/html/"
