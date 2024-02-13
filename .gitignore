@@ -8,3 +8,4 @@ code/
 .dropbox_uploader
 .bash_history
 assets/ssh/
+.env.bak

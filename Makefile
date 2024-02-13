@@ -25,7 +25,10 @@ endif
 #----------------------
 DOCKER_COMPOSE_CONTEXT=
 ifeq ("$(ENV)", "development")
-	DOCKER_COMPOSE_CONTEXT = -f docker-compose.yml -f docker-compose.dev.yml
+	DOCKER_COMPOSE_CONTEXT = -f docker-compose.yml -f d.dev.yml
+endif
+ifeq ("$(ENABLE_DNS)", "true")
+	DOCKER_COMPOSE_CONTEXT += -f d.dns.yml
 endif
 
 DOCKER=docker-compose $(DOCKER_COMPOSE_CONTEXT)
@@ -133,9 +136,8 @@ init-reset-env: ##@init Resets .env
 	make env-scramble-secrets
 
 init-peq-editor: ##@init Initializes PEQ editor
-	$(DOCKER) build peq-editor && $(DOCKER) up -d peq-editor
-	$(DOCKER) exec peq-editor bash -c "git config --global --add safe.directory '*'; chown www-data:www-data -R /var/www/html && git -C /var/www/html pull 2> /dev/null || git clone https://github.com/ProjectEQ/peqphpeditor.git /var/www/html && cd /var/www/html/ && cp config.php.dist config.php"
-	$(DOCKER) exec eqemu-server bash -c "make init-peq-editor"
+	make update-peq-editor
+	@$(DOCKER) exec eqemu-server bash -c "make init-peq-editor"
 
 #----------------------
 # Image Management
@@ -220,11 +222,14 @@ watch-processes: ##@workflow Watch processes
 #----------------------
 
 up: ##@docker Bring up eqemu-server and database
-	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) up -d eqemu-server mariadb $(RUN_SERVICES)
+ifeq ($(ENABLE_PEQ_EDITOR),true)
+	make update-peq-editor
+endif
+	$(DOCKER) up -d eqemu-server mariadb $(RUN_SERVICES)
 	make up-info
 
 down: ##@docker Down all containers
-	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) down --timeout 3
+	$(DOCKER) down --timeout 3
 
 restart: ##@docker Restart containers
 	make down
@@ -339,3 +344,11 @@ backup-dropbox-all: ##@backup Backup all assets to Dropbox
 show-fail2ban: ##@show Show fail2ban logs
 	docker-compose exec fail2ban-server fail2ban-client status sshd
 	docker-compose exec fail2ban-mysqld fail2ban-client status mysqld-auth
+
+#----------------------
+# update
+#----------------------
+
+update-peq-editor: ##@update Update PEQ Editor
+	@$(DOCKER) build peq-editor && $(DOCKER) up -d peq-editor
+	@$(DOCKER) exec peq-editor bash -c "git config --global --add safe.directory '*'; chown www-data:www-data -R /var/www/html && git -C /var/www/html pull 2> /dev/null || git clone https://github.com/ProjectEQ/peqphpeditor.git /var/www/html && cd /var/www/html/ && cp config.php.dist config.php"

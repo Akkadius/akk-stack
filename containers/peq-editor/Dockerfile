@@ -2,7 +2,7 @@
 # 7.1 Apache
 ######################################################
 
-FROM php:7.1-apache
+FROM php:8.3-apache
 
 RUN apt-get update && apt-get install -y \
 	libbz2-dev \
@@ -20,21 +20,7 @@ RUN apt-get update && apt-get install -y \
 ######################################################
 # Enable / Compile PHP modules
 ######################################################
-RUN docker-php-ext-install -j$(nproc) bcmath
-RUN docker-php-ext-install -j$(nproc) calendar
-RUN docker-php-ext-install -j$(nproc) curl
-RUN docker-php-ext-install -j$(nproc) dba
-RUN docker-php-ext-install -j$(nproc) exif
-RUN docker-php-ext-install -j$(nproc) gd
-RUN docker-php-ext-install -j$(nproc) gettext
-RUN docker-php-ext-install -j$(nproc) mcrypt
-RUN docker-php-ext-install -j$(nproc) mysqli
-RUN docker-php-ext-install -j$(nproc) opcache
-RUN docker-php-ext-install -j$(nproc) pdo_mysql
-RUN docker-php-ext-install -j$(nproc) soap
-RUN docker-php-ext-install -j$(nproc) sockets
-RUN docker-php-ext-install -j$(nproc) xsl
-RUN docker-php-ext-install -j$(nproc) zip
+RUN docker-php-ext-install -j$(nproc) bcmath calendar curl dba exif gd gettext mysqli opcache pdo_mysql soap sockets xsl zip
 
 RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini && \
     echo "opcache.memory_consumption=512" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini && \

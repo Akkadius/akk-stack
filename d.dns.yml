@@ -1,0 +1,77 @@
+volumes:
+  shared-pkg:
+  go-build-cache:
+
+services:
+
+  traefik:
+    restart: always
+    image: "traefik:v2.10"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.address=:80"
+      - "--certificatesresolvers.le.acme.tlschallenge=true"
+      - "--certificatesresolvers.le.acme.email=akkadius1+certbot@gmail.com"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+      - "--accesslog.filepath=/proc/1/fd/1"
+    ports:
+      - "${IP_ADDRESS}:80:80"
+      - "${IP_ADDRESS}:443:443"
+      - "${IP_ADDRESS}:8088:8080"
+    volumes:
+      - "./data/letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DASHBOARD_SUBDOMAIN}.${DOMAIN_NAME}`)"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8088"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=le"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.middlewares=traefik-auth"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
+
+  eqemu-server:
+    depends_on:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      # http
+      - "traefik.http.routers.spire-http.rule=Host(`${SPIRE_SUBDOMAIN}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.spire-http.entrypoints=web"
+      - "traefik.http.routers.spire-http.service=spire-http"
+      - "traefik.http.services.spire-http.loadbalancer.server.port=3000"
+      - "traefik.http.routers.spire-http.middlewares=spire-https"
+      - "traefik.http.middlewares.spire-https.redirectscheme.scheme=https"
+      # https
+      - "traefik.http.routers.spire-https.rule=Host(`${SPIRE_SUBDOMAIN}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.spire-https.entrypoints=websecure"
+      - "traefik.http.routers.spire-https.tls.certresolver=le"
+      - "traefik.http.routers.spire-https.service=spire-https"
+      - "traefik.http.services.spire-https.loadbalancer.server.port=3000"
+
+  peq-editor:
+    depends_on:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      # http
+      - "traefik.http.routers.peq-editor-http.rule=Host(`${PEQ_EDITOR_SUBDOMAIN}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.peq-editor-http.entrypoints=web"
+      - "traefik.http.routers.peq-editor-http.service=peq-editor-http"
+      - "traefik.http.services.peq-editor-http.loadbalancer.server.port=80"
+      - "traefik.http.routers.peq-editor-http.middlewares=peq-editor-https"
+      - "traefik.http.middlewares.peq-editor-https.redirectscheme.scheme=https"
+      # https
+      - "traefik.http.routers.peq-editor-https.rule=Host(`${PEQ_EDITOR_SUBDOMAIN}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.peq-editor-https.entrypoints=websecure"
+      - "traefik.http.routers.peq-editor-https.tls.certresolver=le"
+      - "traefik.http.routers.peq-editor-https.service=peq-editor-https"
+      - "traefik.http.services.peq-editor-https.loadbalancer.server.port=80"

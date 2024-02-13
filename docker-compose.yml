@@ -74,7 +74,7 @@ services:
       args:
         - INNODB_BUFFER_POOL_SIZE=${INNODB_BUFFER_POOL_SIZE:-256MB}
     ports:
-      - ${IP_ADDRESS}:3306:3306
+      - "${IP_ADDRESS}:3306:3306"
     volumes:
       - ${DATA_PATH_HOST}/mariadb:/var/lib/mysql:delegated
       - mariadb-var-log:/var/log/mysql/
@@ -142,7 +142,7 @@ services:
     build: ./containers/http-proxy
     restart: unless-stopped
     ports:
-      - ${IP_ADDRESS}:8082:80
+      - "${IP_ADDRESS}:8082:80"
     environment:
       - BASIC_AUTH_USERNAME=${PHPMYADMIN_USERNAME}
       - BASIC_AUTH_PASSWORD=${PHPMYADMIN_PASSWORD}
@@ -217,8 +217,8 @@ services:
     volumes:
       - ./server/quests/:/home/quests/
     ports:
-      - ${IP_ADDRESS}:21:21
-      - ${IP_ADDRESS}:30000-30049:30000-30049
+      - "${IP_ADDRESS}:21:21"
+      - "${IP_ADDRESS}:30000-30049:30000-30049"
     networks:
       - backend
 
