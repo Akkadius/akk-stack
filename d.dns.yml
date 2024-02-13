@@ -75,3 +75,22 @@ services:
       - "traefik.http.routers.peq-editor-https.tls.certresolver=le"
       - "traefik.http.routers.peq-editor-https.service=peq-editor-https"
       - "traefik.http.services.peq-editor-https.loadbalancer.server.port=80"
+
+  magelo:
+    depends_on:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      # http
+      - "traefik.http.routers.magelo-http.rule=Host(`${MAGELO_SUBDOMAIN}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.magelo-http.entrypoints=web"
+      - "traefik.http.routers.magelo-http.service=magelo-http"
+      - "traefik.http.services.magelo-http.loadbalancer.server.port=80"
+      - "traefik.http.routers.magelo-http.middlewares=magelo-https"
+      - "traefik.http.middlewares.magelo-https.redirectscheme.scheme=https"
+      # https
+      - "traefik.http.routers.magelo-https.rule=Host(`${MAGELO_SUBDOMAIN}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.magelo-https.entrypoints=websecure"
+      - "traefik.http.routers.magelo-https.tls.certresolver=le"
+      - "traefik.http.routers.magelo-https.service=magelo-https"
+      - "traefik.http.services.magelo-https.loadbalancer.server.port=80"

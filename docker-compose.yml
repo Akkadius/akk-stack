@@ -198,6 +198,32 @@ services:
       - backend
 
   #############################################
+  # magelo
+  #############################################
+
+  magelo:
+    image: akkadius/magelo:latest
+    build:
+      context: ./containers/apache-php
+    restart: unless-stopped
+    ports:
+      - "${IP_ADDRESS}:8082:80"
+    volumes:
+      - ${DATA_PATH_HOST}/magelo:/var/www/html
+    environment:
+      DB_HOST: mariadb
+      DB_NAME: ${MARIADB_DATABASE}
+      DB_USER: magelo
+      DB_PASSWORD: magelo
+      CONTENT_DB_HOST: mariadb
+      CONTENT_DB_NAME: ${MARIADB_DATABASE}
+      CONTENT_DB_USER: magelo
+      CONTENT_DB_PASSWORD: magelo
+      TZ: ${TZ:-US/Central}
+    networks:
+      - backend
+
+  #############################################
   # ftp
   #############################################
 

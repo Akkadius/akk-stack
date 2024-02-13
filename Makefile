@@ -101,6 +101,10 @@ ifeq ($(ENABLE_BACKUP_CRON),true)
 	RUN_SERVICES+= backup-cron
 endif
 
+ifeq ($(ENABLE_MAGELO),true)
+	RUN_SERVICES+= magelo
+endif
+
 #----------------------
 # env
 #----------------------
@@ -138,6 +142,12 @@ init-reset-env: ##@init Resets .env
 init-peq-editor: ##@init Initializes PEQ editor
 	make update-peq-editor
 	@$(DOCKER) exec eqemu-server bash -c "make init-peq-editor"
+
+init-magelo: ##@init Initializes Magelo
+	@$(DOCKER) build magelo && $(DOCKER) up -d magelo
+	@$(DOCKER) exec magelo bash -c "git config --global --add safe.directory '*'; chown www-data:www-data -R /var/www/html && git -C /var/www/html pull 2> /dev/null || git clone https://github.com/maudigan/charbrowser.git /var/www/html && cd /var/www/html/ && cp ./include/config.template ./include/config.php"
+	@$(DOCKER) exec mariadb bash -c "mysql -uroot -p${MARIADB_ROOT_PASSWORD} -h localhost ${MARIADB_DATABASE} -e \"DROP user IF EXISTS 'magelo'@'172.%'; CREATE USER 'magelo'@'172.%' IDENTIFIED BY 'magelo'; GRANT SELECT ON ${MARIADB_DATABASE}.* TO 'magelo'@'172.%'; GRANT SELECT, UPDATE ON ${MARIADB_DATABASE}.character_data TO 'magelo'@'172.%';\""
+
 
 #----------------------
 # Image Management
