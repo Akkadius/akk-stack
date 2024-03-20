@@ -85,13 +85,14 @@ init-shared-memory: ##@init Run shared memory once on initial install
 init-eqemu-config: ##@init Bootstraps eqemu config
 	@./assets/scripts/banner.pl "Initializing EQEmu Config"
 	@make pull-docker-config
-	@cat ~/server/eqemu_config.json \
-    		| jq '.server.database.password = "${EQEMU_DB_PASSWORD}"' \
-    		| jq '.server.world.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
-    		| jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' \
-    		| jq '.server.world.address = "${IP_ADDRESS}"' \
-    		| jq '.server.ucs.host = "${IP_ADDRESS}"' \
-    		-M > ~/server/eqemu_config.json
+	jq --arg dbpass "$(EQEMU_DB_PASSWORD)" \
+	   --arg porthigh "$(PORT_RANGE_HIGH)" \
+	   --arg ipaddr "$(IP_ADDRESS)" \
+	   '.server.database.password = $$dbpass |
+		.server.world.key = (input_filename | capture("(?<prefix>.*)(?<suffix>.json)"; "i").prefix + ("/dev/urandom" | getline | strflocaltime("%Y%m%d%H%M%S"))) |
+		.server.zones.ports.high = $$porthigh |
+		.server.world.address = $$ipaddr |
+        .server.ucs.host = $ipaddr' ~/server/eqemu_config.json > temp.json && mv temp.json ~/server/eqemu_config.json
 
 init-directories: ##@init Bootstrap directories
 	@./assets/scripts/banner.pl "Bootstrapping directories"
