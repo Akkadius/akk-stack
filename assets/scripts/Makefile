@@ -85,14 +85,12 @@ init-shared-memory: ##@init Run shared memory once on initial install
 init-eqemu-config: ##@init Bootstraps eqemu config
 	@./assets/scripts/banner.pl "Initializing EQEmu Config"
 	@make pull-docker-config
-	jq --arg dbpass "$(EQEMU_DB_PASSWORD)" \
-	   --arg porthigh "$(PORT_RANGE_HIGH)" \
-	   --arg ipaddr "$(IP_ADDRESS)" \
-	   '.server.database.password = $$dbpass | \
-		.server.world.key = (input_filename | capture("(?<prefix>.*)(?<suffix>.json)"; "i").prefix + ("/dev/urandom" | getline | strflocaltime("%Y%m%d%H%M%S"))) | \
-		.server.zones.ports.high = $$porthigh | \
-		.server.world.address = $$ipaddr | \
-        .server.ucs.host = $ipaddr' ~/server/eqemu_config.json > temp.json && mv temp.json ~/server/eqemu_config.json
+	@cat ~/server/eqemu_config.json \
+        | jq --arg dbpass "$(EQEMU_DB_PASSWORD)" '.server.database.password = $$dbpass' \
+        | jq --arg ipaddr "$(IP_ADDRESS)" '.server.world.address = $$ipaddr | .server.ucs.host = $$ipaddr' \
+        | jq '.server.zones.ports.high = "$(PORT_RANGE_HIGH)"' \
+        | jq '.server.world.key = (input_filename | capture("(?<prefix>.*)(?<suffix>.json)"; "i").prefix + ("/dev/urandom" | getline | strflocaltime("%Y%m%d%H%M%S")))' \
+        | tee ~/server/eqemu_config.json > /dev/null
 
 init-directories: ##@init Bootstrap directories
 	@./assets/scripts/banner.pl "Bootstrapping directories"
@@ -166,7 +164,7 @@ init-eqemu-admin: ##@init Initializes EQEmu Admin
 		| jq '.["web-admin"].launcher.runSharedMemory = true' \
 		| jq '.["web-admin"].launcher.minZoneProcesses = 10' \
 		| jq '.["web-admin"].launcher.staticZones = "butcher,erudnext,freporte,qeynos,freeporte,oot,iceclad,nro,oasis,nedaria,abysmal,natimbi,timorous,abysmal,firiona,overthere"' \
-		-M > ~/server/eqemu_config.json
+		| tee ~/server/eqemu_config.json
 	cd ~/server && ./bin/spire spire:init admin ${ADMIN_PASSWORD} || echo "Already initialized"
 	cd ~/server && ./bin/spire spire:occulus-update
 
@@ -177,12 +175,12 @@ init-eqemu-admin-dev: ##@init Initializes EQEmu Admin (Development)
 	cd ~/server/eqemu-web-admin/frontend && npm install
 
 init-peq-editor: ##@init Initializes PEQ Editor DB tables
-	wget --quiet https://raw.githubusercontent.com/ProjectEQ/peqphpeditor/master/sql/schema.sql -O /tmp/schema.sql
-	mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
+	@wget --quiet https://raw.githubusercontent.com/ProjectEQ/peqphpeditor/master/sql/schema.sql -O /tmp/schema.sql
+	@mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
     		-p$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password') \
     		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
     		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') < /tmp/schema.sql
-	mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
+	@mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
     		-p$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password') \
     		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
     		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') -e 'update peq_admin SET password = MD5("${PEQ_EDITOR_PASSWORD}") where id = 1'
