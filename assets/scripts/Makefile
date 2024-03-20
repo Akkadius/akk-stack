@@ -153,7 +153,7 @@ init-eqemu-admin-assets: ##@init Initializes EQEmu Admin Assets
 init-eqemu-admin: ##@init Initializes EQEmu Admin
 	rm -f ~/server/bin/eqemu-admin-*
 	rm -f ~/server/bin/spire-*
-	wget --quiet $(shell curl -s https://api.github.com/repos/Akkadius/spire/releases/latest | jq -r '.assets[].browser_download_url' | grep spire-linux) -O /tmp/spire.zip
+	wget --progress=bar:force:noscroll --quiet $(shell curl -s https://api.github.com/repos/Akkadius/spire/releases/latest | jq -r '.assets[].browser_download_url' | grep spire-linux) -O /tmp/spire.zip
 	unzip -o /tmp/spire.zip -d ~/server/bin
 	mv ~/server/bin/spire-linux-amd64 ~/server/bin/spire
 	chmod +x ~/server/bin/spire
@@ -239,7 +239,7 @@ pull-peq-quests: ##@assets Pulls ProjectEQ quests
 
 pull-docker-config: ##@assets Pulls default eqemu_config.json
 	@./assets/scripts/banner.pl "Bootstrapping default [eqemu_config.json]"
-	cd ~/server && wget --no-cache --no-check-certificate --no-cookies https://raw.githubusercontent.com/Akkadius/eqemu-install-v2/master/eqemu_config_docker.json -O eqemu_config.json
+	cd ~/server && wget --progress=bar:force:noscroll --no-cache --no-check-certificate --no-cookies https://raw.githubusercontent.com/Akkadius/eqemu-install-v2/master/eqemu_config_docker.json -O eqemu_config.json
 
 #----------------------
 # mgmt
@@ -308,7 +308,7 @@ endif
 update-admin-panel: ##@update Update admin panel
 	kill $(shell ps aux | grep "eqemu-admin" | grep "web" | grep -v "grep" | awk '{print $$2}' | tr '\n' ' ') &>/dev/null || echo "Nothing to kill"
 	kill $(shell ps aux | grep "spire" | grep "http:serve" | grep -v "grep" | awk '{print $$2}' | tr '\n' ' ') &>/dev/null || echo "Nothing to kill"
-	wget --quiet $(shell curl -s https://api.github.com/repos/Akkadius/spire/releases/latest | jq -r '.assets[].browser_download_url' | grep spire-linux) -O /tmp/spire.zip
+	wget --progress=bar:force:noscroll --quiet $(shell curl -s https://api.github.com/repos/Akkadius/spire/releases/latest | jq -r '.assets[].browser_download_url' | grep spire-linux) -O /tmp/spire.zip
 	unzip -o /tmp/spire.zip -d ~/server/bin
 	mv ~/server/bin/spire-linux-amd64 ~/server/bin/spire
 	chmod +x ~/server/bin/spire
