@@ -243,7 +243,7 @@ env-scramble-secrets: ##@env Scrambles secrets
 env-set-zone-port-range-high: ##@env Set zone port range high value
 	$(DOCKER) up -d eqemu-server
 	@assets/scripts/env-set-var.pl PORT_RANGE_HIGH $(RUN_ARGS)
-	$(DOCKER) exec eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' -M > ~/server/eqemu_config.json"
+	$(DOCKER) exec eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' -M > /tmp/config.json && mv /tmp/config.json ~/server/eqemu_config.json && rm -f /tmp/config.json"
 	$(DOCKER) up -d --force-recreate eqemu-server
 
 #----------------------
