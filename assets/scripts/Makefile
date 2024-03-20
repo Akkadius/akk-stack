@@ -90,7 +90,7 @@ init-eqemu-config: ##@init Bootstraps eqemu config
              | jq --arg ipaddr "$(IP_ADDRESS)" '.server.world.address = $$ipaddr | .server.ucs.host = $$ipaddr' \
              | jq --arg porthigh "$(PORT_RANGE_HIGH)" '.server.zones.ports.high = $$porthigh' \
              | jq --arg random_string "$$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | head -c 32)" '.server.world.key = $$random_string' \
-             | tee ~/server/eqemu_config.json > /dev/null
+             -M /tmp/config.json && mv /tmp/config.json ~/server/eqemu_config.json
 
 init-directories: ##@init Bootstrap directories
 	@./assets/scripts/banner.pl "Bootstrapping directories"
