@@ -121,8 +121,8 @@ install: ##@init Install full application port-range-high=[] ip-address=[]
 	make init-strip-mysql-remote-root
 	$(DOCKER) exec -T eqemu-server bash -c "make install"
 	make init-peq-editor
-	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) down --timeout 3
-	COMPOSE_HTTP_TIMEOUT=1000 $(DOCKER) up -d
+	make down
+	make up
 	make up-info
 
 init-strip-mysql-remote-root: ##@init Strips MySQL remote root user
