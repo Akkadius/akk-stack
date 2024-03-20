@@ -86,15 +86,15 @@ init-eqemu-config: ##@init Bootstraps eqemu config
 	@./assets/scripts/banner.pl "Initializing EQEmu Config"
 	@make pull-docker-config
 	@cat ~/server/eqemu_config.json \
-    		| jq '.server.database.password = "${EQEMU_DB_PASSWORD}"' \
-    		| jq '.server.world.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
-    		| jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' \
-    		| jq '.server.world.address = "${IP_ADDRESS}"' \
-    		| jq '.server.ucs.host = "${IP_ADDRESS}"' \
-    		| tee ~/server/eqemu_config.json
+             | jq --arg dbpass "$(EQEMU_DB_PASSWORD)" '.server.database.password = $$dbpass' \
+             | jq --arg ipaddr "$(IP_ADDRESS)" '.server.world.address = $$ipaddr | .server.ucs.host = $$ipaddr' \
+             | jq --arg porthigh "$(PORT_RANGE_HIGH)" '.server.zones.ports.high = $$porthigh' \
+             | jq --arg random_string "$$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | head -c 32)" '.server.world.key = $$random_string' \
+             -M > /tmp/config.json && mv /tmp/config.json ~/server/eqemu_config.json && rm -f /tmp/config.json
 
 init-directories: ##@init Bootstrap directories
 	@./assets/scripts/banner.pl "Bootstrapping directories"
+	sudo chown eqemu:eqemu ~/.cache -R
 	sudo chown eqemu:eqemu ~/server -R
 	sudo chown eqemu:eqemu ~/code -R
 	mkdir -p ~/server/assets
@@ -146,15 +146,20 @@ endif
 
 init-eqemu-admin-assets: ##@init Initializes EQEmu Admin Assets
 	@./assets/scripts/banner.pl "Initializing EQEmu Admin Assets"
-	curl -L https://github.com/Akkadius/eq-asset-preview/releases/latest/download/build.zip -o /tmp/build.zip
-	mkdir -p ~/.cache/spire
-	mkdir -p ~/.cache/spire/assets
-	unzip -o /tmp/build.zip -d ~/.cache/spire/assets
+	@if [ $(shell find ~/.cache/spire/assets/assets | wc -l) -gt 10 ] ; then \
+		echo "spire assets are initialized"; \
+	else \
+		echo "spire assets are not initialized"; \
+		curl -L https://github.com/Akkadius/eq-asset-preview/releases/latest/download/build.zip -o /tmp/build.zip; \
+		mkdir -p ~/.cache/spire; \
+		mkdir -p ~/.cache/spire/assets; \
+		unzip -o /tmp/build.zip -d ~/.cache/spire/assets; \
+	fi
 
 init-eqemu-admin: ##@init Initializes EQEmu Admin
 	rm -f ~/server/bin/eqemu-admin-*
 	rm -f ~/server/bin/spire-*
-	wget --quiet $(shell curl -s https://api.github.com/repos/Akkadius/spire/releases/latest | jq -r '.assets[].browser_download_url' | grep spire-linux) -O /tmp/spire.zip
+	wget --progress=bar:force:noscroll --quiet https://github.com/akkadius/spire/releases/latest/download/spire-linux-amd64.zip -O /tmp/spire.zip
 	unzip -o /tmp/spire.zip -d ~/server/bin
 	mv ~/server/bin/spire-linux-amd64 ~/server/bin/spire
 	chmod +x ~/server/bin/spire
@@ -165,7 +170,7 @@ init-eqemu-admin: ##@init Initializes EQEmu Admin
 		| jq '.["web-admin"].launcher.runSharedMemory = true' \
 		| jq '.["web-admin"].launcher.minZoneProcesses = 10' \
 		| jq '.["web-admin"].launcher.staticZones = "butcher,erudnext,freporte,qeynos,freeporte,oot,iceclad,nro,oasis,nedaria,abysmal,natimbi,timorous,abysmal,firiona,overthere"' \
-		| tee ~/server/eqemu_config.json
+		-M > /tmp/config.json && mv /tmp/config.json ~/server/eqemu_config.json && rm -f /tmp/config.json
 	cd ~/server && ./bin/spire spire:init admin ${ADMIN_PASSWORD} || echo "Already initialized"
 	cd ~/server && ./bin/spire spire:occulus-update
 
@@ -176,12 +181,12 @@ init-eqemu-admin-dev: ##@init Initializes EQEmu Admin (Development)
 	cd ~/server/eqemu-web-admin/frontend && npm install
 
 init-peq-editor: ##@init Initializes PEQ Editor DB tables
-	wget --quiet https://raw.githubusercontent.com/ProjectEQ/peqphpeditor/master/sql/schema.sql -O /tmp/schema.sql
-	mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
+	@wget --quiet https://raw.githubusercontent.com/ProjectEQ/peqphpeditor/master/sql/schema.sql -O /tmp/schema.sql
+	@mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
     		-p$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password') \
     		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
     		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') < /tmp/schema.sql
-	mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
+	@mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
     		-p$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password') \
     		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
     		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') -e 'update peq_admin SET password = MD5("${PEQ_EDITOR_PASSWORD}") where id = 1'
@@ -227,7 +232,7 @@ pull-maps: ##@assets Pulls maps
 		echo "maps is initialized"; \
 	else \
 		echo "maps is not initialized"; \
-		cd server && wget https://github.com/Akkadius/eqemu-maps/releases/latest/download/maps.zip -O /tmp/maps.zip && unzip -o /tmp/maps.zip -d ~/server/maps && rm /tmp/maps.zip; \
+		cd server && wget --progress=bar:force:noscroll https://github.com/Akkadius/eqemu-maps/releases/latest/download/maps.zip -O /tmp/maps.zip && unzip -o /tmp/maps.zip -d ~/server/maps && rm /tmp/maps.zip || true; \
 	fi
 
 pull-eqemu-code: ##@assets Pulls eqemu code
@@ -240,7 +245,7 @@ pull-peq-quests: ##@assets Pulls ProjectEQ quests
 
 pull-docker-config: ##@assets Pulls default eqemu_config.json
 	@./assets/scripts/banner.pl "Bootstrapping default [eqemu_config.json]"
-	cd ~/server && wget --no-cache --no-check-certificate --no-cookies https://raw.githubusercontent.com/Akkadius/eqemu-install-v2/master/eqemu_config_docker.json -O eqemu_config.json
+	cd ~/server && wget --progress=bar:force:noscroll --no-cache --no-check-certificate --no-cookies https://raw.githubusercontent.com/Akkadius/eqemu-install-v2/master/eqemu_config_docker.json -O eqemu_config.json
 
 #----------------------
 # mgmt
@@ -309,7 +314,7 @@ endif
 update-admin-panel: ##@update Update admin panel
 	kill $(shell ps aux | grep "eqemu-admin" | grep "web" | grep -v "grep" | awk '{print $$2}' | tr '\n' ' ') &>/dev/null || echo "Nothing to kill"
 	kill $(shell ps aux | grep "spire" | grep "http:serve" | grep -v "grep" | awk '{print $$2}' | tr '\n' ' ') &>/dev/null || echo "Nothing to kill"
-	wget --quiet $(shell curl -s https://api.github.com/repos/Akkadius/spire/releases/latest | jq -r '.assets[].browser_download_url' | grep spire-linux) -O /tmp/spire.zip
+	wget --progress=bar:force:noscroll --quiet $(shell curl -s https://api.github.com/repos/Akkadius/spire/releases/latest | jq -r '.assets[].browser_download_url' | grep spire-linux) -O /tmp/spire.zip
 	unzip -o /tmp/spire.zip -d ~/server/bin
 	mv ~/server/bin/spire-linux-amd64 ~/server/bin/spire
 	chmod +x ~/server/bin/spire

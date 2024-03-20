@@ -6,6 +6,7 @@ networks:
 
 volumes:
   build-cache:
+  spire-assets:
 
 services:
 
@@ -21,6 +22,7 @@ services:
       - ./code:/home/eqemu/code:delegated
       - ./assets:/home/eqemu/assets:delegated
       - build-cache:/home/eqemu/.ccache/
+      - spire-assets:/home/eqemu/.cache/
     ports:
       - ${IP_ADDRESS}:2222:22/tcp
       - ${IP_ADDRESS}:2222:22/udp
