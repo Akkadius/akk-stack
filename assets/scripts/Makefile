@@ -91,7 +91,7 @@ init-eqemu-config: ##@init Bootstraps eqemu config
     		| jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' \
     		| jq '.server.world.address = "${IP_ADDRESS}"' \
     		| jq '.server.ucs.host = "${IP_ADDRESS}"' \
-    		-M ~/server/eqemu_config.json
+    		| tee ~/server/eqemu_config.json
 
 init-directories: ##@init Bootstrap directories
 	@./assets/scripts/banner.pl "Bootstrapping directories"
@@ -165,7 +165,7 @@ init-eqemu-admin: ##@init Initializes EQEmu Admin
 		| jq '.["web-admin"].launcher.runSharedMemory = true' \
 		| jq '.["web-admin"].launcher.minZoneProcesses = 10' \
 		| jq '.["web-admin"].launcher.staticZones = "butcher,erudnext,freporte,qeynos,freeporte,oot,iceclad,nro,oasis,nedaria,abysmal,natimbi,timorous,abysmal,firiona,overthere"' \
-		-M ~/server/eqemu_config.json
+		| tee ~/server/eqemu_config.json
 	cd ~/server && ./bin/spire spire:init admin ${ADMIN_PASSWORD} || echo "Already initialized"
 	cd ~/server && ./bin/spire spire:occulus-update
 
