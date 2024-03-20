@@ -86,11 +86,11 @@ init-eqemu-config: ##@init Bootstraps eqemu config
 	@./assets/scripts/banner.pl "Initializing EQEmu Config"
 	@make pull-docker-config
 	@cat ~/server/eqemu_config.json \
-        | jq --arg dbpass "$(EQEMU_DB_PASSWORD)" '.server.database.password = $$dbpass' \
-        | jq --arg ipaddr "$(IP_ADDRESS)" '.server.world.address = $$ipaddr | .server.ucs.host = $$ipaddr' \
-        | jq '.server.zones.ports.high = "$(PORT_RANGE_HIGH)"' \
-        | jq '.server.world.key = (input_filename | capture("(?<prefix>.*)(?<suffix>.json)"; "i").prefix + ("/dev/urandom" | getline | strflocaltime("%Y%m%d%H%M%S")))' \
-        | tee ~/server/eqemu_config.json > /dev/null
+             | jq --arg dbpass "$(EQEMU_DB_PASSWORD)" '.server.database.password = $$dbpass' \
+             | jq --arg ipaddr "$(IP_ADDRESS)" '.server.world.address = $$ipaddr | .server.ucs.host = $$ipaddr' \
+             | jq --arg porthigh "$(PORT_RANGE_HIGH)" '.server.zones.ports.high = $$porthigh' \
+             | jq --argjson random_string "$$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)" '.server.world.key = $$random_string' \
+             | tee ~/server/eqemu_config.json > /dev/null
 
 init-directories: ##@init Bootstrap directories
 	@./assets/scripts/banner.pl "Bootstrapping directories"
