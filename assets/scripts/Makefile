@@ -154,7 +154,7 @@ init-eqemu-admin-assets: ##@init Initializes EQEmu Admin Assets
 init-eqemu-admin: ##@init Initializes EQEmu Admin
 	rm -f ~/server/bin/eqemu-admin-*
 	rm -f ~/server/bin/spire-*
-	wget --progress=bar:force:noscroll --quiet $(shell curl -s https://api.github.com/repos/Akkadius/spire/releases/latest | jq -r '.assets[].browser_download_url' | grep spire-linux) -O /tmp/spire.zip
+	wget --progress=bar:force:noscroll --quiet https://github.com/akkadius/spire/releases/latest/download/spire-linux-amd64.zip -O /tmp/spire.zip
 	unzip -o /tmp/spire.zip -d ~/server/bin
 	mv ~/server/bin/spire-linux-amd64 ~/server/bin/spire
 	chmod +x ~/server/bin/spire
