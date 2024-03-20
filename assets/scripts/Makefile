@@ -86,12 +86,12 @@ init-eqemu-config: ##@init Bootstraps eqemu config
 	@./assets/scripts/banner.pl "Initializing EQEmu Config"
 	@make pull-docker-config
 	@cat ~/server/eqemu_config.json \
-    		| jq '.server.database.password = "${EQEMU_DB_PASSWORD}"' \
-    		| jq '.server.world.key = "$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $${1:-32} | head -n 1)"' \
-    		| jq '.server.zones.ports.high = "${PORT_RANGE_HIGH}"' \
-    		| jq '.server.world.address = "${IP_ADDRESS}"' \
-    		| jq '.server.ucs.host = "${IP_ADDRESS}"' \
-    		| tee ~/server/eqemu_config.json
+         | jq ".server.database.password = \"${EQEMU_DB_PASSWORD}\"" \
+         | jq ".server.world.key = \"$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-32} | head -n 1)\"" \
+         | jq ".server.zones.ports.high = \"${PORT_RANGE_HIGH}\"" \
+         | jq ".server.world.address = \"${IP_ADDRESS}\"" \
+         | jq ".server.ucs.host = \"${IP_ADDRESS}\"" \
+         | tee ~/server/eqemu_config.json
 
 init-directories: ##@init Bootstrap directories
 	@./assets/scripts/banner.pl "Bootstrapping directories"
