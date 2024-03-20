@@ -94,6 +94,7 @@ init-eqemu-config: ##@init Bootstraps eqemu config
 
 init-directories: ##@init Bootstrap directories
 	@./assets/scripts/banner.pl "Bootstrapping directories"
+	sudo chown eqemu:eqemu ~/.cache -R
 	sudo chown eqemu:eqemu ~/server -R
 	sudo chown eqemu:eqemu ~/code -R
 	mkdir -p ~/server/assets
