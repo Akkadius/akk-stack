@@ -146,10 +146,15 @@ endif
 
 init-eqemu-admin-assets: ##@init Initializes EQEmu Admin Assets
 	@./assets/scripts/banner.pl "Initializing EQEmu Admin Assets"
-	curl -L https://github.com/Akkadius/eq-asset-preview/releases/latest/download/build.zip -o /tmp/build.zip
-	mkdir -p ~/.cache/spire
-	mkdir -p ~/.cache/spire/assets
-	unzip -o /tmp/build.zip -d ~/.cache/spire/assets
+	@if [ $(shell find ~/.cache/spire/assets/assets | wc -l) -gt 10 ] ; then \
+		echo "spire assets are initialized"; \
+	else \
+		echo "spire assets are not initialized"; \
+		curl -L https://github.com/Akkadius/eq-asset-preview/releases/latest/download/build.zip -o /tmp/build.zip && \
+		mkdir -p ~/.cache/spire && \
+		mkdir -p ~/.cache/spire/assets && \
+		unzip -o /tmp/build.zip -d ~/.cache/spire/assets \
+	fi
 
 init-eqemu-admin: ##@init Initializes EQEmu Admin
 	rm -f ~/server/bin/eqemu-admin-*
