@@ -88,10 +88,10 @@ init-eqemu-config: ##@init Bootstraps eqemu config
 	jq --arg dbpass "$(EQEMU_DB_PASSWORD)" \
 	   --arg porthigh "$(PORT_RANGE_HIGH)" \
 	   --arg ipaddr "$(IP_ADDRESS)" \
-	   '.server.database.password = $$dbpass |
-		.server.world.key = (input_filename | capture("(?<prefix>.*)(?<suffix>.json)"; "i").prefix + ("/dev/urandom" | getline | strflocaltime("%Y%m%d%H%M%S"))) |
-		.server.zones.ports.high = $$porthigh |
-		.server.world.address = $$ipaddr |
+	   '.server.database.password = $$dbpass | \
+		.server.world.key = (input_filename | capture("(?<prefix>.*)(?<suffix>.json)"; "i").prefix + ("/dev/urandom" | getline | strflocaltime("%Y%m%d%H%M%S"))) | \
+		.server.zones.ports.high = $$porthigh | \
+		.server.world.address = $$ipaddr | \
         .server.ucs.host = $ipaddr' ~/server/eqemu_config.json > temp.json && mv temp.json ~/server/eqemu_config.json
 
 init-directories: ##@init Bootstrap directories
