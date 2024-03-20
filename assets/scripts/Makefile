@@ -226,7 +226,7 @@ pull-maps: ##@assets Pulls maps
 		echo "maps is initialized"; \
 	else \
 		echo "maps is not initialized"; \
-		cd server && wget --progress=bar:force:noscroll https://github.com/Akkadius/eqemu-maps/releases/latest/download/maps.zip -O /tmp/maps.zip && unzip -o /tmp/maps.zip -d ~/server/maps && rm /tmp/maps.zip; \
+		cd server && wget --progress=bar:force:noscroll https://github.com/Akkadius/eqemu-maps/releases/latest/download/maps.zip -O /tmp/maps.zip && unzip -o /tmp/maps.zip -d ~/server/maps && rm /tmp/maps.zip || true; \
 	fi
 
 pull-eqemu-code: ##@assets Pulls eqemu code
