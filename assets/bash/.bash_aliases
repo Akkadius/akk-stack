@@ -38,6 +38,8 @@ alias r='m && z &'
 alias n='cd ~/code/build && ninja -j$(expr $(nproc) - 2)'
 alias nz='cd ~/code/build && ninja-j$(expr $(nproc) - 2) && pkill -9 zone && z'
 
+alias repogen='cd ~/code && perl ~/code/utils/scripts/generators/repository-generator.pl ~/server/'
+
 ######################################
 # Help
 ######################################

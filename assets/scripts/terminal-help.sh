@@ -47,8 +47,8 @@ printf "${quick_command_spacing} | %-10s\n" "[${grn}crashes${end}]" "Displays al
 printf "${quick_command_spacing} | %-10s\n" "[${grn}config${end}]" "Displays server config"
 printf "\n"
 printf "${quick_command_spacing} | %-10s\n" "[${grn}mc${end}]" "Create direct MySQL console"
+printf "${quick_command_spacing} | %-10s\n" "[${grn}repogen${end}]" "[table|all] [base|extended|all] Shortcut to repository generator"
 printf "\n"
-
 
 # Spire
 if [[ "${SPIRE_DEV}" == *"true"* ]]; then
