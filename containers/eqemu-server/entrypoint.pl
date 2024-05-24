@@ -58,6 +58,7 @@ print `while true; do nohup ~/assets/scripts/process-watcher.pl && break; done >
 print "# chmod/chown | scripts\n";
 print `sudo chmod +x ~/assets/scripts/*`;
 print `sudo chown eqemu -R ~/.ccache`;
+print `sudo chown eqemu -R ~/.cache`;
 
 #########################
 # bash symlinks
