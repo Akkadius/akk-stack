@@ -91,12 +91,16 @@ print `cd $server_path && nohup ./startup/* >/dev/null 2>&1 &`;
 #########################
 # spire-admin
 #########################
-print "# Starting Spire\n";
+print "# Checking MySQL\n";
 print `while ! mysqladmin status -ueqemu -p$EQEMU_DB_PASSWORD -h "mariadb" --silent; do sleep .5; done;`;
-print `while true; do cd ~/server/ && nohup ./bin/spire http:serve --port=$SPIRE_PORT >/dev/null 2>&1; sleep 1; done &`;
+print "# Starting Spire\n";
+system("while true; do cd ~/server/ && ./bin/spire http:serve --port=$SPIRE_PORT; sleep 1; done &");
 
 #############################################
 # cron watcher
 #############################################
+print "# Starting Cron Watcher\n";
 print `while inotifywait -e modify ~/assets/cron/; do bash -c "crontab ~/assets/cron/*; sudo pkill cron; sudo cron -f &"; done >/dev/null 2>&1 &`;
+print "# Starting Cron\n";
 print `crontab ~/assets/cron/*; sudo cron -f &`;
+
