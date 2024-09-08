@@ -59,8 +59,8 @@ RUN apt-get update && apt-get install -y \
 	ninja-build \
 	net-tools \
 	openssh-server \
-    rsyslog \
-    logrotate \
+	rsyslog \
+	logrotate \
 	sudo \
 	telnet \
 	zip \
