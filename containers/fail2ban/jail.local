@@ -1,0 +1,26 @@
+[DEFAULT]
+ignoreip = 127.0.0.1/8 10.0.0.0/8 192.168.0.0/16 172.16.0.0/12
+bantime  = 1d
+findtime = 10m
+maxretry = 3
+backend  = auto
+usedns   = no
+protocol = tcp
+chain    = DOCKER-USER
+
+[sshd]
+enabled  = true
+port     = 22
+filter   = sshd
+logpath  = /eqemu/var/log/auth.log
+maxretry = 2
+protocol = tcp
+chain    = DOCKER-USER
+
+[mysqld-auth]
+enabled   = true
+port      = 3306
+log-error = /mariadb/var/log/mysql/error.log
+logpath   = /mariadb/var/log/mysql/error.log
+backend   = %(mysql_backend)s
+maxretry  = 6
