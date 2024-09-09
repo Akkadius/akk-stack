@@ -96,8 +96,8 @@ services:
 
   fail2ban:
     restart: unless-stopped
-    image: akkadius/akk-stack-fail2ban:v1
-    build: ./containers/fail2ban
+    build:
+      context: ./containers/fail2ban
     network_mode: host
     cap_add:
       - NET_ADMIN
