@@ -2,7 +2,7 @@ FROM akkadius/eqemu-server:v14
 
 USER root
 
-ENV GO_VERSION 1.19.1
+ENV GO_VERSION=1.19.1
 
 #############################################
 # install dependencies
@@ -27,7 +27,7 @@ RUN cd /tmp && wget --quiet https://golang.org/dl/go${GO_VERSION}.linux-amd64.ta
 ENV GOPATH=/home/eqemu
 ENV GOROOT=/usr/local/go/
 ENV PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
-ENV CGO_ENABLED 0
+ENV CGO_ENABLED=0
 
 USER eqemu
 

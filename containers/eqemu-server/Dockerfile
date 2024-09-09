@@ -2,13 +2,13 @@ FROM debian:12-slim
 
 LABEL maintainer="Akkadius <akkadius1@gmail.com>"
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Add a non-root user to prevent files being created with root permissions on host machine.
 ARG PUID=1000
-ENV PUID ${PUID}
+ENV PUID=${PUID}
 ARG PGID=1000
-ENV PGID ${PGID}
+ENV PGID=${PGID}
 
 ENV TZ=US/Central
 
@@ -59,6 +59,8 @@ RUN apt-get update && apt-get install -y \
 	ninja-build \
 	net-tools \
 	openssh-server \
+	rsyslog \
+	logrotate \
 	sudo \
 	telnet \
 	zip \
@@ -116,6 +118,21 @@ RUN /opt/eqemu-perl/bin/cpanm --notest DBI && \
     /opt/eqemu-perl/bin/cpanm --notest Net::Telnet && \
     /opt/eqemu-perl/bin/cpanm -n Module::Refresh && \
     chown eqemu:eqemu -R /opt/eqemu-perl/
+
+#############################################
+# logrotate
+#############################################
+
+COPY logrotate.conf /etc/logrotate.d/var-log
+
+# Create a cron job to run logrotate at midnight
+RUN echo "0 0 * * * /usr/sbin/logrotate /etc/logrotate.conf" > /etc/cron.d/logrotate
+
+# Give execute permissions to cron job file
+RUN chmod 0644 /etc/cron.d/logrotate
+
+# Ensure cron runs on container start
+RUN crontab /etc/cron.d/logrotate
 
 #############################################
 # entrypoint script

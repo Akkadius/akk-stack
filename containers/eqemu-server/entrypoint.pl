@@ -97,6 +97,12 @@ print "# Starting Spire\n";
 system("while true; do cd ~/server/ && ./bin/spire http:serve --port=$SPIRE_PORT; sleep 1; done &");
 
 #############################################
+# start rsyslogd
+#############################################
+print "# Starting rsyslogd\n";
+print `sudo rsyslogd &`;
+
+#############################################
 # cron watcher
 #############################################
 print "# Starting Cron Watcher\n";
