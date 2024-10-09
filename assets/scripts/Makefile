@@ -23,9 +23,15 @@ RESET  := $(shell tput -Txterm sgr0)
 #----------------------
 # environment
 #----------------------
+SERVER_REPO=https://github.com/EQEmu/Server.git
 QUESTS_REPO=https://github.com/ProjectEQ/projecteqquests.git
 SERVER_CONFIG_URL=https://raw.githubusercontent.com/Akkadius/eqemu-install-v2/master/eqemu_config_docker.json
 
+ifeq ("$(EQEMU_ENV)", "takp")
+	SERVER_REPO=https://github.com/EQMacEmu/Server.git
+	QUESTS_REPO=https://github.com/EQMacEmu/quests.git
+#	SERVER_CONFIG_URL=https://raw.githubusercontent.com/Akkadius/eqemu-install-v2/master/eqemu_config_takp.json
+endif
 
 #------------------------------------------------------------------
 # - Add the following 'help' target to your Makefile
@@ -202,7 +208,11 @@ init-set-perms: ##@init Sets permissions recursively
 	find ~/ -not -user eqemu -execdir sudo chown eqemu:eqemu {} \+
 
 init-server-binaries: ##@init Initializes server binaries
+ifeq ("$(EQEMU_ENV)", "eqemu")
 	cd ~/server && ./bin/spire eqemu-server:update --release-binaries=true --auto=true
+else ifeq ("$(EQEMU_ENV)", "takp")
+	cd ~/server && ./bin/spire eqemu-server:update --compile-server=true --auto=true
+endif
 
 init-perl: ##@init Initializes perl - compiles perl from source to /opt/eqemu-perl
 	@./assets/scripts/banner.pl "Initializing Perl"
@@ -234,17 +244,27 @@ init-perl: ##@init Initializes perl - compiles perl from source to /opt/eqemu-pe
 #----------------------
 
 pull-maps: ##@assets Pulls maps
-	@./assets/scripts/banner.pl "Pulling latest EQEmu maps"
+	@./assets/scripts/banner.pl "Pulling latest maps"
+ifeq ("$(EQEMU_ENV)", "eqemu")
 	@if [ $(shell find ~/server/maps | wc -l) -gt 10 ] ; then \
 		echo "maps is initialized"; \
 	else \
 		echo "maps is not initialized"; \
 		cd server && wget --progress=bar:force:noscroll https://github.com/Akkadius/eqemu-maps/releases/latest/download/maps.zip -O /tmp/maps.zip && unzip -o /tmp/maps.zip -d ~/server/maps && rm /tmp/maps.zip || true; \
 	fi
+else ifeq ("$(EQEMU_ENV)", "takp")
+	@if [ $(shell find ~/server/maps | wc -l) -gt 10 ] ; then \
+		echo "maps is initialized"; \
+	else \
+		echo "maps is not initialized"; \
+		(cd ~/server && git -C ./maps pull 2> /dev/null || git clone https://github.com/EQMacEmu/Maps.git maps) \
+	fi
+endif
+
 
 pull-eqemu-code: ##@assets Pulls eqemu code
 	@./assets/scripts/banner.pl "Pulling EQEmu source code into [./code]"
-	git -C ./code pull 2> /dev/null || git clone https://github.com/EQEmu/Server.git code
+	git -C ./code pull 2> /dev/null || git clone $(SERVER_REPO) code
 
 pull-peq-quests: ##@assets Pulls ProjectEQ quests
 	@./assets/scripts/banner.pl "Pulling latest quests"

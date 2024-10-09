@@ -50,7 +50,7 @@ services:
       - PEQ_EDITOR_PASSWORD=${PEQ_EDITOR_PASSWORD}
       - IP_ADDRESS=${IP_ADDRESS}
       - PORT_RANGE_HIGH=${PORT_RANGE_HIGH}
-      - EQEMU_ENV=${EQEMU_ENV}
+      - EQEMU_ENV=${EQEMU_ENV:-eqemu}
       - TZ=${TZ:-US/Central}
     tty: true
     networks:
