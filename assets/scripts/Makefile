@@ -76,7 +76,11 @@ install: ##@init Install full application
 	@make init-eqemu-admin-assets
 	@make init-eqemu-admin
 	@make init-server-binaries
+ifeq ("$(EQEMU_ENV)", "eqemu")
 	@make init-peq-database
+else ifeq ("$(EQEMU_ENV)", "takp")
+	@make init-takp-database
+endif
 	@make init-loginserver
 	@make init-peq-editor
 	@make init-set-perms
@@ -128,6 +132,35 @@ init-peq-database: ##@init Sources fresh PEQ database (Warning: Will over-write 
 		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') \
 		< ./create_all_tables.sql
 	rm -rf /tmp/db/
+	cd ~/server && ./bin/world database:updates
+
+init-takp-database: ##@init Sources fresh TAKP database (Warning: Will over-write existing)
+	@./assets/scripts/banner.pl "Bootstrapping TAKP Database"
+	rm -rf /tmp/db/alkabor
+	curl https://raw.githubusercontent.com/EQMacEmu/Server/refs/heads/main/utils/sql/database_full/alkabor_latest.zip -o /tmp/db.zip
+	unzip -o /tmp/db.zip -d /tmp/db/
+	mv /tmp/db/alkabor_* /tmp/db/alkabor
+	mv /tmp/db/alkabor/alkabor_*.sql /tmp/db/alkabor/alkabor.sql
+	mv /tmp/db/alkabor/data_tables_*.sql /tmp/db/alkabor/data_tables.sql
+	mv /tmp/db/alkabor/player_tables_*.sql /tmp/db/alkabor/player_tables.sql
+	mv /tmp/db/alkabor/login_tables_*.sql /tmp/db/alkabor/login_tables.sql
+	# drop db if exists
+	mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
+		-p$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password') \
+		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
+		-e 'drop database if exists $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db')'
+	# create
+	mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
+		-p$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password') \
+		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
+		-e 'create database $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db')'
+	# source
+	cd /tmp/db/alkabor && mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
+		-p$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password') \
+		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
+		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') \
+		< ./alkabor.sql
+	rm -rf /tmp/db/alkabor/
 	cd ~/server && ./bin/world database:updates
 
 init-loginserver: ##@init Initializes Loginserver
@@ -185,7 +218,6 @@ init-eqemu-admin: ##@init Initializes EQEmu Admin
 		| jq '.["web-admin"].launcher.staticZones = "butcher,erudnext,freporte,qeynos,freeporte,oot,iceclad,nro,oasis,nedaria,abysmal,natimbi,timorous,abysmal,firiona,overthere"' \
 		-M > /tmp/config.json && mv /tmp/config.json ~/server/eqemu_config.json && rm -f /tmp/config.json
 	cd ~/server && ./bin/spire spire:init admin ${ADMIN_PASSWORD} || echo "Already initialized"
-	cd ~/server && ./bin/spire spire:occulus-update
 
 init-eqemu-admin-dev: ##@init Initializes EQEmu Admin (Development)
 	cd ~/server && if cd eqemu-web-admin 2> /dev/null; then git pull; else git clone https://github.com/Akkadius/eqemu-web-admin; fi
