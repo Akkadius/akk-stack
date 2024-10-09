@@ -20,6 +20,13 @@ WHITE  := $(shell tput -Txterm setaf 7)
 YELLOW := $(shell tput -Txterm setaf 3)
 RESET  := $(shell tput -Txterm sgr0)
 
+#----------------------
+# environment
+#----------------------
+QUESTS_REPO=https://github.com/ProjectEQ/projecteqquests.git
+SERVER_CONFIG_URL=https://raw.githubusercontent.com/Akkadius/eqemu-install-v2/master/eqemu_config_docker.json
+
+
 #------------------------------------------------------------------
 # - Add the following 'help' target to your Makefile
 # - Add help text after each target name starting with '\#\#'
@@ -227,7 +234,7 @@ init-perl: ##@init Initializes perl - compiles perl from source to /opt/eqemu-pe
 #----------------------
 
 pull-maps: ##@assets Pulls maps
-	@./assets/scripts/banner.pl "Pulling latest EQEmu Maps"
+	@./assets/scripts/banner.pl "Pulling latest EQEmu maps"
 	@if [ $(shell find ~/server/maps | wc -l) -gt 10 ] ; then \
 		echo "maps is initialized"; \
 	else \
@@ -236,16 +243,16 @@ pull-maps: ##@assets Pulls maps
 	fi
 
 pull-eqemu-code: ##@assets Pulls eqemu code
-	@./assets/scripts/banner.pl "Pulling EQEmu Source Code into [./code]"
+	@./assets/scripts/banner.pl "Pulling EQEmu source code into [./code]"
 	git -C ./code pull 2> /dev/null || git clone https://github.com/EQEmu/Server.git code
 
 pull-peq-quests: ##@assets Pulls ProjectEQ quests
-	@./assets/scripts/banner.pl "Pulling Latest ProjectEQ Quests"
-	cd ~/server && git -C ./quests pull 2> /dev/null || git clone https://github.com/ProjectEQ/projecteqquests.git quests
+	@./assets/scripts/banner.pl "Pulling latest quests"
+	cd ~/server && git -C ./quests pull 2> /dev/null || git clone $(QUESTS_REPO) quests
 
 pull-docker-config: ##@assets Pulls default eqemu_config.json
 	@./assets/scripts/banner.pl "Bootstrapping default [eqemu_config.json]"
-	cd ~/server && wget --progress=bar:force:noscroll --no-cache --no-check-certificate --no-cookies https://raw.githubusercontent.com/Akkadius/eqemu-install-v2/master/eqemu_config_docker.json -O eqemu_config.json
+	cd ~/server && wget --progress=bar:force:noscroll --no-cache --no-check-certificate --no-cookies $(SERVER_CONFIG_URL) -O eqemu_config.json
 
 #----------------------
 # mgmt

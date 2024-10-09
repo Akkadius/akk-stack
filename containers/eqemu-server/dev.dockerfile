@@ -1,4 +1,4 @@
-FROM akkadius/eqemu-server:v15
+FROM akkadius/eqemu-server:v16
 
 USER root
 
