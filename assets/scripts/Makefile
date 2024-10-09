@@ -154,14 +154,16 @@ init-takp-database: ##@init Sources fresh TAKP database (Warning: Will over-writ
 		-p$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password') \
 		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
 		-e 'create database $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db')'
+	# combine
+	cd /tmp/db/alkabor && cat ./alkabor.sql ./data_tables.sql ./player_tables.sql ./login_tables.sql > /tmp/db/all.sql
 	# source
 	cd /tmp/db/alkabor && mysql -u$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.username') \
 		-p$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.password') \
 		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
 		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') \
-		< ./alkabor.sql
+		< /tmp/db/all.sql
 	rm -rf /tmp/db/alkabor/
-	cd ~/server && ./bin/world database:updates
+	#cd ~/server && ./bin/world database:updates
 
 init-loginserver: ##@init Initializes Loginserver
 	@./assets/scripts/banner.pl "Initializing Loginserver"
@@ -243,6 +245,11 @@ init-server-binaries: ##@init Initializes server binaries
 ifeq ("$(EQEMU_ENV)", "eqemu")
 	cd ~/server && ./bin/spire eqemu-server:update --release-binaries=true --auto=true
 else ifeq ("$(EQEMU_ENV)", "takp")
+ifeq ("$(ENV)", "development")
+	make init-dev-build
+else ifeq ("$(ENV)", "production")
+	make init-build
+endif
 	cd ~/server && ./bin/spire eqemu-server:update --compile-server=true --auto=true
 endif
 

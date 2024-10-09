@@ -43,6 +43,7 @@ services:
       - ${IP_ADDRESS}:7000-${PORT_RANGE_HIGH}:7000-${PORT_RANGE_HIGH}/tcp
       - ${IP_ADDRESS}:7000-${PORT_RANGE_HIGH}:7000-${PORT_RANGE_HIGH}/udp
     environment:
+      - ENV=${ENV:-production}
       - SPIRE_PORT=${SPIRE_PORT:-3000}
       - SPIRE_ADMIN_PASSWORD=${SPIRE_ADMIN_PASSWORD:-}
       - SERVER_PASSWORD=${SERVER_PASSWORD}
