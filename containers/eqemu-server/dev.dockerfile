@@ -2,7 +2,7 @@ FROM akkadius/eqemu-server:v16
 
 USER root
 
-ENV GO_VERSION=1.19.1
+ENV GO_VERSION=1.23.2
 
 #############################################
 # install dependencies
