@@ -6,6 +6,8 @@
 CWD=$(pwd)
 source $CWD/.env
 
+export TZ
+
 cd /tmp/
 
 # validate

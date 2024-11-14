@@ -9,6 +9,9 @@ MAILTO=""
 # once a day on a random variance to keep from bursting backups amongst several servers
 0 1 * * * perl -e 'sleep int(rand(1800))'; ./backup/backup-database.sh > /dev/null
 
+# once an hour
+@hourly cd /home/backup-cron && ./backup/backup-database-hourly-player-tables.sh > /dev/null
+
 # once a day on a random variance to keep from bursting backups amongst several servers
 0 1 * * * perl -e 'sleep int(rand(1800))'; ./backup/backup-quests.sh > /dev/null
 

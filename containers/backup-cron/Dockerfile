@@ -1,4 +1,4 @@
-FROM debian:10-slim
+FROM debian:12-slim
 
 ARG PUID=1000
 ENV PUID ${PUID}
@@ -13,8 +13,11 @@ RUN apt-get update -yqq && \
 RUN apt-get update && apt-get install -y \
     bash \
     curl \
+    jq \
     cron \
+    libssl-dev \
     make \
+    tzdata \
     sudo \
     inotify-tools \
     mariadb-client \
