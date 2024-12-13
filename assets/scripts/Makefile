@@ -109,6 +109,12 @@ init-eqemu-config: ##@init Bootstraps eqemu config
              | jq --arg porthigh "$(PORT_RANGE_HIGH)" '.server.zones.ports.high = $$porthigh' \
              | jq --arg random_string "$$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | head -c 32)" '.server.world.key = $$random_string' \
              -M > /tmp/config.json && mv /tmp/config.json ~/server/eqemu_config.json && rm -f /tmp/config.json
+ifeq ("$(EQEMU_ENV)", "takp")
+	@cat ~/server/eqemu_config.json \
+			 | jq --arg name "Akkas Takp Installer (akk-stack) ($$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | head -c 10))" '.server.world.longname = $$name' \
+			 | jq --arg name "Akkas Takp Installer (akk-stack) ($$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | head -c 10))" '.server.world.shortname = $$name' \
+			 -M > /tmp/config.json && mv /tmp/config.json ~/server/eqemu_config.json && rm -f /tmp/config.json
+endif
 
 init-directories: ##@init Bootstrap directories
 	@./assets/scripts/banner.pl "Bootstrapping directories"
