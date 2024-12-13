@@ -80,6 +80,7 @@ ifeq ("$(EQEMU_ENV)", "eqemu")
 	@make init-peq-database
 else ifeq ("$(EQEMU_ENV)", "takp")
 	@make init-takp-database
+	@make init-eqemu-admin
 endif
 	@make init-loginserver
 	@make init-peq-editor
@@ -136,7 +137,7 @@ init-peq-database: ##@init Sources fresh PEQ database (Warning: Will over-write 
 
 init-takp-database: ##@init Sources fresh TAKP database (Warning: Will over-write existing)
 	@./assets/scripts/banner.pl "Bootstrapping TAKP Database"
-	rm -rf /tmp/db/alkabor
+	rm -rf /tmp/db/
 	curl https://raw.githubusercontent.com/EQMacEmu/Server/refs/heads/main/utils/sql/database_full/alkabor_latest.zip -o /tmp/db.zip
 	unzip -o /tmp/db.zip -d /tmp/db/
 	mv /tmp/db/alkabor_* /tmp/db/alkabor
@@ -162,7 +163,7 @@ init-takp-database: ##@init Sources fresh TAKP database (Warning: Will over-writ
 		-h $(shell ~/assets/scripts/init/get-config-var.sh '.server.database.host') \
 		$(shell ~/assets/scripts/init/get-config-var.sh '.server.database.db') \
 		< /tmp/db/all.sql
-	rm -rf /tmp/db/alkabor/
+	rm -rf /tmp/db/
 	#cd ~/server && ./bin/world database:updates
 
 init-loginserver: ##@init Initializes Loginserver
