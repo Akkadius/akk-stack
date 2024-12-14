@@ -2,7 +2,7 @@
 # 7.1 Apache
 ######################################################
 
-FROM php:7.1-apache
+FROM php:8.1-apache
 
 RUN apt-get update && apt-get install -y \
 	libbz2-dev \
@@ -27,14 +27,12 @@ RUN docker-php-ext-install -j$(nproc) dba
 RUN docker-php-ext-install -j$(nproc) exif
 RUN docker-php-ext-install -j$(nproc) gd
 RUN docker-php-ext-install -j$(nproc) gettext
-RUN docker-php-ext-install -j$(nproc) mcrypt
 RUN docker-php-ext-install -j$(nproc) mysqli
 RUN docker-php-ext-install -j$(nproc) opcache
 RUN docker-php-ext-install -j$(nproc) pdo_mysql
 RUN docker-php-ext-install -j$(nproc) soap
 RUN docker-php-ext-install -j$(nproc) sockets
 RUN docker-php-ext-install -j$(nproc) xsl
-RUN docker-php-ext-install -j$(nproc) zip
 
 RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini && \
     echo "opcache.memory_consumption=512" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini && \
