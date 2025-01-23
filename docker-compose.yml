@@ -15,6 +15,7 @@ services:
   #############################################
 
   eqemu-server:
+    hostname: ${SERVER_HOSTNAME:-}
     restart: unless-stopped
     image: akkadius/eqemu-server:v15
     volumes:
