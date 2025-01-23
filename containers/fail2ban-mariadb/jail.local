@@ -8,15 +8,6 @@ usedns   = no
 protocol = tcp
 chain    = DOCKER-USER
 
-[sshd]
-enabled  = true
-port     = 22
-filter   = sshd
-logpath  = /eqemu/var/log/auth.log
-maxretry = 2
-protocol = tcp
-chain    = DOCKER-USER
-
 [mysqld-auth]
 enabled   = true
 port      = 3306

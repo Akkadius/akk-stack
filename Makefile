@@ -330,3 +330,11 @@ backup-dropbox-all: ##@backup Backup all assets to Dropbox
 	make backup-dropbox-database
 	make backup-dropbox-quests
 	make backup-dropbox-deployment
+
+#----------------------
+# show
+#----------------------
+
+show-fail2ban: ##@show Show fail2ban logs
+	docker-compose exec fail2ban-server fail2ban-client status sshd
+	docker-compose exec fail2ban-mysqld fail2ban-client status mysqld-auth
