@@ -61,7 +61,7 @@ services:
       - SYS_PTRACE
     cpu_shares: 900
     depends_on:
-      - fail2ban
+      - fail2ban-server
 
   #############################################
   # mariadb
@@ -88,16 +88,16 @@ services:
     networks:
       - backend
     depends_on:
-      - fail2ban
+      - fail2ban-mysqld
 
   #############################################
   # fail2ban
   #############################################
 
-  fail2ban:
+  fail2ban-server:
     restart: unless-stopped
     build:
-      context: ./containers/fail2ban
+      context: containers/fail2ban-server
     network_mode: host
     cap_add:
       - NET_ADMIN
@@ -113,6 +113,25 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /var/log:/var/log:ro
       - eqemu-var-log:/eqemu/var/log/
+
+  fail2ban-mysqld:
+    restart: unless-stopped
+    build:
+      context: containers/fail2ban-mariadb
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    environment:
+      - F2B_LOG_LEVE=DEBUG
+      - F2B_DB_PURGE_AGE=30d
+      - F2B_MAX_RETRY=3
+      - F2B_ACTION=%(action_)s
+      - F2B_IPTABLES_CHAIN=DOCKER-USER
+      - TZ=${TZ:-US/Central}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/log:/var/log:ro
       - mariadb-var-log:/mariadb/var/log/mysql/
 
   #############################################
