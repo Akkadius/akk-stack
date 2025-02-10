@@ -168,11 +168,24 @@ services:
   # peq editor
   #############################################
 
-  peq-editor:
-    image: akkadius/peq-editor:latest
+  peq-editor-proxy:
+    build: ./containers/http-proxy
     restart: unless-stopped
     ports:
-      - ${IP_ADDRESS}:8081:80
+      - "${IP_ADDRESS}:8081:80"
+    environment:
+      - BASIC_AUTH_USERNAME=${PEQ_EDITOR_PROXY_USERNAME:-peq-editor}
+      - BASIC_AUTH_PASSWORD=${PEQ_EDITOR_PROXY_PASSWORD}
+      - PROXY_PASS=http://peq-editor
+      - TZ=${TZ:-US/Central}
+    networks:
+      - backend
+
+  peq-editor:
+    depends_on:
+      - peq-editor-proxy
+    image: akkadius/peq-editor:latest
+    restart: unless-stopped
     volumes:
       - ${DATA_PATH_HOST}/peq-editor:/var/www/html
     environment:

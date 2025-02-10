@@ -268,9 +268,10 @@ info: ##@info Print install info
 	@echo "----------------------------------"
 	@echo "> Web Interfaces"
 	@echo "----------------------------------"
-	@echo "> PEQ Editor  | http://${IP_ADDRESS}:8081 | admin / ${PEQ_EDITOR_PASSWORD}"
-	@echo "> PhpMyAdmin  | http://${IP_ADDRESS}:8082 | admin / ${PHPMYADMIN_PASSWORD}"
-	@echo "> EQEmu Admin | http://${IP_ADDRESS}:3000 | admin / $(shell $(DOCKER) exec -T eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.[\"web-admin\"].application.admin.password'")"
+	@echo "> PEQ Editor (proxy) | http://${IP_ADDRESS}:8081 | ${PEQ_EDITOR_PROXY_USERNAME} / ${PEQ_EDITOR_PROXY_PASSWORD}"
+	@echo "> PEQ Editor (app)   | http://${IP_ADDRESS}:8081 | admin / ${PEQ_EDITOR_PASSWORD}"
+	@echo "> PhpMyAdmin         | http://${IP_ADDRESS}:8082 | admin / ${PHPMYADMIN_PASSWORD}"
+	@echo "> EQEmu Admin        | http://${IP_ADDRESS}:3000 | admin / $(shell $(DOCKER) exec -T eqemu-server bash -c "cat ~/server/eqemu_config.json | jq '.[\"web-admin\"].application.admin.password'")"
 ifeq ("$(SPIRE_DEV)", "true")
 	@echo "----------------------------------"
 	@echo "> Spire Backend Development  | http://${IP_ADDRESS}:3010 | "

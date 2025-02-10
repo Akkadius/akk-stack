@@ -3,13 +3,14 @@ use strict;
 use warnings FATAL => 'all';
 
 my %fields_to_scramble = (
-    "MARIADB_ROOT_PASSWORD"  => 1,
-    "MARIADB_PASSWORD"       => 1,
-    "PHPMYADMIN_PASSWORD"    => 1,
-    "SERVER_PASSWORD"        => 1,
-    "FTP_QUESTS_PASSWORD"    => 1,
-    "SPIRE_ADMIN_PASSWORD"   => 1,
-    "PEQ_EDITOR_PASSWORD"    => 1
+    "MARIADB_ROOT_PASSWORD"     => 1,
+    "MARIADB_PASSWORD"          => 1,
+    "PHPMYADMIN_PASSWORD"       => 1,
+    "PEQ_EDITOR_PROXY_PASSWORD" => 1,
+    "SERVER_PASSWORD"           => 1,
+    "FTP_QUESTS_PASSWORD"       => 1,
+    "SPIRE_ADMIN_PASSWORD"      => 1,
+    "PEQ_EDITOR_PASSWORD"       => 1
 );
 
 ##################################
@@ -35,8 +36,11 @@ if (-e $filename) {
                     $write = 0;
                 }
 
-                if (defined $write && $write == 1) {
+                if (defined $write && $write == 1 && $value eq "<template>") {
+                    print "Scrambling [$key]\n";
                     $row =~ s/$value/$new_hash/g;
+                } elsif ($value ne "<template>") {
+                    print "Skipping [$key] because it was already set\n";
                 }
             }
         }
@@ -55,15 +59,13 @@ close $fh;
 
 print "Wrote updated config to [.env]\n";
 
-sub hash
-{
+sub hash {
     my @alphanumeric    = ('a' .. 'z', 'A' .. 'Z', 0 .. 9);
     my $random_password = join '', map $alphanumeric[rand @alphanumeric], 0 .. 30;
     return $random_password;
 }
 
-sub trim
-{
+sub trim {
     my $string = $_[0];
     $string =~ s/^\s+//;
     $string =~ s/\s+$//;

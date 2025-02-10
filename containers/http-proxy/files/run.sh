@@ -12,6 +12,12 @@ if [ -z $BASIC_AUTH_PASSWORD ]; then
   exit 1
 fi
 
+# check if $BASIC_AUTH_PASSWORD is set to "<template>"
+if [ "$BASIC_AUTH_PASSWORD" = "<template>" ]; then
+  echo >&2 "BASIC_AUTH_PASSWORD must be set"
+  exit 1
+fi
+
 if [ -z $PROXY_PASS ]; then
   echo >&2 "PROXY_PASS must be set"
   exit 1
