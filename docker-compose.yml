@@ -17,7 +17,7 @@ services:
   eqemu-server:
     hostname: ${SERVER_HOSTNAME:-}
     restart: unless-stopped
-    image: akkadius/eqemu-server:v15
+    image: akkadius/eqemu-server:v16
     volumes:
       - ./server:/home/eqemu/server:delegated
       - ./code:/home/eqemu/code:delegated

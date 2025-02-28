@@ -53,6 +53,8 @@ RUN apt-get update && apt-get install -y \
 	libsodium-dev \
 	libssl-dev \
 	lua5.1 \
+	nano \
+	tmux \
 	make \
 	mariadb-client \
 	minizip \
