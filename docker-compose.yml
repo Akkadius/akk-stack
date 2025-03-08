@@ -41,6 +41,8 @@ services:
       - ${IP_ADDRESS}:6000:6000/tcp
       - ${IP_ADDRESS}:7778:7778/tcp
       - ${IP_ADDRESS}:7778:7778/udp
+      - ${IP_ADDRESS}:9500:9500/tcp
+      - ${IP_ADDRESS}:9500:9500/udp
       - ${IP_ADDRESS}:${PORT_RANGE_LOW:-7000}-${PORT_RANGE_HIGH}:${PORT_RANGE_LOW:-7000}-${PORT_RANGE_HIGH}/udp
     environment:
       - SPIRE_PORT=${SPIRE_PORT:-3000}
