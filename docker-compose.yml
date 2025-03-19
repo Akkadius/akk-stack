@@ -76,7 +76,7 @@ services:
       args:
         - INNODB_BUFFER_POOL_SIZE=${INNODB_BUFFER_POOL_SIZE:-256MB}
     ports:
-      - ${IP_ADDRESS}:3306:3306
+      - ${IP_ADDRESS}:${MARIADB_PORT:-3306}:3306
     volumes:
       - ${DATA_PATH_HOST}/mariadb:/var/lib/mysql:delegated
       - mariadb-var-log:/var/log/mysql/
