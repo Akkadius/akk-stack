@@ -103,7 +103,6 @@ init-directories: ##@init Bootstrap directories
 	mkdir -p ~/server/bin
 	mkdir -p ~/server/logs
 	mkdir -p ~/server/shared
-	mkdir -p ~/server/assets
 
 init-peq-database: ##@init Sources fresh PEQ database (Warning: Will over-write existing)
 	@./assets/scripts/banner.pl "Bootstrapping PEQ Database"
