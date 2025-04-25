@@ -261,6 +261,9 @@ last-crash: ##@mgmt Shows last crash that happened
 # build
 #----------------------
 
+ARCH := $(shell uname -m)
+PERL_ARCH := $(if $(filter $(ARCH),aarch64 arm64),aarch64-linux-thread-multi,x86_64-linux-thread-multi)
+
 init-build: ##@build Initialize build
 	@./assets/scripts/banner.pl "Initializing EQEmu Server Build"
 	cd ~/code && \
@@ -272,9 +275,9 @@ init-build: ##@build Initialize build
 		cmake \
 			-DEQEMU_BUILD_LOGIN=ON \
 			-DEQEMU_BUILD_LUA=ON \
-			-DPERL_LIBRARY=/opt/eqemu-perl/lib/5.32.1/x86_64-linux-thread-multi/CORE/libperl.so \
+			-DPERL_LIBRARY=/opt/eqemu-perl/lib/5.32.1/$(PERL_ARCH)/CORE/libperl.so \
 			-DPERL_EXECUTABLE=/opt/eqemu-perl/bin/perl \
-			-DPERL_INCLUDE_PATH=/opt/eqemu-perl/lib/5.32.1/x86_64-linux-thread-multi/CORE/ \
+			-DPERL_INCLUDE_PATH=/opt/eqemu-perl/lib/5.32.1/$(PERL_ARCH)/CORE/ \
 			-DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O1 -g -DNDEBUG -Wno-everything" \
 			-DCMAKE_CXX_COMPILER_LAUNCHER=ccache -G 'Unix Makefiles' ..
 
@@ -289,9 +292,9 @@ init-dev-build: ##@build Initialize build for development (faster compiles, uses
 		cmake -DEQEMU_BUILD_LOGIN=ON \
 			-DEQEMU_BUILD_TESTS=ON \
 			-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-			-DPERL_LIBRARY=/opt/eqemu-perl/lib/5.32.1/x86_64-linux-thread-multi/CORE/libperl.so \
+			-DPERL_LIBRARY=/opt/eqemu-perl/lib/5.32.1/$(PERL_ARCH)/CORE/libperl.so \
 			-DPERL_EXECUTABLE=/opt/eqemu-perl/bin/perl \
-			-DPERL_INCLUDE_PATH=/opt/eqemu-perl/lib/5.32.1/x86_64-linux-thread-multi/CORE/ \
+			-DPERL_INCLUDE_PATH=/opt/eqemu-perl/lib/5.32.1/$(PERL_ARCH)/CORE/ \
 			-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=gold \
 			-DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O0 -g -DNDEBUG -Os -Wno-everything" -G "Ninja" ..
 
