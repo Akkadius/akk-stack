@@ -339,3 +339,30 @@ backup-dropbox-all: ##@backup Backup all assets to Dropbox
 show-fail2ban: ##@show Show fail2ban logs
 	docker-compose exec fail2ban-server fail2ban-client status sshd
 	docker-compose exec fail2ban-mysqld fail2ban-client status mysqld-auth
+
+#----------------------
+# monitoring
+#----------------------
+
+init-pmm: ##@monitoring Initializes Percona PMM for MariaDB
+	@echo "🔧 Starting PMM services..."
+	$(DOCKER) up -d pmm-server mariadb
+	@echo "⏳ Waiting for MariaDB to become available..."
+	$(DOCKER) exec mariadb bash -c 'while ! mysqladmin ping -uroot -p${MARIADB_ROOT_PASSWORD} --silent; do sleep 1; done'
+	@echo "🔐 Creating or updating PMM monitoring user in MariaDB..."
+	$(DOCKER) exec mariadb bash -c "mysql -uroot -p${MARIADB_ROOT_PASSWORD} -e \"\
+		CREATE USER IF NOT EXISTS 'pmm'@'%' IDENTIFIED BY '${PMM_DB_MONITOR_PASSWORD}'; \
+		ALTER USER 'pmm'@'%' IDENTIFIED BY '${PMM_DB_MONITOR_PASSWORD}'; \
+		GRANT SELECT, PROCESS, SUPER, REPLICATION CLIENT ON *.* TO 'pmm'@'%'; \
+		FLUSH PRIVILEGES;\""
+	@echo "⏳ Waiting for PMM Server to become ready (inside container)..."
+	@echo "⏳ Waiting for PostgreSQL to become ready..."
+	$(DOCKER) exec pmm-server bash -c '\
+		until /usr/pgsql-14/bin/pg_isready > /dev/null 2>&1; do \
+			echo "Waiting for PostgreSQL to become ready..."; \
+			sleep 2; \
+		done'
+	@echo "✅ PMM Server is available"
+	$(DOCKER) exec -t pmm-server bash -c "change-admin-password ${PMM_SERVER_PASSWORD}"
+	$(DOCKER) up -d pmm-client
+	@echo "✅ PMM setup complete. Access the UI at http://${IP_ADDRESS}:8083"

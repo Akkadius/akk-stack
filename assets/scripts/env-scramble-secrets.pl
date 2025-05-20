@@ -11,6 +11,8 @@ my %fields_to_scramble = (
     "FTP_QUESTS_PASSWORD"       => 1,
     "SPIRE_ADMIN_PASSWORD"      => 1,
     "PEQ_EDITOR_PASSWORD"       => 1
+    "PMM_SERVER_PASSWORD"       => 1
+    "PMM_DB_MONITOR_PASSWORD"   => 1
 );
 
 ##################################

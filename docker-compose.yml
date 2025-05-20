@@ -7,6 +7,8 @@ volumes:
   spire-assets:
   eqemu-var-log:
   mariadb-var-log:
+  pmm-data:
+  pmm-client-data:
 
 services:
 
@@ -91,6 +93,52 @@ services:
       - backend
     depends_on:
       - fail2ban-mysqld
+
+  pmm-client:
+    image: percona/pmm-client:3
+    platform: linux/amd64
+    restart: unless-stopped
+    container_name: pmm-client
+    networks:
+      - backend
+    volumes:
+      - pmm-client-data:/srv
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      PMM_AGENT_SERVER_ADDRESS: pmm-server:8443
+      PMM_AGENT_SERVER_USERNAME: admin
+      PMM_AGENT_SERVER_PASSWORD: ${PMM_SERVER_PASSWORD}
+      PMM_AGENT_SERVER_INSECURE_TLS: 1
+      PMM_AGENT_SETUP: 1
+      PMM_AGENT_CONFIG_FILE=config/pmm-agent:
+      PMM_AGENT_SETUP_FORCE: 1
+      PMM_AGENT_SERVER_URL: https://admin:${PMM_SERVER_PASSWORD}@pmm-server
+      PMM_AGENT_PRERUN_SCRIPT: |
+        pmm-admin status --wait=10s && \
+        pmm-admin remove mysql mariadb \
+        pmm-admin add mysql \
+          --query-source=perfschema \
+          --username=pmm \
+          --password=${PMM_DB_MONITOR_PASSWORD} \
+          --host=mariadb \
+          --port=3306 \
+          mariadb
+
+  pmm-server:
+    image: percona/pmm-server:3
+    platform: linux/amd64
+    restart: unless-stopped
+    container_name: pmm-server
+    environment:
+      - PMM_DATA_RETENTION=24h
+    ports:
+      - "${IP_ADDRESS}:8081:8080"
+      - "${IP_ADDRESS}:8443:8443"
+    volumes:
+      - pmm-data:/srv
+    networks:
+      - backend
+
 
   #############################################
   # fail2ban
