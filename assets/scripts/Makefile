@@ -296,7 +296,7 @@ init-dev-build: ##@build Initialize build for development (faster compiles, uses
 			-DPERL_EXECUTABLE=/opt/eqemu-perl/bin/perl \
 			-DPERL_INCLUDE_PATH=/opt/eqemu-perl/lib/5.32.1/$(PERL_ARCH)/CORE/ \
 			-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=gold \
-			-DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O0 -g -DNDEBUG -Os -Wno-everything" -G "Ninja" ..
+			-DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O0 -g -Wno-everything -fno-lto" -G "Ninja" ..
 
 build: ##@build Build EQEmu server
 	@./assets/scripts/banner.pl "Building EQEmu Server"
