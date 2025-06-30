@@ -275,10 +275,11 @@ init-build: ##@build Initialize build
 		cmake \
 			-DEQEMU_BUILD_LOGIN=ON \
 			-DEQEMU_BUILD_LUA=ON \
+			-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 			-DPERL_LIBRARY=/opt/eqemu-perl/lib/5.32.1/$(PERL_ARCH)/CORE/libperl.so \
 			-DPERL_EXECUTABLE=/opt/eqemu-perl/bin/perl \
 			-DPERL_INCLUDE_PATH=/opt/eqemu-perl/lib/5.32.1/$(PERL_ARCH)/CORE/ \
-			-DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-O1 -g -DNDEBUG -Wno-everything" \
+			-DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING="-Wno-everything" \
 			-DCMAKE_CXX_COMPILER_LAUNCHER=ccache -G 'Unix Makefiles' ..
 
 init-dev-build: ##@build Initialize build for development (faster compiles, uses ninja)
