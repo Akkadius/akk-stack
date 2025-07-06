@@ -56,6 +56,7 @@ if [[ "${SPIRE_DEV}" == *"true"* ]]; then
   printf "${directory_spacing} | %-10s\n" "[${grn}spire${end}]" "Changes directory to spire (alias)"
   printf "${directory_spacing} | %-10s\n" "[${grn}spire-be${end}]" "Starts Spire backend development server"
   printf "${directory_spacing} | %-10s\n" "[${grn}spire-fe${end}]" "Starts Spire frontend development server"
+  printf "${directory_spacing} | %-10s\n" "[${grn}spirewatch${end}]" "Starts both with split-screen monitor (tmux)"
   printf "\n"
 fi
 
